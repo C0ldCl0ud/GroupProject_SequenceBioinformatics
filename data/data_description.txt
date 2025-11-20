@@ -1,0 +1,21 @@
+Dataset Sample Description
+Marine Surface seawater samples collected from the North Sea between March and May 2020 [1] (30
+mNGS samples and 30 HiFi samples).
+
+Cheese Rind samples of three washed-rind cheeses collected at five time points [2] (15 mNGS samples
+and 15 HiFi samples).
+
+Human gut I Human fecal samples obtained from three healthy volunteers [3] (3 mNGS samples and 3
+HiFi samples).
+
+Human gut II Human fecal samples obtained from 30 healthy volunteers [4] (30 mNGS samples and 30
+Nanopore samples).
+
+Activated sludge Fresh activated sludge samples collected from 23 Danish wastewater treatment plants during
+August and September of 2018 [5] (23 mNGS samples and 23 Nanopore samples).
+
+
+For the human gut I, cheese, marine, and activated sludge datasets, we downloaded all the long-read samples along with their
+corresponding short-read samples from the original papers. In the human gut II dataset, considering the substantial computational
+resources and disk space required for multi-sample binning, we downloaded 30 Nanopore samples and their corresponding 30 mNGS
+samples.
