@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
 
-conda env create -f environment.yml
-conda activate myenv
+eval "$(conda shell.bash hook)"
+
+conda env update -f environment.yml --prune
+conda activate metagenomics
