@@ -22,3 +22,12 @@ If you install, update or deinstall tools run:
 
 bash scripts/environment/save_environment.sh
 
+---
+
+## Downloading data
+
+To download the .sra files run:
+
+bash scripts/00_download.sh
+
+This will fetch all .sra files (202, approx. 2 Tb) from the accesion codes in the data/subdir/*.txt files into the respective data/subdir folders. Rerunning this script only downloads files, if they are missing or incomplete.
