@@ -8,4 +8,4 @@ set -euo pipefail
 FILE=$1
 DATASET=$2
 
-grep "^$FILE" ./../data/"$DATASET"/filereport.tsv | cut -f7
+grep "^$FILE" "./../data/$DATASET/filereport.tsv" | cut -f7
