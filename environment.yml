@@ -12,9 +12,12 @@ dependencies:
   - bzip2=1.0.8
   - ca-certificates=2025.11.4
   - expat=2.7.3
+  - fastp=0.23.4
   - icu=58.2
   - intel-openmp=2025.0.0
+  - isa-l=2.30.0
   - ld_impl_linux-64=2.44
+  - libdeflate=1.22
   - libffi=3.4.4
   - libgcc=15.2.0
   - libgcc-ng=15.2.0
