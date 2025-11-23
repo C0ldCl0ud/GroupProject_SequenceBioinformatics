@@ -1,11 +1,21 @@
 #!/usr/bin/env bash
-set -euo pipefail
 
-#This should later eventually retrieve the ftp-url for a given Accesion number
-#Usage: 00_download.sh <Accession> <dataset>
-#Output: echos ftp-url
+# Base data folder
+DATA_DIR="data"
 
-FILE=$1
-DATASET=$2
+# Loop through all .txt files in subfolders
+find "$DATA_DIR" -mindepth 2 -maxdepth 2 -type f -name "*.txt" | while read txtfile; do
+    echo "Processing $txtfile..."
 
-grep "^$FILE" "./../data/$DATASET/filereport.tsv" | cut -f7
+    # Get the directory of the .txt file (subfolder)
+    SUBFOLDER=$(dirname "$txtfile")
+
+    # Loop through each accession code in the file
+    while read accession; do
+        # Skip empty lines
+        [[ -z "$accession" ]] && continue
+
+        echo "Prefetching $accession..."
+        prefetch -O "$SUBFOLDER" "$accession"
+    done < "$txtfile"
+done
