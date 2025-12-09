@@ -87,3 +87,10 @@ scp path/to/file/you/want/to/transfer nog:/teachstor/../path/to/copy/to/
 
 This also works the other way around if you want to copy something from the
 server to your laptop. (Basically like "cp")
+
+## VERY IMPORTANT: change permissions of files
+after uploading or creating files do:
+
+```
+chmod -R 770 DIRECTORY_NAME
+```
