@@ -17,6 +17,19 @@ or
 
 `/teachstor/share/groupprojectWS25/groupB/`
 
+## condensed workflow before starting to work
+
+The following commands need to be executed, before starting any pipeline on the server.
+You need the `bash` command to start conda service.
+
+```
+ssh [USERNAME]@sshgw.cs.uni-tuebingen.de
+ssh nog
+cd ../../teachstor/share/groupprojectWS25/groupB/
+bash
+conda activate metagenomics
+```
+
 ## miniconda
 
 You do not have sudo rights, so you cannot install anything using `sudo apt install`. You always need to either download some installer/binary or install packages using conda.
