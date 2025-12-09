@@ -20,7 +20,7 @@ or
 ## condensed workflow before starting to work
 
 The following commands need to be executed, before starting any pipeline on the server.
-You need the `bash` command to start conda service.
+You need the `bash` command to start conda service. I put them here to copy/paste them.
 
 ```
 ssh [USERNAME]@sshgw.cs.uni-tuebingen.de
