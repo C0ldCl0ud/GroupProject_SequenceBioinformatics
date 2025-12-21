@@ -5,9 +5,39 @@ configfile: "config/config.yaml"
 
 # dataset is passed via --config dataset=dataset1
 DATASET = config["dataset"]
-
 DATASET_DIR = f"data/{DATASET}"
 RESULTS_DIR = f"results/{DATASET}"
+
+#check long read technology
+LONG_TECH = config["long_read_technology"].lower()
+if LONG_TECH == "nanopore":
+    LONG_PREPROCESSED = f"{RESULTS_DIR}/preprocess/long/{{sample}}.final.fq.gz"
+elif LONG_TECH == "pacbio":
+    LONG_PREPROCESSED = f"{RESULTS_DIR}/fastq/long/{{sample}}.fq.gz"
+else:
+    raise ValueError("Unsupported long_read_technology")
+
+#check human gut removal
+if bool(config.get("remove_human_reads", False)):
+    SHORT_FINAL_R1 = f"{RESULTS_DIR}/preprocess/short/{{sample}}_R1.nohuman.fq.gz"
+    SHORT_FINAL_R2 = f"{RESULTS_DIR}/preprocess/short/{{sample}}_R2.nohuman.fq.gz"
+    LONG_FINAL = f"{RESULTS_DIR}/preprocess/long/{{sample}}.nohuman.fq.gz"
+else:
+    SHORT_FINAL_R1 = f"{RESULTS_DIR}/preprocess/short/{{sample}}_R1.fastp.fq.gz"
+    SHORT_FINAL_R2 = f"{RESULTS_DIR}/preprocess/short/{{sample}}_R2.fastp.fq.gz"
+    LONG_FINAL = LONG_PREPROCESSED
+
+#assembly modes
+if LONG_TECH == "pacbio":
+    FLYE_MODE = "--pacbio-hifi"
+elif LONG_TECH == "nanopore":
+    FLYE_MODE = "--nano-raw"
+
+#assemply post processing with pilon
+if LONG_TECH == "nanopore":
+    HYBRID_FINAL = f"{RESULTS_DIR}/assemblies/single/hybrid/{{sample}}/contigs.pilon.fasta"
+else:
+    HYBRID_FINAL = f"{RESULTS_DIR}/assemblies/single/hybrid/{{sample}}/contigs.fasta"
 
 short = [l.strip() for l in open(DATASET_DIR+"/short_reads.txt") if l.strip()]
 long  = [l.strip() for l in open(DATASET_DIR+"/long_reads.txt") if l.strip()]
@@ -25,23 +55,23 @@ LONG_ACC  = dict(zip(SAMPLES, long))
 
 rule all:
     input:
-        # short-read-only assemblies
+        # single-sample assemblies
         expand(
-            f"{RESULTS_DIR}/assemblies/short/{{sample}}/contigs.fasta",
+            f"{RESULTS_DIR}/assemblies/single/short/{{sample}}/contigs.fasta",
             sample=SAMPLES
         ),
-        # long-read-only assemblies
         expand(
-            f"{RESULTS_DIR}/assemblies/long/{{sample}}/contigs.fasta",
+            f"{RESULTS_DIR}/assemblies/single/long/{{sample}}/contigs.fasta",
             sample=SAMPLES
         ),
-        # hybrid assemblies
         expand(
-            f"{RESULTS_DIR}/assemblies/hybrid/{{sample}}/contigs.fasta",
+            f"{RESULTS_DIR}/assemblies/single/hybrid/{{sample}}/contigs.fasta",
             sample=SAMPLES
         ),
-        # multi assembly
-        f"{RESULTS_DIR}/assemblies/multi/contigs.fasta",
+
+        # multi-sample assembly
+        f"{RESULTS_DIR}/assemblies/multi/short/contigs.fasta",
+
 
         # binning
         expand(f"{RESULTS_DIR}/bins/coassembly/{{tool}}/bins.done",tool=config["binning_tools"]),
@@ -126,35 +156,144 @@ rule sra_to_fastq_long:
 # 3. Preprocessing
 ############################################
 
-rule preprocess_short:
+rule preprocess_short_fastp:
     input:
         r1=f"{RESULTS_DIR}/fastq/short/{{sample}}_R1.fq.gz",
         r2=f"{RESULTS_DIR}/fastq/short/{{sample}}_R2.fq.gz"
     output:
-        r1=f"{RESULTS_DIR}/preprocess/short/{{sample}}_R1.fq.gz",
-        r2=f"{RESULTS_DIR}/preprocess/short/{{sample}}_R2.fq.gz"
+        r1=f"{RESULTS_DIR}/preprocess/short/{{sample}}_R1.fastp.fq.gz",
+        r2=f"{RESULTS_DIR}/preprocess/short/{{sample}}_R2.fastp.fq.gz"
     log:
-        f"logs/{DATASET}/preprocess/short/{{sample}}.log"
+        f"logs/{DATASET}/preprocess/short/{{sample}}.fastp.log"
+    conda:
+        "envs/preprocessing.yaml"
     shell:
         """
         fastp \
           -i {input.r1} -I {input.r2} \
           -o {output.r1} -O {output.r2} \
+          -q 20 \
+          --length_required 100 \
+          --low_complexity_filter \
           > {log} 2>&1
         """
 
-rule preprocess_long:
+rule nanopore_qcat:
     input:
-        fq=f"{RESULTS_DIR}/fastq/long/{{sample}}.fq.gz"
-    output:
         fq=f"{RESULTS_DIR}/preprocess/long/{{sample}}.fq.gz"
+    output:
+        fq=f"{RESULTS_DIR}/preprocess/long/{{sample}}.qcat.fq.gz"
     log:
-        f"logs/{DATASET}/preprocess/long/{{sample}}.log"
+        f"logs/{DATASET}/preprocess/long/{{sample}}.qcat.log"
+    conda:
+        "envs/preprocessing.yaml"
     shell:
         """
-        # For long reads, fastp can still be used, but only single input
-        fastp \
-          -i {input.fq} -o {output.fq} \
+        qcat \
+          --trim \
+          --detect-middle \
+          -i {input.fq} \
+          -o {output.fq} \
+          > {log} 2>&1
+        """
+
+rule nanopore_filtlong_1:
+    input:
+        fq=f"{RESULTS_DIR}/preprocess/long/{{sample}}.qcat.fq.gz"
+    output:
+        fq=f"{RESULTS_DIR}/preprocess/long/{{sample}}.filtlong1.fq.gz"
+    log:
+        f"logs/{DATASET}/preprocess/long/{{sample}}.filtlong1.log"
+    conda:
+        "envs/preprocessing.yaml"
+    shell:
+        """
+        filtlong \
+          --min_length 4000 \
+          --min_mean_q 80 \
+          {input.fq} | gzip > {output.fq} \
+          2> {log}
+        """
+
+rule nanopore_porechop:
+    input:
+        fq = f"{RESULTS_DIR}/preprocess/long/{{sample}}.filtlong1.fq.gz"
+
+    output:
+        fq=f"{RESULTS_DIR}/preprocess/long/{{sample}}.porechop.fq.gz"
+    log:
+        f"logs/{DATASET}/preprocess/long/{{sample}}.porechop.log"
+    conda:
+        "envs/preprocessing.yaml"
+    shell:
+        """
+        porechop \
+          -i {input.fq} \
+          -o {output.fq} \
+          --min_split_read_size 4000 \
+          > {log} 2>&1
+        """
+
+rule nanopore_filtlong_2:
+    input:
+        fq=f"{RESULTS_DIR}/preprocess/long/{{sample}}.porechop.fq.gz"
+    output:
+        fq=f"{RESULTS_DIR}/preprocess/long/{{sample}}.final.fq.gz"
+    log:
+        f"logs/{DATASET}/preprocess/long/{{sample}}.filtlong2.log"
+    conda:
+        "envs/preprocessing.yaml"
+    shell:
+        """
+        filtlong \
+          --min_length 4000 \
+          --min_mean_q 80 \
+          {input.fq} | gzip > {output.fq} \
+          2> {log}
+        """
+
+rule remove_human_short:
+    input:
+        r1=f"{RESULTS_DIR}/preprocess/short/{{sample}}_R1.fastp.fq.gz",
+        r2=f"{RESULTS_DIR}/preprocess/short/{{sample}}_R2.fastp.fq.gz"
+    output:
+        r1=f"{RESULTS_DIR}/preprocess/short/{{sample}}_R1.nohuman.fq.gz",
+        r2=f"{RESULTS_DIR}/preprocess/short/{{sample}}_R2.nohuman.fq.gz"
+    threads: config["threads"]
+    log:
+        f"logs/{DATASET}/preprocess/short/{{sample}}.bowtie2.log"
+    conda:
+        "envs/preprocessing.yaml"
+    shell:
+        """
+        bowtie2 \
+          -x {config[hg38_index]} \
+          -1 {input.r1} -2 {input.r2} \
+          -p {threads} \
+          --un-conc-gz {RESULTS_DIR}/preprocess/short/{wildcards.sample}.nohuman.fq.gz \
+          > {log} 2>&1
+
+        mv {RESULTS_DIR}/preprocess/short/{wildcards.sample}.nohuman.1.fq.gz {output.r1}
+        mv {RESULTS_DIR}/preprocess/short/{wildcards.sample}.nohuman.2.fq.gz {output.r2}
+        """
+
+rule remove_human_long:
+    input:
+        fq=LONG_PREPROCESSED
+    output:
+        fq=f"{RESULTS_DIR}/preprocess/long/{{sample}}.nohuman.fq.gz"
+    threads: config["threads"]
+    log:
+        f"logs/{DATASET}/preprocess/long/{{sample}}.bowtie2.log"
+    conda:
+        "envs/preprocessing.yaml"
+    shell:
+        """
+        bowtie2 \
+          -x {config[hg38_index]} \
+          -U {input.fq} \
+          -p {threads} \
+          --un-gz {output.fq} \
           > {log} 2>&1
         """
 
@@ -166,132 +305,381 @@ rule preprocess_long:
 
 rule assemble_single_short:
     input:
-        r1=f"{RESULTS_DIR}/preprocess/short/{{sample}}_R1.fq.gz",
-        r2=f"{RESULTS_DIR}/preprocess/short/{{sample}}_R2.fq.gz"
+        r1=SHORT_FINAL_R1,
+        r2=SHORT_FINAL_R2
     output:
         f"{RESULTS_DIR}/assemblies/single/short/{{sample}}/contigs.fasta"
     threads: config["threads"]
     log:
-        f"logs/{DATASET}/assembly/single/short/{{sample}}.log"
+        f"logs/{DATASET}/assembly/single/short/{{sample}}.megahit.log"
+    conda:
+        "envs/assembly.yaml"
     shell:
         """
-        spades.py \
-          -1 {input.r1} -2 {input.r2} \
+        megahit \
+          -1 {input.r1} \
+          -2 {input.r2} \
           -o {RESULTS_DIR}/assemblies/single/short/{wildcards.sample} \
+          --min-contig-len 1000 \
+          -t {threads} \
           > {log} 2>&1
         """
 
 rule assemble_single_long:
     input:
-        fq=f"{RESULTS_DIR}/preprocess/long/{{sample}}.fq.gz"
+        fq=LONG_FINAL
     output:
         f"{RESULTS_DIR}/assemblies/single/long/{{sample}}/contigs.fasta"
     threads: config["threads"]
     log:
-        f"logs/{DATASET}/assembly/single/long/{{sample}}.log"
+        f"logs/{DATASET}/assembly/single/long/{{sample}}.flye.log"
+    conda:
+        "envs/assembly.yaml"
     shell:
         """
-        spades.py \
-          --pacbio {input.fq} \
-          -o {RESULTS_DIR}/assemblies/single/long/{wildcards.sample} \
+        flye \
+          {FLYE_MODE} {input.fq} \
+          --out-dir {RESULTS_DIR}/assemblies/single/long/{wildcards.sample} \
+          --threads {threads} \
+          --min-overlap 1000 \
           > {log} 2>&1
         """
 
-rule assemble_hybrid:
+rule assemble_single_hybrid:
     input:
-        r1=f"{RESULTS_DIR}/preprocess/short/{{sample}}_R1.fq.gz",
-        r2=f"{RESULTS_DIR}/preprocess/short/{{sample}}_R2.fq.gz",
-        long=f"{RESULTS_DIR}/preprocess/long/{{sample}}.fq.gz"
+        r1=SHORT_FINAL_R1,
+        r2=SHORT_FINAL_R2,
+        long=LONG_FINAL
     output:
-        f"{RESULTS_DIR}/assemblies/hybrid/{{sample}}/contigs.fasta"
+        f"{RESULTS_DIR}/assemblies/single/hybrid/{{sample}}/contigs.fasta"
     threads: config["threads"]
     log:
-        f"logs/{DATASET}/assembly/hybrid/{{sample}}.log"
+        f"logs/{DATASET}/assembly/single/hybrid/{{sample}}.operams.log"
+    conda:
+        "envs/assembly.yaml"
     shell:
         """
-        spades.py \
-          -1 {input.r1} -2 {input.r2} \
-          --pacbio {input.long} \
-          -o {RESULTS_DIR}/assemblies/hybrid/{wildcards.sample} \
+        opera-ms \
+          --short-read1 {input.r1} \
+          --short-read2 {input.r2} \
+          --long-read {input.long} \
+          --out-dir {RESULTS_DIR}/assemblies/single/hybrid/{wildcards.sample} \
+          --num-threads {threads} \
           > {log} 2>&1
         """
 
-# 4.2 Multi-sample assemblies (dataset-level)
-
-rule assemble_multi_short:
+rule assemble_coassembly_short:
     input:
-        r1=expand(f"{RESULTS_DIR}/preprocess/short/{{sample}}_R1.fq.gz", sample=SAMPLES),
-        r2=expand(f"{RESULTS_DIR}/preprocess/short/{{sample}}_R2.fq.gz", sample=SAMPLES)
+        r1=expand(SHORT_FINAL_R1, sample=SAMPLES),
+        r2=expand(SHORT_FINAL_R2, sample=SAMPLES)
     output:
-        f"{RESULTS_DIR}/assemblies/multi/short/contigs.fasta"
+        f"{RESULTS_DIR}/assemblies/coassembly/short/contigs.fasta"
     threads: config["threads"]
     log:
-        f"logs/{DATASET}/assembly/multi_short.log"
+        f"logs/{DATASET}/assembly/coassembly/short.megahit.log"
+    conda:
+        "envs/assembly.yaml"
     shell:
         """
         megahit \
           -1 {','.join(input.r1)} \
           -2 {','.join(input.r2)} \
-          -o {RESULTS_DIR}/assemblies/multi/short \
+          -o {RESULTS_DIR}/assemblies/coassembly/short \
+          --min-contig-len 1000 \
+          -t {threads} \
           > {log} 2>&1
         """
 
 ############################################
-# 5. Binning
+# 5. Binning (mapping + depth + binning)
 ############################################
 
-rule bin_coassembly:
+############################################
+# 5.1 Build indices (ONCE per assembly)
+############################################
+
+rule index_short_single:
     input:
-        assembly=f"{RESULTS_DIR}/assemblies/multi/short/contigs.fasta"
+        contigs = f"{RESULTS_DIR}/assemblies/single/short/{{sample}}/contigs.fasta"
     output:
-        touch(f"{RESULTS_DIR}/bins/coassembly/{{tool}}/bins.done")
-    params:
-        tool=lambda wc: wc.tool
-    threads: config["threads"]
-    log:
-        f"logs/{DATASET}/binning/coassembly/{{tool}}.log"
+        idx = directory(f"{RESULTS_DIR}/indices/single/short/{{sample}}")
+    conda:
+        "envs/mapping.yaml"
     shell:
         """
-        # example placeholder, replace with actual binning command
-        binning_tool --input {input.assembly} --output {wildcards.tool}_bins \
-        > {log} 2>&1
-        touch {output}
+        bowtie2-build {input.contigs} {output.idx}/contigs
         """
 
-rule bin_single_sample:
+rule index_short_coassembly:
     input:
-        assembly=lambda wc: f"{RESULTS_DIR}/assemblies/{wc.assembly_type}/{wc.sample}/contigs.fasta"
+        contigs = f"{RESULTS_DIR}/assemblies/coassembly/short/contigs.fasta"
     output:
-        touch(f"{RESULTS_DIR}/bins/{{tool}}/{{assembly_type}}/{{sample}}/bins.done")
-    params:
-        tool=lambda wc: wc.tool
-    threads: config["threads"]
-    log:
-        f"logs/{DATASET}/binning/single/{{tool}}/{{assembly_type}}/{{sample}}.log"
+        idxdir = directory(f"{RESULTS_DIR}/indices/coassembly/short")
+    conda:
+        "envs/mapping.yaml"
     shell:
         """
-        binning_tool --input {input} --output {wildcards.tool}_{wildcards.sample}_{wildcards.assembly_type}_bins \
-        > {log} 2>&1
-        touch {output}
+        bowtie2-build {input.contigs} {output.idxdir}/contigs
         """
 
-rule bin_multi_sample:
+rule index_hybrid_single:
     input:
-        assemblies=lambda wc: expand(
-            f"{RESULTS_DIR}/assemblies/single/{wc.assembly_type}/{{sample}}/contigs.fasta",
-            sample=SAMPLES
+        contigs = f"{RESULTS_DIR}/assemblies/single/hybrid/{{sample}}/contigs.fasta"
+    output:
+        idx = directory(f"{RESULTS_DIR}/indices/single/hybrid/{{sample}}")
+    conda:
+        "envs/mapping.yaml"
+    shell:
+        """
+        bowtie2-build {input.contigs} {output.idx}/contigs
+        """
+
+############################################
+# 5.2 Mapping
+############################################
+
+# ---- SHORT READS ----
+
+rule map_short_single:
+    input:
+        idx = f"{RESULTS_DIR}/indices/single/short/{{sample}}/contigs",
+        r1 = SHORT_FINAL_R1,
+        r2 = SHORT_FINAL_R2
+    output:
+        bam = f"{RESULTS_DIR}/mapping/single/short/{{sample}}.sorted.bam"
+    threads: config["threads"]
+    conda:
+        "envs/mapping.yaml"
+    shell:
+        """
+        bowtie2 -x {input.idx} -1 {input.r1} -2 {input.r2} -p {threads} |
+        samtools sort -@ {threads} -o {output.bam}
+        samtools index {output.bam}
+        """
+
+rule map_short_coassembly:
+    input:
+        idxdir = f"{RESULTS_DIR}/indices/coassembly/short",
+        r1 = SHORT_FINAL_R1,
+        r2 = SHORT_FINAL_R2
+    output:
+        bam = f"{RESULTS_DIR}/mapping/coassembly/short/{{sample}}.sorted.bam"
+    threads: config["threads"]
+    conda:
+        "envs/mapping.yaml"
+    shell:
+        """
+        bowtie2 -x {input.idxdir}/contigs \
+          -1 {input.r1} -2 {input.r2} -p {threads} |
+        samtools sort -@ {threads} -o {output.bam}
+        samtools index {output.bam}
+        """
+
+rule map_short_multi:
+    input:
+        idx = f"{RESULTS_DIR}/indices/single/short/{{sample}}/contigs",
+        r1 = lambda wc: SHORT_FINAL_R1.format(sample=wc.other),
+        r2 = lambda wc: SHORT_FINAL_R2.format(sample=wc.other)
+    output:
+        bam = f"{RESULTS_DIR}/mapping/multi/short/{{sample}}/{{other}}.sorted.bam"
+    threads: config["threads"]
+    conda:
+        "envs/mapping.yaml"
+    shell:
+        """
+        bowtie2 -x {input.idx} -1 {input.r1} -2 {input.r2} -p {threads} |
+        samtools sort -@ {threads} -o {output.bam}
+        samtools index {output.bam}
+        """
+
+# ---- LONG READS ----
+
+rule map_long_single:
+    input:
+        contigs = f"{RESULTS_DIR}/assemblies/single/long/{{sample}}/contigs.fasta",
+        reads = LONG_FINAL
+    output:
+        bam = f"{RESULTS_DIR}/mapping/single/long/{{sample}}.sorted.bam"
+    threads: config["threads"]
+    conda:
+        "envs/mapping.yaml"
+    shell:
+        """
+        minimap2 -ax map-hifi {input.contigs} {input.reads} -t {threads} |
+        samtools sort -@ {threads} -o {output.bam}
+        samtools index {output.bam}
+        """
+
+rule map_long_multi:
+    input:
+        contigs = f"{RESULTS_DIR}/assemblies/single/long/{{sample}}/contigs.fasta",
+        reads = lambda wc: LONG_FINAL.format(sample=wc.other)
+    output:
+        bam = f"{RESULTS_DIR}/mapping/multi/long/{{sample}}/{{other}}.sorted.bam"
+    threads: config["threads"]
+    conda:
+        "envs/mapping.yaml"
+    shell:
+        """
+        minimap2 -ax map-hifi {input.contigs} {input.reads} -t {threads} |
+        samtools sort -@ {threads} -o {output.bam}
+        samtools index {output.bam}
+        """
+
+# ---- HYBRID ----
+
+rule map_hybrid_single:
+    input:
+        idx = f"{RESULTS_DIR}/indices/single/hybrid/{{sample}}/contigs",
+        contigs = f"{RESULTS_DIR}/assemblies/single/hybrid/{{sample}}/contigs.fasta",
+        r1 = SHORT_FINAL_R1,
+        r2 = SHORT_FINAL_R2,
+        long = LONG_FINAL
+    output:
+        bam = f"{RESULTS_DIR}/mapping/single/hybrid/{{sample}}.sorted.bam"
+    threads: config["threads"]
+    conda:
+        "envs/mapping.yaml"
+    shell:
+        """
+        bowtie2 -x {input.idx} -1 {input.r1} -2 {input.r2} -p {threads} |
+        samtools sort -@ {threads} -o short_{wildcards.sample}.bam
+
+        minimap2 -ax map-hifi {input.contigs} {input.long} -t {threads} |
+        samtools sort -@ {threads} -o long_{wildcards.sample}.bam
+
+        samtools merge -@ {threads} {output.bam} short_{wildcards.sample}.bam long_{wildcards.sample}.bam
+        samtools index {output.bam}
+
+        rm short_{wildcards.sample}.bam long_{wildcards.sample}.bam
+        """
+
+rule map_hybrid_multi:
+    input:
+        idx = f"{RESULTS_DIR}/indices/single/hybrid/{{sample}}/contigs",
+        contigs = f"{RESULTS_DIR}/assemblies/single/hybrid/{{sample}}/contigs.fasta",
+        r1 = lambda wc: SHORT_FINAL_R1.format(sample=wc.other),
+        r2 = lambda wc: SHORT_FINAL_R2.format(sample=wc.other),
+        long = lambda wc: LONG_FINAL.format(sample=wc.other)
+    output:
+        bam = f"{RESULTS_DIR}/mapping/multi/hybrid/{{sample}}/{{other}}.sorted.bam"
+    threads: config["threads"]
+    conda:
+        "envs/mapping.yaml"
+    shell:
+        """
+        bowtie2 -x {input.idx} -1 {input.r1} -2 {input.r2} -p {threads} |
+        samtools sort -@ {threads} -o short_{wildcards.sample}_{wildcards.other}.bam
+
+        minimap2 -ax map-hifi {input.contigs} {input.long} -t {threads} |
+        samtools sort -@ {threads} -o long_{wildcards.sample}_{wildcards.other}.bam
+
+        samtools merge -@ {threads} {output.bam} \
+          short_{wildcards.sample}_{wildcards.other}.bam \
+          long_{wildcards.sample}_{wildcards.other}.bam
+        samtools index {output.bam}
+
+        rm short_{wildcards.sample}_{wildcards.other}.bam \
+           long_{wildcards.sample}_{wildcards.other}.bam
+        """
+
+############################################
+# 5.3 Depth calculation
+############################################
+
+rule depth_coassembly:
+    input:
+        expand(f"{RESULTS_DIR}/mapping/coassembly/short/{{sample}}.sorted.bam", sample=SAMPLES)
+    output:
+        depth = f"{RESULTS_DIR}/depth/coassembly/depth.txt"
+    conda:
+        "envs/binning.yaml"
+    shell:
+        """
+        jgi_summarize_bam_contig_depths --outputDepth {output.depth} {input}
+        """
+
+rule depth_single:
+    input:
+        bam = f"{RESULTS_DIR}/mapping/single/{{assembly_type}}/{{sample}}.sorted.bam"
+    output:
+        depth = f"{RESULTS_DIR}/depth/single/{{assembly_type}}/{{sample}}/depth.txt"
+    conda:
+        "envs/binning.yaml"
+    shell:
+        """
+        jgi_summarize_bam_contig_depths --outputDepth {output.depth} {input.bam}
+        """
+
+rule depth_multi:
+    input:
+        bams = lambda wc: expand(
+            f"{RESULTS_DIR}/mapping/multi/{wc.assembly_type}/{wc.sample}/{{other}}.sorted.bam",
+            other=SAMPLES
         )
     output:
-        touch(f"{RESULTS_DIR}/bins/multi/{{tool}}/{{assembly_type}}/bins.done")
-    params:
-        tool=lambda wc: wc.tool
-    threads: config["threads"]
-    log:
-        f"logs/{DATASET}/binning/multi/{{tool}}/{{assembly_type}}.log"
+        depth = f"{RESULTS_DIR}/depth/multi/{{assembly_type}}/{{sample}}/depth.txt"
+    conda:
+        "envs/binning.yaml"
     shell:
         """
-        binning_tool --input {','.join(input.assemblies)} --output {wildcards.tool}_{wildcards.assembly_type}_multi_bins \
-        > {log} 2>&1
+        jgi_summarize_bam_contig_depths --outputDepth {output.depth} {input.bams}
+        """
+
+############################################
+# 5.4 MetaBAT2
+############################################
+
+rule metabat2_coassembly:
+    input:
+        contigs = f"{RESULTS_DIR}/assemblies/coassembly/short/contigs.fasta",
+        depth = f"{RESULTS_DIR}/depth/coassembly/depth.txt"
+    output:
+        touch(f"{RESULTS_DIR}/bins/coassembly/metabat2/bins.done")
+    threads: config["threads"]
+    conda:
+        "envs/binning.yaml"
+    shell:
+        """
+        mkdir -p {RESULTS_DIR}/bins/coassembly/metabat2
+        metabat2 -t {threads} -i {input.contigs} -a {input.depth} \
+          -o {RESULTS_DIR}/bins/coassembly/metabat2/bin
+        touch {output}
+        """
+
+rule metabat2_single:
+    input:
+        contigs = f"{RESULTS_DIR}/assemblies/single/{{assembly_type}}/{{sample}}/contigs.fasta",
+        depth = f"{RESULTS_DIR}/depth/single/{{assembly_type}}/{{sample}}/depth.txt"
+    output:
+        touch(f"{RESULTS_DIR}/bins/single/metabat2/{{assembly_type}}/{{sample}}/bins.done")
+    threads: config["threads"]
+    conda:
+        "envs/binning.yaml"
+    shell:
+        """
+        mkdir -p {RESULTS_DIR}/bins/single/metabat2/{wildcards.assembly_type}/{wildcards.sample}
+        metabat2 -t {threads} -i {input.contigs} -a {input.depth} \
+          -o {RESULTS_DIR}/bins/single/metabat2/{wildcards.assembly_type}/{wildcards.sample}/bin
+        touch {output}
+        """
+
+rule metabat2_multi:
+    input:
+        contigs = f"{RESULTS_DIR}/assemblies/single/{{assembly_type}}/{{sample}}/contigs.fasta",
+        depth = f"{RESULTS_DIR}/depth/multi/{{assembly_type}}/{{sample}}/depth.txt"
+    output:
+        touch(f"{RESULTS_DIR}/bins/multi/metabat2/{{assembly_type}}/{{sample}}/bins.done")
+    threads: config["threads"]
+    conda:
+        "envs/binning.yaml"
+    shell:
+        """
+        mkdir -p {RESULTS_DIR}/bins/multi/metabat2/{wildcards.assembly_type}/{wildcards.sample}
+        metabat2 -t {threads} \
+          -i {input.contigs} \
+          -a {input.depth} \
+          -o {RESULTS_DIR}/bins/multi/metabat2/{wildcards.assembly_type}/{wildcards.sample}/bin
         touch {output}
         """
 

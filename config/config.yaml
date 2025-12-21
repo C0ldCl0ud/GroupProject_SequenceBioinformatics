@@ -1,0 +1,8 @@
+dataset: cheese
+threads: 16
+long_read_technology: pacbio   # pacbio | nanopore
+binning_tools:
+  - metabat2
+  - maxbin2
+hg38_index: /path/to/hg38/bowtie2_index
+remove_human_reads: false
