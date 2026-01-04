@@ -1,4 +1,4 @@
-dataset: cheese
+dataset: marine
 threads: 16
 long_read_technology: pacbio   # pacbio | nanopore
 binning_tools:
