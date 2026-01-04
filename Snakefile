@@ -402,7 +402,7 @@ rule index_short_single:
     input:
         contigs = f"{RESULTS_DIR}/assemblies/single/short/{{sample}}/contigs.fasta"
     output:
-        idx = directory(f"{RESULTS_DIR}/indices/single/short/{{sample}}")
+        idx = f"{RESULTS_DIR}/indices/single/short/{{sample}}"
     conda:
         "envs/mapping.yaml"
     shell:
@@ -414,7 +414,7 @@ rule index_short_coassembly:
     input:
         contigs = f"{RESULTS_DIR}/assemblies/coassembly/short/contigs.fasta"
     output:
-        idxdir = directory(f"{RESULTS_DIR}/indices/coassembly/short")
+        idxdir = f"{RESULTS_DIR}/indices/coassembly/short"
     conda:
         "envs/mapping.yaml"
     shell:
@@ -426,7 +426,7 @@ rule index_hybrid_single:
     input:
         contigs = f"{RESULTS_DIR}/assemblies/single/hybrid/{{sample}}/contigs.fasta"
     output:
-        idx = directory(f"{RESULTS_DIR}/indices/single/hybrid/{{sample}}")
+        idx = f"{RESULTS_DIR}/indices/single/hybrid/{{sample}}"
     conda:
         "envs/mapping.yaml"
     shell:
