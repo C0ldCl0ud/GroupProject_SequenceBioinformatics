@@ -8,10 +8,15 @@ DATASET = config["dataset"]
 DATASET_DIR = f"data/{DATASET}"
 RESULTS_DIR = f"results/{DATASET}"
 
+short = [l.strip() for l in open(DATASET_DIR+"/short_reads.txt") if l.strip()]
+long  = [l.strip() for l in open(DATASET_DIR+"/long_reads.txt") if l.strip()]
+
+SAMPLES = [f"S{i:02d}" for i in range(len(short))]
+
 #check long read technology
 LONG_TECH = config["long_read_technology"].lower()
 if LONG_TECH == "nanopore":
-    LONG_PREPROCESSED = f"{RESULTS_DIR}/preprocess/long/{{sample}}.final.fq.gz"
+    LONG_PREPROCESSED = expand(f"{RESULTS_DIR}/preprocess/long/{{sample}}.final.fq.gz", sample=SAMPLES)
 elif LONG_TECH == "pacbio":
     LONG_PREPROCESSED = f"{RESULTS_DIR}/fastq/long/{{sample}}.fq.gz"
 else:
@@ -23,8 +28,8 @@ if bool(config.get("remove_human_reads", False)):
     SHORT_FINAL_R2 = f"{RESULTS_DIR}/preprocess/short/{{sample}}_R2.nohuman.fq.gz"
     LONG_FINAL = f"{RESULTS_DIR}/preprocess/long/{{sample}}.nohuman.fq.gz"
 else:
-    SHORT_FINAL_R1 = f"{RESULTS_DIR}/preprocess/short/{{sample}}_R1.fastp.fq.gz"
-    SHORT_FINAL_R2 = f"{RESULTS_DIR}/preprocess/short/{{sample}}_R2.fastp.fq.gz"
+    SHORT_FINAL_R1 = expand(f"{RESULTS_DIR}/preprocess/short/{{sample}}_R1.fastp.fq.gz", sample=SAMPLES)
+    SHORT_FINAL_R2 = expand(f"{RESULTS_DIR}/preprocess/short/{{sample}}_R2.fastp.fq.gz", sample=SAMPLES)
     LONG_FINAL = LONG_PREPROCESSED
 
 #assembly modes
@@ -39,12 +44,9 @@ if LONG_TECH == "nanopore":
 else:
     HYBRID_FINAL = f"{RESULTS_DIR}/assemblies/single/hybrid/{{sample}}/contigs.fasta"
 
-short = [l.strip() for l in open(DATASET_DIR+"/short_reads.txt") if l.strip()]
-long  = [l.strip() for l in open(DATASET_DIR+"/long_reads.txt") if l.strip()]
+
 
 assert len(short) == len(long), "Short/long accession count mismatch"
-
-SAMPLES = [f"S{i:02d}" for i in range(len(short))]
 
 SHORT_ACC = dict(zip(SAMPLES, short))
 LONG_ACC  = dict(zip(SAMPLES, long))
@@ -55,6 +57,25 @@ LONG_ACC  = dict(zip(SAMPLES, long))
 
 rule all:
     input:
+        expand(f"{RESULTS_DIR}/raw/short/{{sample}}.sra", sample=SAMPLES),
+        expand(f"{RESULTS_DIR}/raw/long/{{sample}}.sra", sample=SAMPLES),
+
+        expand(f"{RESULTS_DIR}/fastq/short/{{sample}}_R1.fq.gz", sample=SAMPLES),
+        expand(f"{RESULTS_DIR}/fastq/short/{{sample}}_R2.fq.gz", sample=SAMPLES),
+        expand(f"{RESULTS_DIR}/fastq/long/{{sample}}.fq.gz", sample=SAMPLES),
+
+        expand(f"{RESULTS_DIR}/preprocess/short/{{sample}}_R1.fastp.fq.gz", sample=SAMPLES),
+        expand(f"{RESULTS_DIR}/preprocess/short/{{sample}}_R2.fastp.fq.gz", sample=SAMPLES),
+        expand(f"{RESULTS_DIR}/preprocess/long/{{sample}}.qcat.fq.gz", sample=SAMPLES),
+
+        expand(f"{RESULTS_DIR}/preprocess/long/{{sample}}.filtlong1.fq.gz", sample=SAMPLES),
+        expand(f"{RESULTS_DIR}/preprocess/long/{{sample}}.porechop.fq.gz", sample=SAMPLES),
+        expand(f"{RESULTS_DIR}/preprocess/long/{{sample}}.final.fq.gz", sample=SAMPLES),
+        
+        expand(f"{RESULTS_DIR}/preprocess/short/{{sample}}_R1.nohuman.fq.gz", sample=SAMPLES),
+        expand(f"{RESULTS_DIR}/preprocess/short/{{sample}}_R2.nohuman.fq.gz", sample=SAMPLES),
+        expand(f"{RESULTS_DIR}/preprocess/long/{{sample}}.nohuman.fq.gz", sample=SAMPLES),
+
         # single-sample assemblies
         expand(
             f"{RESULTS_DIR}/assemblies/single/short/{{sample}}/contigs.fasta",
@@ -70,19 +91,19 @@ rule all:
         ),
 
         # multi-sample assembly
-        f"{RESULTS_DIR}/assemblies/multi/short/contigs.fasta",
+        #f"{RESULTS_DIR}/assemblies/multi/short/contigs.fasta",
 
 
         # binning
         expand(f"{RESULTS_DIR}/bins/coassembly/{{tool}}/bins.done",tool=config["binning_tools"]),
         expand(f"{RESULTS_DIR}/bins/single/{{tool}}/{{assembly_type}}/{{sample}}/bins.done", tool=config["binning_tools"], assembly_type=["short", "long", "hybrid"], sample=SAMPLES),
-        expand(f"{RESULTS_DIR}/bins/multi/{{tool}}/{{assembly_type}}/bins.done", tool=config["binning_tools"], assembly_type=["short", "long", "hybrid"]),
+        expand(f"{RESULTS_DIR}/bins/multi/{{tool}}/{{assembly_type}}/{{sample}}/bins.done", tool=config["binning_tools"], sample=SAMPLES, assembly_type=["short", "long", "hybrid"])
         # QC
         # Single-sample QC
-        expand(f"{RESULTS_DIR}/qc/single/{{assembly_type}}/{{sample}}/qc.done",
-               assembly_type=["short","long","hybrid"], sample=SAMPLES),
+        #expand(f"{RESULTS_DIR}/qc/single/{{assembly_type}}/{{sample}}/qc.done",
+               #assembly_type=["short","long","hybrid"], sample=SAMPLES),
         # Multi-sample QC
-        f"{RESULTS_DIR}/qc/multi/short/qc.done",
+        #f"{RESULTS_DIR}/qc/multi/short/qc.done",
 
 ############################################
 # 1. Download SRA / dump files
@@ -97,19 +118,17 @@ rule download_short_reads:
         f"logs/{DATASET}/download/short/{{sample}}.log"
     shell:
         """
-        prefetch {params.acc} --output-file {output.sra}
+        prefetch {params.acc} -O {output.sra}
         """
 
 rule download_long_reads:
     output:
         sra=f"{RESULTS_DIR}/raw/long/{{sample}}.sra"
-    params:
-        acc=lambda wc: LONG_ACC[wc.sample]
     log:
         f"logs/{DATASET}/download/long/{{sample}}.log"
     shell:
         """
-        prefetch {params.acc} --output-file {output.sra}
+        prefetch {{sample}} -O {output.sra}
         """
 
 ############################################
@@ -141,8 +160,6 @@ rule sra_to_fastq_long:
         sra=f"{RESULTS_DIR}/raw/long/{{sample}}.sra"
     output:
         fq=f"{RESULTS_DIR}/fastq/long/{{sample}}.fq.gz"
-    params:
-        acc=lambda wc: LONG_ACC[wc.sample]
     log:
         f"logs/{DATASET}/fastq/long/{{sample}}.log"
     shell:
@@ -180,7 +197,7 @@ rule preprocess_short_fastp:
 
 rule nanopore_qcat:
     input:
-        fq=f"{RESULTS_DIR}/preprocess/long/{{sample}}.fq.gz"
+        fq=f"{RESULTS_DIR}/fastq/long/{{sample}}.fq.gz"
     output:
         fq=f"{RESULTS_DIR}/preprocess/long/{{sample}}.qcat.fq.gz"
     log:
@@ -379,12 +396,15 @@ rule assemble_coassembly_short:
         f"logs/{DATASET}/assembly/coassembly/short.megahit.log"
     conda:
         "envs/assembly.yaml"
+    params:
+        bam_r1=lambda wc, input: ','.join(input.r1),
+        bam_r2=lambda wc, input: ','.join(input.r2)
     shell:
         """
         megahit \
-          -1 {','.join(input.r1)} \
-          -2 {','.join(input.r2)} \
-          -o {RESULTS_DIR}/assemblies/coassembly/short \
+          -1 bam_r1 \
+          -2 bam_r2 \
+          -o {RESULTS_DIR}/assemblies/multi/short \
           --min-contig-len 1000 \
           -t {threads} \
           > {log} 2>&1
@@ -402,7 +422,7 @@ rule index_short_single:
     input:
         contigs = f"{RESULTS_DIR}/assemblies/single/short/{{sample}}/contigs.fasta"
     output:
-        idx = f"{RESULTS_DIR}/indices/single/short/{{sample}}"
+        idx = directory(f"{RESULTS_DIR}/indices/single/short/{{sample}}")
     conda:
         "envs/mapping.yaml"
     shell:
@@ -414,7 +434,7 @@ rule index_short_coassembly:
     input:
         contigs = f"{RESULTS_DIR}/assemblies/coassembly/short/contigs.fasta"
     output:
-        idxdir = f"{RESULTS_DIR}/indices/coassembly/short"
+        idxdir = directory(f"{RESULTS_DIR}/indices/coassembly/short")
     conda:
         "envs/mapping.yaml"
     shell:
@@ -426,7 +446,7 @@ rule index_hybrid_single:
     input:
         contigs = f"{RESULTS_DIR}/assemblies/single/hybrid/{{sample}}/contigs.fasta"
     output:
-        idx = f"{RESULTS_DIR}/indices/single/hybrid/{{sample}}"
+        idx = directory(f"{RESULTS_DIR}/indices/single/hybrid/{{sample}}")
     conda:
         "envs/mapping.yaml"
     shell:
@@ -478,8 +498,8 @@ rule map_short_coassembly:
 rule map_short_multi:
     input:
         idx = f"{RESULTS_DIR}/indices/single/short/{{sample}}/contigs",
-        r1 = lambda wc: SHORT_FINAL_R1.format(sample=wc.other),
-        r2 = lambda wc: SHORT_FINAL_R2.format(sample=wc.other)
+        r1 = lambda wc: SHORT_FINAL_R1,
+        r2 = lambda wc: SHORT_FINAL_R2
     output:
         bam = f"{RESULTS_DIR}/mapping/multi/short/{{sample}}/{{other}}.sorted.bam"
     threads: config["threads"]
@@ -558,9 +578,9 @@ rule map_hybrid_multi:
     input:
         idx = f"{RESULTS_DIR}/indices/single/hybrid/{{sample}}/contigs",
         contigs = f"{RESULTS_DIR}/assemblies/single/hybrid/{{sample}}/contigs.fasta",
-        r1 = lambda wc: SHORT_FINAL_R1.format(sample=wc.other),
-        r2 = lambda wc: SHORT_FINAL_R2.format(sample=wc.other),
-        long = lambda wc: LONG_FINAL.format(sample=wc.other)
+        r1 = lambda wc: SHORT_FINAL_R1,
+        r2 = lambda wc: SHORT_FINAL_R2,
+        long = lambda wc: LONG_FINAL
     output:
         bam = f"{RESULTS_DIR}/mapping/multi/hybrid/{{sample}}/{{other}}.sorted.bam"
     threads: config["threads"]
@@ -684,6 +704,820 @@ rule metabat2_multi:
         """
 
 ############################################
+# 5.5 MaxBin 2
+############################################
+
+rule maxbin2_coassembly:
+    input:
+        contigs = f"{RESULTS_DIR}/assemblies/coassembly/short/contigs.fasta",
+        depth   = f"{RESULTS_DIR}/depth/coassembly/depth.txt"
+    output:
+        touch(f"{RESULTS_DIR}/bins/coassembly/maxbin2/bins.done")
+    threads: config["threads"]
+    conda:
+        "envs/binning.yaml"
+    shell:
+        """
+        mkdir -p {RESULTS_DIR}/bins/coassembly/maxbin2
+        run_MaxBin.pl \
+          -contig {input.contigs} \
+          -abund_list {input.depth} \
+          -o {RESULTS_DIR}/bins/coassembly/maxbin2/bin \
+          -thread {threads}
+        touch {output}
+        """
+
+rule maxbin2_single:
+    input:
+        contigs = f"{RESULTS_DIR}/assemblies/single/{{assembly_type}}/{{sample}}/contigs.fasta",
+        depth   = f"{RESULTS_DIR}/depth/single/{{assembly_type}}/{{sample}}/depth.txt"
+    output:
+        touch(f"{RESULTS_DIR}/bins/single/maxbin2/{{assembly_type}}/{{sample}}/bins.done")
+    threads: config["threads"]
+    conda:
+        "envs/binning.yaml"
+    shell:
+        """
+        mkdir -p {RESULTS_DIR}/bins/single/maxbin2/{wildcards.assembly_type}/{wildcards.sample}
+        run_MaxBin.pl \
+          -contig {input.contigs} \
+          -abund {input.depth} \
+          -o {RESULTS_DIR}/bins/single/maxbin2/{wildcards.assembly_type}/{wildcards.sample}/bin \
+          -thread {threads}
+        touch {output}
+        """
+
+rule maxbin2_multi:
+    input:
+        contigs = f"{RESULTS_DIR}/assemblies/single/{{assembly_type}}/{{sample}}/contigs.fasta",
+        depth   = f"{RESULTS_DIR}/depth/multi/{{assembly_type}}/{{sample}}/depth.txt"
+    output:
+        touch(f"{RESULTS_DIR}/bins/multi/maxbin2/{{assembly_type}}/{{sample}}/bins.done")
+    threads: config["threads"]
+    conda:
+        "envs/binning.yaml"
+    shell:
+        """
+        mkdir -p {RESULTS_DIR}/bins/multi/maxbin2/{wildcards.assembly_type}/{wildcards.sample}
+        run_MaxBin.pl \
+          -contig {input.contigs} \
+          -abund_list {input.depth} \
+          -o {RESULTS_DIR}/bins/multi/maxbin2/{wildcards.assembly_type}/{wildcards.sample}/bin \
+          -thread {threads}
+        touch {output}
+        """
+
+############################################
+# 5.6 CONCOCT
+############################################
+
+rule concoct_coassembly:
+    input:
+        contigs = f"{RESULTS_DIR}/assemblies/coassembly/short/contigs.fasta",
+        bams = expand(
+            f"{RESULTS_DIR}/mapping/coassembly/short/{{sample}}.sorted.bam",
+            sample=SAMPLES
+        )
+    output:
+        touch(f"{RESULTS_DIR}/bins/coassembly/concoct/bins.done")
+    threads: config["threads"]
+    conda:
+        "envs/binning.yaml"
+    shell:
+        """
+        outdir={RESULTS_DIR}/bins/coassembly/concoct
+        mkdir -p $outdir
+
+        cut_up_fasta.py {input.contigs} \
+          -c 10000 -o 0 --merge_last \
+          -b $outdir/contigs_10K.bed \
+          > $outdir/contigs_10K.fa
+
+        concoct_coverage_table.py \
+          $outdir/contigs_10K.bed \
+          {input.bams} \
+          > $outdir/coverage_table.tsv
+
+        concoct \
+          -t {threads} \
+          --composition_file $outdir/contigs_10K.fa \
+          --coverage_file $outdir/coverage_table.tsv \
+          -b $outdir/concoct_output/
+
+        merge_cutup_clustering.py \
+          $outdir/concoct_output/clustering_gt1000.csv \
+          > $outdir/concoct_output/clustering_merged.csv
+
+        mkdir -p $outdir/concoct_output/fasta_bins
+        extract_fasta_bins.py \
+          {input.contigs} \
+          $outdir/concoct_output/clustering_merged.csv \
+          --output_path $outdir/concoct_output/fasta_bins
+
+        touch {output}
+        """
+
+rule concoct_single:
+    input:
+        contigs = f"{RESULTS_DIR}/assemblies/single/{{assembly_type}}/{{sample}}/contigs.fasta",
+        bam = f"{RESULTS_DIR}/mapping/single/{{assembly_type}}/{{sample}}/{{sample}}.sorted.bam"
+    output:
+        touch(f"{RESULTS_DIR}/bins/single/concoct/{{assembly_type}}/{{sample}}/bins.done")
+    threads: config["threads"]
+    conda:
+        "envs/binning.yaml"
+    shell:
+        """
+        outdir={RESULTS_DIR}/bins/single/concoct/{wildcards.assembly_type}/{wildcards.sample}
+        mkdir -p $outdir
+
+        cut_up_fasta.py {input.contigs} \
+          -c 10000 -o 0 --merge_last \
+          -b $outdir/contigs_10K.bed \
+          > $outdir/contigs_10K.fa
+
+        concoct_coverage_table.py \
+          $outdir/contigs_10K.bed \
+          {input.bam} \
+          > $outdir/coverage_table.tsv
+
+        concoct \
+          -t {threads} \
+          --composition_file $outdir/contigs_10K.fa \
+          --coverage_file $outdir/coverage_table.tsv \
+          -b $outdir/concoct_output/
+
+        merge_cutup_clustering.py \
+          $outdir/concoct_output/clustering_gt1000.csv \
+          > $outdir/concoct_output/clustering_merged.csv
+
+        mkdir -p $outdir/concoct_output/fasta_bins
+        extract_fasta_bins.py \
+          {input.contigs} \
+          $outdir/concoct_output/clustering_merged.csv \
+          --output_path $outdir/concoct_output/fasta_bins
+
+        touch {output}
+        """
+
+rule concoct_multi:
+    input:
+        contigs = f"{RESULTS_DIR}/assemblies/single/{{assembly_type}}/{{sample}}/contigs.fasta",
+        bams = lambda wc: expand(
+            f"{RESULTS_DIR}/mapping/multi/{wc.assembly_type}/{wc.sample}/{{other}}.sorted.bam",
+            other=SAMPLES
+        )
+    output:
+        touch(f"{RESULTS_DIR}/bins/multi/concoct/{{assembly_type}}/{{sample}}/bins.done")
+    threads: config["threads"]
+    conda:
+        "envs/binning.yaml"
+    shell:
+        """
+        outdir={RESULTS_DIR}/bins/multi/concoct/{wildcards.assembly_type}/{wildcards.sample}
+        mkdir -p $outdir
+
+        cut_up_fasta.py {input.contigs} \
+          -c 10000 -o 0 --merge_last \
+          -b $outdir/contigs_10K.bed \
+          > $outdir/contigs_10K.fa
+
+        concoct_coverage_table.py \
+          $outdir/contigs_10K.bed \
+          {input.bams} \
+          > $outdir/coverage_table.tsv
+
+        concoct \
+          -t {threads} \
+          --composition_file $outdir/contigs_10K.fa \
+          --coverage_file $outdir/coverage_table.tsv \
+          -b $outdir/concoct_output/
+
+        merge_cutup_clustering.py \
+          $outdir/concoct_output/clustering_gt1000.csv \
+          > $outdir/concoct_output/clustering_merged.csv
+
+        mkdir -p $outdir/concoct_output/fasta_bins
+        extract_fasta_bins.py \
+          {input.contigs} \
+          $outdir/concoct_output/clustering_merged.csv \
+          --output_path $outdir/concoct_output/fasta_bins
+
+        touch {output}
+        """
+
+############################################
+# 5.7. VAMB
+############################################
+
+rule vamb_coassembly:
+    input:
+        contigs = f"{RESULTS_DIR}/assemblies/coassembly/short/contigs.fasta",
+        depth   = f"{RESULTS_DIR}/depth/coassembly/depth.txt"
+    output:
+        touch(f"{RESULTS_DIR}/bins/coassembly/vamb/bins.done")
+    threads: config["threads"]
+    conda:
+        "envs/binning.yaml"
+    shell:
+        """
+        outdir={RESULTS_DIR}/bins/coassembly/vamb
+        mkdir -p $outdir
+
+        vamb \
+          --outdir $outdir \
+          --fasta {input.contigs} \
+          --jgi {input.depth} \
+          --minfasta 200000 \
+          -m 2000 \
+          --threads {threads}
+
+        touch {output}
+        """
+
+rule vamb_single:
+    input:
+        contigs = f"{RESULTS_DIR}/assemblies/single/{{assembly_type}}/{{sample}}/contigs.fasta",
+        depth   = f"{RESULTS_DIR}/depth/single/{{assembly_type}}/{{sample}}/depth.txt"
+    output:
+        touch(f"{RESULTS_DIR}/bins/single/vamb/{{assembly_type}}/{{sample}}/bins.done")
+    threads: config["threads"]
+    conda:
+        "envs/binning.yaml"
+    shell:
+        """
+        outdir={RESULTS_DIR}/bins/single/vamb/{wildcards.assembly_type}/{wildcards.sample}
+        mkdir -p $outdir
+
+        vamb \
+          --outdir $outdir \
+          --fasta {input.contigs} \
+          --jgi {input.depth} \
+          --minfasta 200000 \
+          -m 2000 \
+          --threads {threads}
+
+        touch {output}
+        """
+
+rule vamb_multi:
+    input:
+        contigs = f"{RESULTS_DIR}/assemblies/single/{{assembly_type}}/{{sample}}/contigs.fasta",
+        depth   = f"{RESULTS_DIR}/depth/multi/{{assembly_type}}/{{sample}}/depth.txt"
+    output:
+        touch(f"{RESULTS_DIR}/bins/multi/vamb/{{assembly_type}}/{{sample}}/bins.done")
+    threads: config["threads"]
+    conda:
+        "envs/binning.yaml"
+    shell:
+        """
+        outdir={RESULTS_DIR}/bins/multi/vamb/{wildcards.assembly_type}/{wildcards.sample}
+        mkdir -p $outdir
+
+        vamb \
+          --outdir $outdir \
+          --fasta {input.contigs} \
+          --jgi {input.depth} \
+          --minfasta 200000 \
+          -m 2000 \
+          --threads {threads}
+
+        touch {output}
+        """
+
+############################################
+# 5.8. CLIMB
+############################################
+
+rule climb_coassembly:
+    input:
+        contigs = f"{RESULTS_DIR}/assemblies/coassembly/short/contigs.fasta",
+        depth   = f"{RESULTS_DIR}/depth/coassembly/depth.txt"
+    output:
+        touch(f"{RESULTS_DIR}/bins/coassembly/climb/bins.done")
+    threads: config["threads"]
+    conda:
+        "envs/binning.yaml"
+    shell:
+        """
+        outdir={RESULTS_DIR}/bins/coassembly/climb
+        mkdir -p $outdir
+
+        vamb \
+          --contrastive \
+          --outdir $outdir \
+          --fasta {input.contigs} \
+          --jgi {input.depth} \
+          --minfasta 200000 \
+          -m 2000 \
+          --threads {threads}
+
+        touch {output}
+        """
+
+rule climb_single:
+    input:
+        contigs = f"{RESULTS_DIR}/assemblies/single/{{assembly_type}}/{{sample}}/contigs.fasta",
+        depth   = f"{RESULTS_DIR}/depth/single/{{assembly_type}}/{{sample}}/depth.txt"
+    output:
+        touch(f"{RESULTS_DIR}/bins/single/climb/{{assembly_type}}/{{sample}}/bins.done")
+    threads: config["threads"]
+    conda:
+        "envs/binning.yaml"
+    shell:
+        """
+        outdir={RESULTS_DIR}/bins/single/climb/{wildcards.assembly_type}/{wildcards.sample}
+        mkdir -p $outdir
+
+        vamb \
+          --contrastive \
+          --outdir $outdir \
+          --fasta {input.contigs} \
+          --jgi {input.depth} \
+          --minfasta 200000 \
+          -m 2000 \
+          --threads {threads}
+
+        touch {output}
+        """
+
+rule climb_multi:
+    input:
+        contigs = f"{RESULTS_DIR}/assemblies/single/{{assembly_type}}/{{sample}}/contigs.fasta",
+        depth   = f"{RESULTS_DIR}/depth/multi/{{assembly_type}}/{{sample}}/depth.txt"
+    output:
+        touch(f"{RESULTS_DIR}/bins/multi/climb/{{assembly_type}}/{{sample}}/bins.done")
+    threads: config["threads"]
+    conda:
+        "envs/binning.yaml"
+    shell:
+        """
+        outdir={RESULTS_DIR}/bins/multi/climb/{wildcards.assembly_type}/{wildcards.sample}
+        mkdir -p $outdir
+
+        vamb \
+          --contrastive \
+          --outdir $outdir \
+          --fasta {input.contigs} \
+          --jgi {input.depth} \
+          --minfasta 200000 \
+          -m 2000 \
+          --threads {threads}
+
+        touch {output}
+        """
+
+############################################
+# 5.9. MetaDecoder
+############################################
+
+rule metadecoder_coassembly:
+    input:
+        contigs = f"{RESULTS_DIR}/assemblies/coassembly/short/contigs.fasta",
+        sams = expand(
+            f"{RESULTS_DIR}/mapping/coassembly/short/{{sample}}.sorted.bam",
+            sample=SAMPLES
+        )
+
+    output:
+        touch(f"{RESULTS_DIR}/bins/coassembly/metadecoder/bins.done")
+    threads: config["threads"]
+    conda:
+        "envs/binning.yaml"
+    shell:
+        """
+        outdir={RESULTS_DIR}/bins/coassembly/metadecoder
+        mkdir -p $outdir
+        cd $outdir
+
+        metadecoder coverage \
+          --threads {threads} \
+          -s {input.sams} \
+          -o METADECODER_gsa.COVERAGE
+
+        metadecoder seed \
+          --threads {threads} \
+          -f {input.contigs} \
+          -o METADECODER_gsa.SEED
+
+        metadecoder cluster \
+          -f {input.contigs} \
+          -c METADECODER_gsa.COVERAGE \
+          -s METADECODER_gsa.SEED \
+          -o METADECODER_coassembly
+
+        touch {output}
+        """
+
+rule metadecoder_single:
+    input:
+        contigs = f"{RESULTS_DIR}/assemblies/single/{{assembly_type}}/{{sample}}/contigs.fasta",
+        sam = f"{RESULTS_DIR}/mapping/single/{{assembly_type}}/{{sample}}/{{sample}}.sorted.bam"
+    output:
+        touch(f"{RESULTS_DIR}/bins/single/metadecoder/{{assembly_type}}/{{sample}}/bins.done")
+    threads: config["threads"]
+    conda:
+        "envs/binning.yaml"
+    shell:
+        """
+        outdir={RESULTS_DIR}/bins/single/metadecoder/{wildcards.assembly_type}/{wildcards.sample}
+        mkdir -p $outdir
+        cd $outdir
+
+        metadecoder coverage \
+          --threads {threads} \
+          -s {input.sam} \
+          -o METADECODER_gsa.COVERAGE
+
+        metadecoder seed \
+          --threads {threads} \
+          -f {input.contigs} \
+          -o METADECODER_gsa.SEED
+
+        metadecoder cluster \
+          -f {input.contigs} \
+          -c METADECODER_gsa.COVERAGE \
+          -s METADECODER_gsa.SEED \
+          -o METADECODER_{wildcards.sample}
+
+        touch {output}
+        """
+
+rule metadecoder_multi:
+    input:
+        contigs = f"{RESULTS_DIR}/assemblies/single/{{assembly_type}}/{{sample}}/contigs.fasta",
+        sams = lambda wc: expand(
+            f"{RESULTS_DIR}/mapping/multi/{wc.assembly_type}/{wc.sample}/{{rep}}.sorted.bam",
+            rep=SAMPLES
+        )
+
+    output:
+        touch(f"{RESULTS_DIR}/bins/multi/metadecoder/{{assembly_type}}/{{sample}}/bins.done")
+    threads: config["threads"]
+    conda:
+        "envs/binning.yaml"
+    shell:
+        """
+        outdir={RESULTS_DIR}/bins/multi/metadecoder/{wildcards.assembly_type}/{wildcards.sample}
+        mkdir -p $outdir
+        cd $outdir
+
+        metadecoder coverage \
+          --threads {threads} \
+          -s {input.sams} \
+          -o METADECODER_gsa.COVERAGE
+
+        metadecoder seed \
+          --threads {threads} \
+          -f {input.contigs} \
+          -o METADECODER_gsa.SEED
+
+        metadecoder cluster \
+          -f {input.contigs} \
+          -c METADECODER_gsa.COVERAGE \
+          -s METADECODER_gsa.SEED \
+          -o METADECODER_{wildcards.sample}
+
+        touch {output}
+        """
+
+############################################
+# 5.10. BINNY
+############################################
+
+rule binny_coassembly:
+    input:
+        config = f"{RESULTS_DIR}/assemblies/coassembly/short/contigs.fasta"
+    output:
+        touch(f"{RESULTS_DIR}/bins/coassembly/binny/bins.done")
+    threads: config["threads"]
+    conda:
+        "envs/binning.yaml"
+    shell:
+        """
+        outdir={RESULTS_DIR}/bins/coassembly/binny
+        mkdir -p $outdir
+
+        binny \
+          -l \
+          -n marine_result \
+          -r \
+          -t {threads} \
+          {input.config}
+
+        touch {output}
+        """
+
+rule binny_single:
+    input:
+        config = f"{RESULTS_DIR}/assemblies/single/{{assembly_type}}/{{sample}}/contigs.fasta"
+    output:
+        touch(f"{RESULTS_DIR}/bins/single/binny/{{assembly_type}}/{{sample}}/bins.done")
+    threads: config["threads"]
+    conda:
+        "envs/binning.yaml"
+    shell:
+        """
+        outdir={RESULTS_DIR}/bins/single/binny/{wildcards.sample}
+        mkdir -p $outdir
+
+        binny \
+          -l \
+          -n {wildcards.sample}_single_result \
+          -r \
+          -t {threads} \
+          {input.config}
+
+        touch {output}
+        """
+
+rule binny_multi:
+    input:
+        config = f"{RESULTS_DIR}/assemblies/single/{{assembly_type}}/{{sample}}/contigs.fasta"
+    output:
+        touch(f"{RESULTS_DIR}/bins/multi/binny/{{assembly_type}}/{{sample}}/bins.done")
+    threads: config["threads"]
+    conda:
+        "envs/binning.yaml"
+    shell:
+        """
+        outdir={RESULTS_DIR}/bins/multi/binny/{wildcards.sample}
+        mkdir -p $outdir
+
+        binny \
+          -l \
+          -n {wildcards.sample}_multi_result \
+          -r \
+          -t {threads} \
+          {input.config}
+
+        touch {output}
+        """
+
+############################################
+# 5.11. MetaBinner
+############################################
+
+rule metabinner_coassembly:
+    input:
+        contigs = f"{RESULTS_DIR}/assemblies/coassembly/short/contigs.fasta",
+        coverage = f"{RESULTS_DIR}/depth/coassembly/depth.txt"
+    output:
+        touch(f"{RESULTS_DIR}/bins/coassembly/metabinner/bins.done")
+    threads: config["threads"]
+    conda:
+        "envs/binning.yaml"
+    shell:
+        """
+        outdir={RESULTS_DIR}/bins/coassembly/metabinner
+        mkdir -p $outdir
+
+        metabinner_path=xx/MetaBinner
+        python xx/MetaBinner/scripts/gen_kmer.py {input.contigs} 1000 4 $outdir/marine_kmer.tsv
+
+        contig_file={input.contigs}
+        output_dir=$outdir/output
+        coverage_profiles={input.coverage}
+        kmer_profile=$outdir/marine_kmer.tsv
+
+        bash xx/MetaBinner/scripts/run_metabinner.sh \
+          -t {threads} \
+          -a $contig_file \
+          -o $output_dir \
+          -d $coverage_profiles \
+          -k $kmer_profile \
+          -p $metabinner_path
+
+        touch {output}
+        """
+
+rule metabinner_single:
+    input:
+        contigs = f"{RESULTS_DIR}/assemblies/single/{{assembly_type}}/{{sample}}/contigs.fasta",
+        coverage = f"{RESULTS_DIR}/depth/single/{{assembly_type}}/{{sample}}/depth.txt"
+    output:
+        touch(f"{RESULTS_DIR}/bins/single/metabinner/{{assembly_type}}/{{sample}}/bins.done")
+    threads: config["threads"]
+    conda:
+        "envs/binning.yaml"
+    shell:
+        """
+        outdir={RESULTS_DIR}/bins/single/metabinner/{{assembly_type}}/{{wildcards.sample}}
+        mkdir -p $outdir
+
+        metabinner_path=xx/MetaBinner
+        python xx/MetaBinner/scripts/gen_kmer.py {input.contigs} 1000 4 $outdir/{{wildcards.sample}}_kmer.tsv
+
+        contig_file={input.contigs}
+        output_dir=$outdir/output
+        coverage_profiles={input.coverage}
+        kmer_profile=$outdir/{{wildcards.sample}}_kmer.tsv
+
+        bash xx/MetaBinner/scripts/run_metabinner.sh \
+          -t {threads} \
+          -a $contig_file \
+          -o $output_dir \
+          -d $coverage_profiles \
+          -k $kmer_profile \
+          -p $metabinner_path
+
+        touch {output}
+        """
+
+rule metabinner_multi:
+    input:
+        contigs = f"{RESULTS_DIR}/assemblies/single/{{assembly_type}}/{{sample}}/contigs.fasta",
+        coverage = f"{RESULTS_DIR}/depth/multi/{{assembly_type}}/{{sample}}/depth.txt"
+    output:
+        touch(f"{RESULTS_DIR}/bins/multi/metabinner/{{assembly_type}}/{{sample}}/bins.done")
+    threads: config["threads"]
+    conda:
+        "envs/binning.yaml"
+    shell:
+        """
+        outdir={RESULTS_DIR}/bins/multi/metabinner/{{assembly_type}}/{{wildcards.sample}}
+        mkdir -p $outdir
+
+        metabinner_path=xx/MetaBinner
+        python xx/MetaBinner/scripts/gen_kmer.py {input.contigs} 1000 4 $outdir/{{wildcards.sample}}_kmer.tsv
+
+        contig_file={input.contigs}
+        output_dir=$outdir/output
+        coverage_profiles={input.coverage}
+        kmer_profile=$outdir/{{wildcards.sample}}_kmer.tsv
+
+        bash xx/MetaBinner/scripts/run_metabinner.sh \
+          -t {threads} \
+          -a $contig_file \
+          -o $output_dir \
+          -d $coverage_profiles \
+          -k $kmer_profile \
+          -p $metabinner_path
+
+        touch {output}
+        """
+
+############################################
+# 5.12. SemiBin2
+############################################
+
+rule semibin2_coassembly:
+    input:
+        contigs = f"{RESULTS_DIR}/assemblies/coassembly/short/contigs.fasta",
+        bams = expand(f"{RESULTS_DIR}/mapping/coassembly/short/{{sample}}.sorted.bam", sample=SAMPLES)
+    output:
+        touch(f"{RESULTS_DIR}/bins/coassembly/semibin2/bins.done")
+    threads: config["threads"]
+    conda:
+        "envs/binning.yaml"
+    params:
+        bam_list=lambda wc, input: ' '.join(input.bams)
+    shell:
+        """
+        outdir={RESULTS_DIR}/bins/coassembly/semibin2
+        mkdir -p $outdir
+
+        SemiBin2 single_easy_bin \
+          -t {threads} \
+          -i {input.contigs} \
+          -b bam_list \
+          -o $outdir/output \
+          --compression none
+
+        touch {output}
+        """
+
+rule semibin2_single:
+    input:
+        contigs = f"{RESULTS_DIR}/assemblies/single/{{assembly_type}}/{{sample}}/contigs.fasta",
+        bam = f"{RESULTS_DIR}/mapping/single/{{assembly_type}}/{{sample}}/{{sample}}.sorted.bam"
+    output:
+        touch(f"{RESULTS_DIR}/bins/single/semibin2/{{assembly_type}}/{{sample}}/bins.done")
+    threads: config["threads"]
+    conda:
+        "envs/binning.yaml"
+    shell:
+        """
+        outdir={RESULTS_DIR}/bins/single/semibin2/{{assembly_type}}/{{wildcards.sample}}
+        mkdir -p $outdir
+
+        SemiBin2 single_easy_bin \
+          -t {threads} \
+          -i {input.contigs} \
+          -b {input.bam} \
+          -o $outdir/output \
+          --compression none
+
+        touch {output}
+        """
+
+rule semibin2_multi:
+    input:
+        contigs = f"{RESULTS_DIR}/assemblies/single/{{assembly_type}}/{{sample}}/contigs.fasta",
+        bams = lambda wc: expand(
+            f"{RESULTS_DIR}/mapping/multi/{wc.assembly_type}/{wc.sample}/{{other}}.sorted.bam",
+            other=SAMPLES
+        )    
+    output:
+        touch(f"{RESULTS_DIR}/bins/multi/semibin2/{{assembly_type}}/{{sample}}/bins.done")
+    threads: 
+        config["threads"]
+    conda:
+        "envs/binning.yaml"
+    params:
+        bam_list=lambda wc, input: ' '.join(input.bams)
+    shell:
+        """
+        outdir={RESULTS_DIR}/bins/multi/semibin2/{{assembly_type}}/{{wildcards.sample}}
+        mkdir -p $outdir
+
+        SemiBin2 single_easy_bin \
+          -t {threads} \
+          -i {input.contigs} \
+          -b bam_list \
+          -o $outdir/output \
+          --compression none
+
+        touch {output}
+        """
+
+############################################
+# 5.13. COMEBin
+############################################
+
+rule comebin_coassembly:
+    input:
+        contigs = f"{RESULTS_DIR}/assemblies/coassembly/short/contigs.fasta",
+        bams_dir = expand(f"{RESULTS_DIR}/mapping/coassembly/short/{{sample}}.sorted.bam", sample=SAMPLES)
+    output:
+        touch(f"{RESULTS_DIR}/bins/coassembly/comebin/bins.done")
+    threads: config["threads"]
+    conda:
+        "envs/binning.yaml"
+    shell:
+        """
+        outdir={RESULTS_DIR}/bins/coassembly/comebin
+        mkdir -p $outdir
+
+        run_comebin.sh \
+          -t {threads} \
+          -a {input.contigs} \
+          -o $outdir \
+          -p {input.bams_dir}
+
+        touch {output}
+        """
+
+rule comebin_single:
+    input:
+        contigs = f"{RESULTS_DIR}/assemblies/single/{{assembly_type}}/{{sample}}/contigs.fasta",
+        bam = f"{RESULTS_DIR}/mapping/single/{{assembly_type}}/{{sample}}/{{sample}}.sorted.bam"
+    output:
+        touch(f"{RESULTS_DIR}/bins/single/comebin/{{assembly_type}}/{{sample}}/bins.done")
+    threads: config["threads"]
+    conda:
+        "envs/binning.yaml"
+    shell:
+        """
+        outdir={RESULTS_DIR}/bins/single/comebin/{{assembly_type}}/{{wildcards.sample}}
+        mkdir -p $outdir
+
+        run_comebin.sh \
+          -t {threads} \
+          -a {input.contigs} \
+          -o $outdir \
+          -p {input.bam}
+
+        touch {output}
+        """
+
+rule comebin_multi:
+    input:
+        contigs = f"{RESULTS_DIR}/assemblies/single/{{assembly_type}}/{{sample}}/contigs.fasta",
+        bams = lambda wc: expand(
+            f"{RESULTS_DIR}/mapping/multi/{wc.assembly_type}/{wc.sample}/{{other}}.sorted.bam",
+            other=SAMPLES
+        ) 
+    output:
+        touch(f"{RESULTS_DIR}/bins/multi/comebin/{{assembly_type}}/{{sample}}/bins.done")
+    threads: config["threads"]
+    conda:
+        "envs/binning.yaml"
+    shell:
+        """
+        outdir={RESULTS_DIR}/bins/multi/comebin/{{assembly_type}}/{{wildcards.sample}}
+        mkdir -p $outdir
+
+        run_comebin.sh \
+          -t {threads} \
+          -a {input.contigs} \
+          -o $outdir \
+          -p {input.bams}
+
+        touch {output}
+        """
+
+############################################
 # 6. Quality control
 ############################################
 
@@ -715,4 +1549,3 @@ rule qc_multi:
         quast {input.assembly} -o qc_tmp_multi_short > {log} 2>&1
         touch {output}
         """
-
