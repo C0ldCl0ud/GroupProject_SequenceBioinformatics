@@ -1272,7 +1272,7 @@ rule metabinner_coassembly:
         outdir={RESULTS_DIR}/bins/coassembly/metabinner
         mkdir -p $outdir
 
-        metabinner_path=xx/MetaBinner
+        metabinner_path=xx/MetaBinner        # metabinner path = $CONDA_PREFIX/bin/MetaBinner ??? 
         python xx/MetaBinner/scripts/gen_kmer.py {input.contigs} 1000 4 $outdir/marine_kmer.tsv
 
         contig_file={input.contigs}
