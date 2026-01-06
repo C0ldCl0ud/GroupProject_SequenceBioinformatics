@@ -2,20 +2,21 @@ name: binning
 channels:
   - bioconda
   - conda-forge
+  - ursky
+  - THeOaphidian
 dependencies:
   - concoct=1.1.0
   - maxbin2=2.2.7
   - metabat2=2.15
   - vamb=3.0.9
-  - clmb=1.0.0
   - metadecoder=1.0.16
   - binny=2.2.15
   - metabinner=1.4.4
   - semibin=1.5.1
   - comebin=1.0.3
-  - dastool=1.1.6
-  - metawrap=1.3.2
-  - magscot=1.0.0
+  - das_tool=1.1.6
+  - metawrap-mg=1.3.2
   - bowtie2=2.5.1
   - minimap2=2.24
   - samtools=1.3.1
+
