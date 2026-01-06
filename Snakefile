@@ -1258,6 +1258,8 @@ rule binny_multi:
 # 5.11. MetaBinner
 ############################################
 
+# TODO metabinner_path in shell command should probably be: $CONDA_PREFIX/bin/MetaBinner
+
 rule metabinner_coassembly:
     input:
         contigs = f"{RESULTS_DIR}/assemblies/coassembly/short/contigs.fasta",
@@ -1272,7 +1274,7 @@ rule metabinner_coassembly:
         outdir={RESULTS_DIR}/bins/coassembly/metabinner
         mkdir -p $outdir
 
-        metabinner_path=xx/MetaBinner        # metabinner path = $CONDA_PREFIX/bin/MetaBinner ??? 
+        metabinner_path=xx/MetaBinner
         python xx/MetaBinner/scripts/gen_kmer.py {input.contigs} 1000 4 $outdir/marine_kmer.tsv
 
         contig_file={input.contigs}
