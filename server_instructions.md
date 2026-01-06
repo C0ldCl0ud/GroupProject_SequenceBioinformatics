@@ -110,4 +110,11 @@ This also works the other way around if you want to copy something from the
 server to your laptop. (Basically like "cp")
 
 
+## check FILE SIZE
+to check file or directory sizes:
+
+```
+du -hs *
+```
+
 
