@@ -1,0 +1,7 @@
+name: assembly
+channels:
+  - bioconda
+  - conda-forge
+  - rdenise
+dependencies:
+  - operams=0.9.0
