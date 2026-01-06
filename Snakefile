@@ -373,7 +373,7 @@ rule assemble_single_hybrid:
     log:
         f"logs/{DATASET}/assembly/single/hybrid/{{sample}}.operams.log"
     conda:
-        "envs/assembly.yaml"
+        "envs/assembly_operams.yaml"
     shell:
         """
         opera-ms \
@@ -1083,7 +1083,7 @@ rule metadecoder_coassembly:
         touch(f"{RESULTS_DIR}/bins/coassembly/metadecoder/bins.done")
     threads: config["threads"]
     conda:
-        "envs/binning.yaml"
+        "envs/binning_metadecoder.yaml"
     shell:
         """
         outdir={RESULTS_DIR}/bins/coassembly/metadecoder
@@ -1117,7 +1117,7 @@ rule metadecoder_single:
         touch(f"{RESULTS_DIR}/bins/single/metadecoder/{{assembly_type}}/{{sample}}/bins.done")
     threads: config["threads"]
     conda:
-        "envs/binning.yaml"
+        "envs/binning_metadecoder.yaml"
     shell:
         """
         outdir={RESULTS_DIR}/bins/single/metadecoder/{wildcards.assembly_type}/{wildcards.sample}
@@ -1155,7 +1155,7 @@ rule metadecoder_multi:
         touch(f"{RESULTS_DIR}/bins/multi/metadecoder/{{assembly_type}}/{{sample}}/bins.done")
     threads: config["threads"]
     conda:
-        "envs/binning.yaml"
+        "envs/binning_metadecoder.yaml"
     shell:
         """
         outdir={RESULTS_DIR}/bins/multi/metadecoder/{wildcards.assembly_type}/{wildcards.sample}
@@ -1268,7 +1268,7 @@ rule metabinner_coassembly:
         touch(f"{RESULTS_DIR}/bins/coassembly/metabinner/bins.done")
     threads: config["threads"]
     conda:
-        "envs/binning.yaml"
+        "envs/binning_metabinner.yaml"
     shell:
         """
         outdir={RESULTS_DIR}/bins/coassembly/metabinner
@@ -1301,7 +1301,7 @@ rule metabinner_single:
         touch(f"{RESULTS_DIR}/bins/single/metabinner/{{assembly_type}}/{{sample}}/bins.done")
     threads: config["threads"]
     conda:
-        "envs/binning.yaml"
+        "envs/binning_metabinner.yaml"
     shell:
         """
         outdir={RESULTS_DIR}/bins/single/metabinner/{{assembly_type}}/{{wildcards.sample}}
@@ -1334,7 +1334,7 @@ rule metabinner_multi:
         touch(f"{RESULTS_DIR}/bins/multi/metabinner/{{assembly_type}}/{{sample}}/bins.done")
     threads: config["threads"]
     conda:
-        "envs/binning.yaml"
+        "envs/binning_metabinner.yaml"
     shell:
         """
         outdir={RESULTS_DIR}/bins/multi/metabinner/{{assembly_type}}/{{wildcards.sample}}
@@ -1455,7 +1455,7 @@ rule comebin_coassembly:
         touch(f"{RESULTS_DIR}/bins/coassembly/comebin/bins.done")
     threads: config["threads"]
     conda:
-        "envs/binning.yaml"
+        "envs/binning_comebin.yaml"
     shell:
         """
         outdir={RESULTS_DIR}/bins/coassembly/comebin
@@ -1478,7 +1478,7 @@ rule comebin_single:
         touch(f"{RESULTS_DIR}/bins/single/comebin/{{assembly_type}}/{{sample}}/bins.done")
     threads: config["threads"]
     conda:
-        "envs/binning.yaml"
+        "envs/binning_comebin.yaml"
     shell:
         """
         outdir={RESULTS_DIR}/bins/single/comebin/{{assembly_type}}/{{wildcards.sample}}
@@ -1504,7 +1504,7 @@ rule comebin_multi:
         touch(f"{RESULTS_DIR}/bins/multi/comebin/{{assembly_type}}/{{sample}}/bins.done")
     threads: config["threads"]
     conda:
-        "envs/binning.yaml"
+        "envs/binning_comebin.yaml"
     shell:
         """
         outdir={RESULTS_DIR}/bins/multi/comebin/{{assembly_type}}/{{wildcards.sample}}
