@@ -1,0 +1,806 @@
+{
+  "build": "py310hdf79db3_2",
+  "build_number": 2,
+  "channel": "https://conda.anaconda.org/bioconda/linux-64",
+  "constrains": [],
+  "depends": [
+    "numpy",
+    "libgcc-ng >=12",
+    "libstdcxx-ng >=12",
+    "python_abi 3.10.* *_cp310",
+    "python >=3.10,<3.11.0a0",
+    "libzlib >=1.2.13,<2.0a0"
+  ],
+  "extracted_package_dir": "/home/lump/Anwendungen/anaconda3/pkgs/parasail-python-1.3.4-py310hdf79db3_2",
+  "files": [
+    "lib/python3.10/site-packages/parasail-1.3.4.dist-info/COPYING",
+    "lib/python3.10/site-packages/parasail-1.3.4.dist-info/INSTALLER",
+    "lib/python3.10/site-packages/parasail-1.3.4.dist-info/METADATA",
+    "lib/python3.10/site-packages/parasail-1.3.4.dist-info/RECORD",
+    "lib/python3.10/site-packages/parasail-1.3.4.dist-info/REQUESTED",
+    "lib/python3.10/site-packages/parasail-1.3.4.dist-info/WHEEL",
+    "lib/python3.10/site-packages/parasail-1.3.4.dist-info/direct_url.json",
+    "lib/python3.10/site-packages/parasail-1.3.4.dist-info/top_level.txt",
+    "lib/python3.10/site-packages/parasail/__init__.py",
+    "lib/python3.10/site-packages/parasail/__pycache__/__init__.cpython-310.pyc",
+    "lib/python3.10/site-packages/parasail/__pycache__/bindings_v1.cpython-310.pyc",
+    "lib/python3.10/site-packages/parasail/__pycache__/bindings_v2.cpython-310.pyc",
+    "lib/python3.10/site-packages/parasail/bindings_v1.py",
+    "lib/python3.10/site-packages/parasail/bindings_v2.py",
+    "lib/python3.10/site-packages/parasail/include/parasail.h",
+    "lib/python3.10/site-packages/parasail/include/parasail/cpuid.h",
+    "lib/python3.10/site-packages/parasail/include/parasail/function_lookup.h",
+    "lib/python3.10/site-packages/parasail/include/parasail/internal_altivec.h",
+    "lib/python3.10/site-packages/parasail/include/parasail/internal_avx.h",
+    "lib/python3.10/site-packages/parasail/include/parasail/internal_neon.h",
+    "lib/python3.10/site-packages/parasail/include/parasail/internal_sse.h",
+    "lib/python3.10/site-packages/parasail/include/parasail/io.h",
+    "lib/python3.10/site-packages/parasail/include/parasail/matrices/blosum100.h",
+    "lib/python3.10/site-packages/parasail/include/parasail/matrices/blosum30.h",
+    "lib/python3.10/site-packages/parasail/include/parasail/matrices/blosum35.h",
+    "lib/python3.10/site-packages/parasail/include/parasail/matrices/blosum40.h",
+    "lib/python3.10/site-packages/parasail/include/parasail/matrices/blosum45.h",
+    "lib/python3.10/site-packages/parasail/include/parasail/matrices/blosum50.h",
+    "lib/python3.10/site-packages/parasail/include/parasail/matrices/blosum55.h",
+    "lib/python3.10/site-packages/parasail/include/parasail/matrices/blosum60.h",
+    "lib/python3.10/site-packages/parasail/include/parasail/matrices/blosum62.h",
+    "lib/python3.10/site-packages/parasail/include/parasail/matrices/blosum65.h",
+    "lib/python3.10/site-packages/parasail/include/parasail/matrices/blosum70.h",
+    "lib/python3.10/site-packages/parasail/include/parasail/matrices/blosum75.h",
+    "lib/python3.10/site-packages/parasail/include/parasail/matrices/blosum80.h",
+    "lib/python3.10/site-packages/parasail/include/parasail/matrices/blosum85.h",
+    "lib/python3.10/site-packages/parasail/include/parasail/matrices/blosum90.h",
+    "lib/python3.10/site-packages/parasail/include/parasail/matrices/blosum_map.h",
+    "lib/python3.10/site-packages/parasail/include/parasail/matrices/blosumn.h",
+    "lib/python3.10/site-packages/parasail/include/parasail/matrices/dnafull.h",
+    "lib/python3.10/site-packages/parasail/include/parasail/matrices/nuc44.h",
+    "lib/python3.10/site-packages/parasail/include/parasail/matrices/pam10.h",
+    "lib/python3.10/site-packages/parasail/include/parasail/matrices/pam100.h",
+    "lib/python3.10/site-packages/parasail/include/parasail/matrices/pam110.h",
+    "lib/python3.10/site-packages/parasail/include/parasail/matrices/pam120.h",
+    "lib/python3.10/site-packages/parasail/include/parasail/matrices/pam130.h",
+    "lib/python3.10/site-packages/parasail/include/parasail/matrices/pam140.h",
+    "lib/python3.10/site-packages/parasail/include/parasail/matrices/pam150.h",
+    "lib/python3.10/site-packages/parasail/include/parasail/matrices/pam160.h",
+    "lib/python3.10/site-packages/parasail/include/parasail/matrices/pam170.h",
+    "lib/python3.10/site-packages/parasail/include/parasail/matrices/pam180.h",
+    "lib/python3.10/site-packages/parasail/include/parasail/matrices/pam190.h",
+    "lib/python3.10/site-packages/parasail/include/parasail/matrices/pam20.h",
+    "lib/python3.10/site-packages/parasail/include/parasail/matrices/pam200.h",
+    "lib/python3.10/site-packages/parasail/include/parasail/matrices/pam210.h",
+    "lib/python3.10/site-packages/parasail/include/parasail/matrices/pam220.h",
+    "lib/python3.10/site-packages/parasail/include/parasail/matrices/pam230.h",
+    "lib/python3.10/site-packages/parasail/include/parasail/matrices/pam240.h",
+    "lib/python3.10/site-packages/parasail/include/parasail/matrices/pam250.h",
+    "lib/python3.10/site-packages/parasail/include/parasail/matrices/pam260.h",
+    "lib/python3.10/site-packages/parasail/include/parasail/matrices/pam270.h",
+    "lib/python3.10/site-packages/parasail/include/parasail/matrices/pam280.h",
+    "lib/python3.10/site-packages/parasail/include/parasail/matrices/pam290.h",
+    "lib/python3.10/site-packages/parasail/include/parasail/matrices/pam30.h",
+    "lib/python3.10/site-packages/parasail/include/parasail/matrices/pam300.h",
+    "lib/python3.10/site-packages/parasail/include/parasail/matrices/pam310.h",
+    "lib/python3.10/site-packages/parasail/include/parasail/matrices/pam320.h",
+    "lib/python3.10/site-packages/parasail/include/parasail/matrices/pam330.h",
+    "lib/python3.10/site-packages/parasail/include/parasail/matrices/pam340.h",
+    "lib/python3.10/site-packages/parasail/include/parasail/matrices/pam350.h",
+    "lib/python3.10/site-packages/parasail/include/parasail/matrices/pam360.h",
+    "lib/python3.10/site-packages/parasail/include/parasail/matrices/pam370.h",
+    "lib/python3.10/site-packages/parasail/include/parasail/matrices/pam380.h",
+    "lib/python3.10/site-packages/parasail/include/parasail/matrices/pam390.h",
+    "lib/python3.10/site-packages/parasail/include/parasail/matrices/pam40.h",
+    "lib/python3.10/site-packages/parasail/include/parasail/matrices/pam400.h",
+    "lib/python3.10/site-packages/parasail/include/parasail/matrices/pam410.h",
+    "lib/python3.10/site-packages/parasail/include/parasail/matrices/pam420.h",
+    "lib/python3.10/site-packages/parasail/include/parasail/matrices/pam430.h",
+    "lib/python3.10/site-packages/parasail/include/parasail/matrices/pam440.h",
+    "lib/python3.10/site-packages/parasail/include/parasail/matrices/pam450.h",
+    "lib/python3.10/site-packages/parasail/include/parasail/matrices/pam460.h",
+    "lib/python3.10/site-packages/parasail/include/parasail/matrices/pam470.h",
+    "lib/python3.10/site-packages/parasail/include/parasail/matrices/pam480.h",
+    "lib/python3.10/site-packages/parasail/include/parasail/matrices/pam490.h",
+    "lib/python3.10/site-packages/parasail/include/parasail/matrices/pam50.h",
+    "lib/python3.10/site-packages/parasail/include/parasail/matrices/pam500.h",
+    "lib/python3.10/site-packages/parasail/include/parasail/matrices/pam60.h",
+    "lib/python3.10/site-packages/parasail/include/parasail/matrices/pam70.h",
+    "lib/python3.10/site-packages/parasail/include/parasail/matrices/pam80.h",
+    "lib/python3.10/site-packages/parasail/include/parasail/matrices/pam90.h",
+    "lib/python3.10/site-packages/parasail/include/parasail/matrices/pam_map.h",
+    "lib/python3.10/site-packages/parasail/include/parasail/matrix_lookup.h",
+    "lib/python3.10/site-packages/parasail/include/parasail/memory.h",
+    "lib/python3.10/site-packages/parasail/include/parasail/stats.h",
+    "lib/python3.10/site-packages/parasail/libparasail.so"
+  ],
+  "fn": "parasail-python-1.3.4-py310hdf79db3_2.tar.bz2",
+  "license": "BSD-3-Clause",
+  "link": {
+    "source": "/home/lump/Anwendungen/anaconda3/pkgs/parasail-python-1.3.4-py310hdf79db3_2",
+    "type": 1
+  },
+  "md5": "e15b2bd7334dcbcc538cc169580a0d84",
+  "name": "parasail-python",
+  "package_tarball_full_path": "/home/lump/Anwendungen/anaconda3/pkgs/parasail-python-1.3.4-py310hdf79db3_2.tar.bz2",
+  "paths_data": {
+    "paths": [
+      {
+        "_path": "lib/python3.10/site-packages/parasail-1.3.4.dist-info/COPYING",
+        "path_type": "hardlink",
+        "sha256": "31278448a29990fcfe74c6d85e95584d6b6cc843237aec5294bbce33554733a4",
+        "sha256_in_prefix": "31278448a29990fcfe74c6d85e95584d6b6cc843237aec5294bbce33554733a4",
+        "size_in_bytes": 2346
+      },
+      {
+        "_path": "lib/python3.10/site-packages/parasail-1.3.4.dist-info/INSTALLER",
+        "path_type": "hardlink",
+        "sha256": "d0edee15f91b406f3f99726e44eb990be6e34fd0345b52b910c568e0eef6a2a8",
+        "sha256_in_prefix": "d0edee15f91b406f3f99726e44eb990be6e34fd0345b52b910c568e0eef6a2a8",
+        "size_in_bytes": 5
+      },
+      {
+        "_path": "lib/python3.10/site-packages/parasail-1.3.4.dist-info/METADATA",
+        "path_type": "hardlink",
+        "sha256": "5eecaa15e217536916de77fd2ded515791819bdbc4fecfd6709c552735e6936c",
+        "sha256_in_prefix": "5eecaa15e217536916de77fd2ded515791819bdbc4fecfd6709c552735e6936c",
+        "size_in_bytes": 21650
+      },
+      {
+        "_path": "lib/python3.10/site-packages/parasail-1.3.4.dist-info/RECORD",
+        "path_type": "hardlink",
+        "sha256": "94b8a68ddd5ca27cae8c15c12736f2c61446ad75036a3e8456a5ffeacd59dba9",
+        "sha256_in_prefix": "94b8a68ddd5ca27cae8c15c12736f2c61446ad75036a3e8456a5ffeacd59dba9",
+        "size_in_bytes": 9299
+      },
+      {
+        "_path": "lib/python3.10/site-packages/parasail-1.3.4.dist-info/REQUESTED",
+        "path_type": "hardlink",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "sha256_in_prefix": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "size_in_bytes": 0
+      },
+      {
+        "_path": "lib/python3.10/site-packages/parasail-1.3.4.dist-info/WHEEL",
+        "path_type": "hardlink",
+        "sha256": "922ac64080af06bdd5e52b55ac53f0f20a450d5dcd97a818680ddebf07c6e204",
+        "sha256_in_prefix": "922ac64080af06bdd5e52b55ac53f0f20a450d5dcd97a818680ddebf07c6e204",
+        "size_in_bytes": 128
+      },
+      {
+        "_path": "lib/python3.10/site-packages/parasail-1.3.4.dist-info/direct_url.json",
+        "path_type": "hardlink",
+        "sha256": "436b0493ff712470321839879f65b7dc0f69fd3e8a55d14886587c180c90cce5",
+        "sha256_in_prefix": "436b0493ff712470321839879f65b7dc0f69fd3e8a55d14886587c180c90cce5",
+        "size_in_bytes": 89
+      },
+      {
+        "_path": "lib/python3.10/site-packages/parasail-1.3.4.dist-info/top_level.txt",
+        "path_type": "hardlink",
+        "sha256": "d4bb301d00331452ef9fa2d858d14a2e2d587d42ad13ede7f66527255f8bf74e",
+        "sha256_in_prefix": "d4bb301d00331452ef9fa2d858d14a2e2d587d42ad13ede7f66527255f8bf74e",
+        "size_in_bytes": 9
+      },
+      {
+        "_path": "lib/python3.10/site-packages/parasail/__init__.py",
+        "path_type": "hardlink",
+        "sha256": "d1a4f358782f36a9b8286dde60b309c8a2f99c7e4a923413ffaab4d4c208db5f",
+        "sha256_in_prefix": "d1a4f358782f36a9b8286dde60b309c8a2f99c7e4a923413ffaab4d4c208db5f",
+        "size_in_bytes": 3278
+      },
+      {
+        "_path": "lib/python3.10/site-packages/parasail/__pycache__/__init__.cpython-310.pyc",
+        "path_type": "hardlink",
+        "sha256": "47bf8ed8340d9a6b693e54e0821eb49ecdb78fbe168bd2e10db6e9f8865b48c0",
+        "sha256_in_prefix": "47bf8ed8340d9a6b693e54e0821eb49ecdb78fbe168bd2e10db6e9f8865b48c0",
+        "size_in_bytes": 2802
+      },
+      {
+        "_path": "lib/python3.10/site-packages/parasail/__pycache__/bindings_v1.cpython-310.pyc",
+        "path_type": "hardlink",
+        "sha256": "a69ba16a65327475a90d8326c9791970ebe114f37b69b8cb9d4cd995c0a021fd",
+        "sha256_in_prefix": "a69ba16a65327475a90d8326c9791970ebe114f37b69b8cb9d4cd995c0a021fd",
+        "size_in_bytes": 110774
+      },
+      {
+        "_path": "lib/python3.10/site-packages/parasail/__pycache__/bindings_v2.cpython-310.pyc",
+        "path_type": "hardlink",
+        "sha256": "b08767a561502374151e07242464b9fb06aa46d736909cf393bae150768a2393",
+        "sha256_in_prefix": "b08767a561502374151e07242464b9fb06aa46d736909cf393bae150768a2393",
+        "size_in_bytes": 533313
+      },
+      {
+        "_path": "lib/python3.10/site-packages/parasail/bindings_v1.py",
+        "path_type": "hardlink",
+        "sha256": "cbaa18528123a9cb36e36869f1ab53735151db6e679c7dbfcaef5a2a0588789d",
+        "sha256_in_prefix": "cbaa18528123a9cb36e36869f1ab53735151db6e679c7dbfcaef5a2a0588789d",
+        "size_in_bytes": 169560
+      },
+      {
+        "_path": "lib/python3.10/site-packages/parasail/bindings_v2.py",
+        "path_type": "hardlink",
+        "sha256": "d60f669034b9c1f1d41320b0b9b6520ca8c0d8f35fe78f4281a4a191823b10d7",
+        "sha256_in_prefix": "d60f669034b9c1f1d41320b0b9b6520ca8c0d8f35fe78f4281a4a191823b10d7",
+        "size_in_bytes": 844377
+      },
+      {
+        "_path": "lib/python3.10/site-packages/parasail/include/parasail.h",
+        "path_type": "hardlink",
+        "sha256": "63c6bb84f524d9c1b04da3e44db43d016c587ed0c6dd01bf9bb7f057a5ace203",
+        "sha256_in_prefix": "63c6bb84f524d9c1b04da3e44db43d016c587ed0c6dd01bf9bb7f057a5ace203",
+        "size_in_bytes": 3898101
+      },
+      {
+        "_path": "lib/python3.10/site-packages/parasail/include/parasail/cpuid.h",
+        "path_type": "hardlink",
+        "sha256": "300dc39a6f898df89028284257349e863e4acc102905037cf86d68320a0df11a",
+        "sha256_in_prefix": "300dc39a6f898df89028284257349e863e4acc102905037cf86d68320a0df11a",
+        "size_in_bytes": 595
+      },
+      {
+        "_path": "lib/python3.10/site-packages/parasail/include/parasail/function_lookup.h",
+        "path_type": "hardlink",
+        "sha256": "5e4ecc5229a971a13a6ec7c9b9b847c352df29693f3e237ddae23ab4c4892a75",
+        "sha256_in_prefix": "5e4ecc5229a971a13a6ec7c9b9b847c352df29693f3e237ddae23ab4c4892a75",
+        "size_in_bytes": 2450525
+      },
+      {
+        "_path": "lib/python3.10/site-packages/parasail/include/parasail/internal_altivec.h",
+        "path_type": "hardlink",
+        "sha256": "e6533a82e25ceefba3e15bd6fab4d6009da24aa53932b5141918bba8fd0e2f97",
+        "sha256_in_prefix": "e6533a82e25ceefba3e15bd6fab4d6009da24aa53932b5141918bba8fd0e2f97",
+        "size_in_bytes": 14947
+      },
+      {
+        "_path": "lib/python3.10/site-packages/parasail/include/parasail/internal_avx.h",
+        "path_type": "hardlink",
+        "sha256": "a5d268e1ba9c7734dfa92a086eeab9250758cd4e6fa2b2a61d667a465743bcad",
+        "sha256_in_prefix": "a5d268e1ba9c7734dfa92a086eeab9250758cd4e6fa2b2a61d667a465743bcad",
+        "size_in_bytes": 857
+      },
+      {
+        "_path": "lib/python3.10/site-packages/parasail/include/parasail/internal_neon.h",
+        "path_type": "hardlink",
+        "sha256": "6e3408e517de798ce45e9e1beca7625764fbd12a4c239e54701ca6d4f2e62432",
+        "sha256_in_prefix": "6e3408e517de798ce45e9e1beca7625764fbd12a4c239e54701ca6d4f2e62432",
+        "size_in_bytes": 2988
+      },
+      {
+        "_path": "lib/python3.10/site-packages/parasail/include/parasail/internal_sse.h",
+        "path_type": "hardlink",
+        "sha256": "7bae6571abaa5928ef7e04d27ae02aa765144e4639175e6450f4e0b021c3e070",
+        "sha256_in_prefix": "7bae6571abaa5928ef7e04d27ae02aa765144e4639175e6450f4e0b021c3e070",
+        "size_in_bytes": 856
+      },
+      {
+        "_path": "lib/python3.10/site-packages/parasail/include/parasail/io.h",
+        "path_type": "hardlink",
+        "sha256": "f8c752e617839fdb5cd99f62398b051b5a9a1e1b04a33f90b4562eefd38e87b6",
+        "sha256_in_prefix": "f8c752e617839fdb5cd99f62398b051b5a9a1e1b04a33f90b4562eefd38e87b6",
+        "size_in_bytes": 2668
+      },
+      {
+        "_path": "lib/python3.10/site-packages/parasail/include/parasail/matrices/blosum100.h",
+        "path_type": "hardlink",
+        "sha256": "8daf4cca4f5e987997937e11145a5c2a9657ca4bb72139f7dd9c2e98cbe83dc0",
+        "sha256_in_prefix": "8daf4cca4f5e987997937e11145a5c2a9657ca4bb72139f7dd9c2e98cbe83dc0",
+        "size_in_bytes": 3723
+      },
+      {
+        "_path": "lib/python3.10/site-packages/parasail/include/parasail/matrices/blosum30.h",
+        "path_type": "hardlink",
+        "sha256": "7349ead5513fb5359eb3818737a949bf9f95dde00d33915542cb0444bd8c07fc",
+        "sha256_in_prefix": "7349ead5513fb5359eb3818737a949bf9f95dde00d33915542cb0444bd8c07fc",
+        "size_in_bytes": 3710
+      },
+      {
+        "_path": "lib/python3.10/site-packages/parasail/include/parasail/matrices/blosum35.h",
+        "path_type": "hardlink",
+        "sha256": "5f7f3a2695ec4a3efbbcfe0d72677010b36b90b9d25b4a44a2e736e715f4abc6",
+        "sha256_in_prefix": "5f7f3a2695ec4a3efbbcfe0d72677010b36b90b9d25b4a44a2e736e715f4abc6",
+        "size_in_bytes": 3710
+      },
+      {
+        "_path": "lib/python3.10/site-packages/parasail/include/parasail/matrices/blosum40.h",
+        "path_type": "hardlink",
+        "sha256": "b94e45784d8e412c1031dd5993f3acefd69f03bf1a95508b466e1d6b1ab37817",
+        "sha256_in_prefix": "b94e45784d8e412c1031dd5993f3acefd69f03bf1a95508b466e1d6b1ab37817",
+        "size_in_bytes": 3710
+      },
+      {
+        "_path": "lib/python3.10/site-packages/parasail/include/parasail/matrices/blosum45.h",
+        "path_type": "hardlink",
+        "sha256": "06a896fbe2771db9941a294b1d2e636284564c68cdc403c34c551f9835f88468",
+        "sha256_in_prefix": "06a896fbe2771db9941a294b1d2e636284564c68cdc403c34c551f9835f88468",
+        "size_in_bytes": 3710
+      },
+      {
+        "_path": "lib/python3.10/site-packages/parasail/include/parasail/matrices/blosum50.h",
+        "path_type": "hardlink",
+        "sha256": "e1713fef036afa488a6951008c47fd5bd1f9d3e4316a1f80bbc0b4de88e74a79",
+        "sha256_in_prefix": "e1713fef036afa488a6951008c47fd5bd1f9d3e4316a1f80bbc0b4de88e74a79",
+        "size_in_bytes": 3710
+      },
+      {
+        "_path": "lib/python3.10/site-packages/parasail/include/parasail/matrices/blosum55.h",
+        "path_type": "hardlink",
+        "sha256": "c73b9c47af57428ca8ec94259d4a0abf206601b0b382c63972357d41c8e07fb7",
+        "sha256_in_prefix": "c73b9c47af57428ca8ec94259d4a0abf206601b0b382c63972357d41c8e07fb7",
+        "size_in_bytes": 3710
+      },
+      {
+        "_path": "lib/python3.10/site-packages/parasail/include/parasail/matrices/blosum60.h",
+        "path_type": "hardlink",
+        "sha256": "9be9ed63a45f5f4c26e75e1bcc78fe84236e34d8ad307e91d8ab591f8c0a383c",
+        "sha256_in_prefix": "9be9ed63a45f5f4c26e75e1bcc78fe84236e34d8ad307e91d8ab591f8c0a383c",
+        "size_in_bytes": 3710
+      },
+      {
+        "_path": "lib/python3.10/site-packages/parasail/include/parasail/matrices/blosum62.h",
+        "path_type": "hardlink",
+        "sha256": "89decd09f3cc66bb8e03d32b10f219fa9bbeb3d5ad6f51662fb686f2bc8ec96e",
+        "sha256_in_prefix": "89decd09f3cc66bb8e03d32b10f219fa9bbeb3d5ad6f51662fb686f2bc8ec96e",
+        "size_in_bytes": 3710
+      },
+      {
+        "_path": "lib/python3.10/site-packages/parasail/include/parasail/matrices/blosum65.h",
+        "path_type": "hardlink",
+        "sha256": "5abfad137f72a293a6ad4789b156dff43c3b42afa8fd41096b26d06c4a3cc837",
+        "sha256_in_prefix": "5abfad137f72a293a6ad4789b156dff43c3b42afa8fd41096b26d06c4a3cc837",
+        "size_in_bytes": 3710
+      },
+      {
+        "_path": "lib/python3.10/site-packages/parasail/include/parasail/matrices/blosum70.h",
+        "path_type": "hardlink",
+        "sha256": "2c886bbdcfc51f356ded6fe39de508f301e606edf5df5548caf64727e0389cec",
+        "sha256_in_prefix": "2c886bbdcfc51f356ded6fe39de508f301e606edf5df5548caf64727e0389cec",
+        "size_in_bytes": 3710
+      },
+      {
+        "_path": "lib/python3.10/site-packages/parasail/include/parasail/matrices/blosum75.h",
+        "path_type": "hardlink",
+        "sha256": "f1ad43ca0f4b955aa0ad83158d4a1baa229e9848b73b5d6fba40d808d841e49c",
+        "sha256_in_prefix": "f1ad43ca0f4b955aa0ad83158d4a1baa229e9848b73b5d6fba40d808d841e49c",
+        "size_in_bytes": 3710
+      },
+      {
+        "_path": "lib/python3.10/site-packages/parasail/include/parasail/matrices/blosum80.h",
+        "path_type": "hardlink",
+        "sha256": "f7f4c425ffdaeab635c387f7c91d14316c93daa41d4a73388935360a5207dfd9",
+        "sha256_in_prefix": "f7f4c425ffdaeab635c387f7c91d14316c93daa41d4a73388935360a5207dfd9",
+        "size_in_bytes": 3712
+      },
+      {
+        "_path": "lib/python3.10/site-packages/parasail/include/parasail/matrices/blosum85.h",
+        "path_type": "hardlink",
+        "sha256": "f2c7af76a604bf3dada8fab8c83a9019d2779987ec8b82e3f234429758b98f5b",
+        "sha256_in_prefix": "f2c7af76a604bf3dada8fab8c83a9019d2779987ec8b82e3f234429758b98f5b",
+        "size_in_bytes": 3710
+      },
+      {
+        "_path": "lib/python3.10/site-packages/parasail/include/parasail/matrices/blosum90.h",
+        "path_type": "hardlink",
+        "sha256": "db2d868a9c56fdb96aa47fe72fdbc0b05109b19b94b2713ebb9d89016c4a94fd",
+        "sha256_in_prefix": "db2d868a9c56fdb96aa47fe72fdbc0b05109b19b94b2713ebb9d89016c4a94fd",
+        "size_in_bytes": 3710
+      },
+      {
+        "_path": "lib/python3.10/site-packages/parasail/include/parasail/matrices/blosum_map.h",
+        "path_type": "hardlink",
+        "sha256": "c412aad7f147ac5acfcb869ac9b607cc1deb057e7cf5eae3906b1f5e6e544ccb",
+        "sha256_in_prefix": "c412aad7f147ac5acfcb869ac9b607cc1deb057e7cf5eae3906b1f5e6e544ccb",
+        "size_in_bytes": 1434
+      },
+      {
+        "_path": "lib/python3.10/site-packages/parasail/include/parasail/matrices/blosumn.h",
+        "path_type": "hardlink",
+        "sha256": "92ad4dbfd2d5219508849adb8ca6b6650a5536d5cf8933f6dc631900a4a79ebc",
+        "sha256_in_prefix": "92ad4dbfd2d5219508849adb8ca6b6650a5536d5cf8933f6dc631900a4a79ebc",
+        "size_in_bytes": 3701
+      },
+      {
+        "_path": "lib/python3.10/site-packages/parasail/include/parasail/matrices/dnafull.h",
+        "path_type": "hardlink",
+        "sha256": "8d5a77c2beb3b8299cf1dadb89d48b9408a60537dca01040c7d212851776c549",
+        "sha256_in_prefix": "8d5a77c2beb3b8299cf1dadb89d48b9408a60537dca01040c7d212851776c549",
+        "size_in_bytes": 3214
+      },
+      {
+        "_path": "lib/python3.10/site-packages/parasail/include/parasail/matrices/nuc44.h",
+        "path_type": "hardlink",
+        "sha256": "0164bfd85c4608d14e7c942802d27aa523c850d9865686a9d24344e6732c79a7",
+        "sha256_in_prefix": "0164bfd85c4608d14e7c942802d27aa523c850d9865686a9d24344e6732c79a7",
+        "size_in_bytes": 3388
+      },
+      {
+        "_path": "lib/python3.10/site-packages/parasail/include/parasail/matrices/pam10.h",
+        "path_type": "hardlink",
+        "sha256": "9363e80d5feddaae19b3721ec21cb0f306e7f4b0be6460b2bbcf3076c06b8586",
+        "sha256_in_prefix": "9363e80d5feddaae19b3721ec21cb0f306e7f4b0be6460b2bbcf3076c06b8586",
+        "size_in_bytes": 3667
+      },
+      {
+        "_path": "lib/python3.10/site-packages/parasail/include/parasail/matrices/pam100.h",
+        "path_type": "hardlink",
+        "sha256": "d424bf7a0256eabcdabf6894b886d4c19ff2bbd0ab9afd86a21118b06ef8bd17",
+        "sha256_in_prefix": "d424bf7a0256eabcdabf6894b886d4c19ff2bbd0ab9afd86a21118b06ef8bd17",
+        "size_in_bytes": 3674
+      },
+      {
+        "_path": "lib/python3.10/site-packages/parasail/include/parasail/matrices/pam110.h",
+        "path_type": "hardlink",
+        "sha256": "4178852e8c4f969e84c1904da95ca9bac93c1892ff1c68d239e3dc7ae1b9c8a1",
+        "sha256_in_prefix": "4178852e8c4f969e84c1904da95ca9bac93c1892ff1c68d239e3dc7ae1b9c8a1",
+        "size_in_bytes": 3674
+      },
+      {
+        "_path": "lib/python3.10/site-packages/parasail/include/parasail/matrices/pam120.h",
+        "path_type": "hardlink",
+        "sha256": "4830ff61d20a95e04c3b0e0e09bb98e17b73ade0ea47e8bd5bcf1afe2a524582",
+        "sha256_in_prefix": "4830ff61d20a95e04c3b0e0e09bb98e17b73ade0ea47e8bd5bcf1afe2a524582",
+        "size_in_bytes": 3675
+      },
+      {
+        "_path": "lib/python3.10/site-packages/parasail/include/parasail/matrices/pam130.h",
+        "path_type": "hardlink",
+        "sha256": "fe87150cdff90b5de6c76bb5c8ff0b2abe5cc17c812ad2d3f8ffbb173dd241f7",
+        "sha256_in_prefix": "fe87150cdff90b5de6c76bb5c8ff0b2abe5cc17c812ad2d3f8ffbb173dd241f7",
+        "size_in_bytes": 3675
+      },
+      {
+        "_path": "lib/python3.10/site-packages/parasail/include/parasail/matrices/pam140.h",
+        "path_type": "hardlink",
+        "sha256": "8fc05fe74a891215d550bd95f5e37c906be8f6c43d5a630431aa723fabf6500a",
+        "sha256_in_prefix": "8fc05fe74a891215d550bd95f5e37c906be8f6c43d5a630431aa723fabf6500a",
+        "size_in_bytes": 3675
+      },
+      {
+        "_path": "lib/python3.10/site-packages/parasail/include/parasail/matrices/pam150.h",
+        "path_type": "hardlink",
+        "sha256": "d8aee731819d1b5cc7e2def6e537d9b195b7a1e12611935289917d99bb643804",
+        "sha256_in_prefix": "d8aee731819d1b5cc7e2def6e537d9b195b7a1e12611935289917d99bb643804",
+        "size_in_bytes": 3675
+      },
+      {
+        "_path": "lib/python3.10/site-packages/parasail/include/parasail/matrices/pam160.h",
+        "path_type": "hardlink",
+        "sha256": "31540e89a983082f6888d2487905c271f9faa08d0bd9c8d432dffbe47dad1fe2",
+        "sha256_in_prefix": "31540e89a983082f6888d2487905c271f9faa08d0bd9c8d432dffbe47dad1fe2",
+        "size_in_bytes": 3675
+      },
+      {
+        "_path": "lib/python3.10/site-packages/parasail/include/parasail/matrices/pam170.h",
+        "path_type": "hardlink",
+        "sha256": "2b526c6ed596343761dc6cf34472e17a07d7834d89c98413d8398bfdf97f7355",
+        "sha256_in_prefix": "2b526c6ed596343761dc6cf34472e17a07d7834d89c98413d8398bfdf97f7355",
+        "size_in_bytes": 3677
+      },
+      {
+        "_path": "lib/python3.10/site-packages/parasail/include/parasail/matrices/pam180.h",
+        "path_type": "hardlink",
+        "sha256": "c1944402acda920e30862aa6175e2c2bc1227b353ed2b916e276e062103243e6",
+        "sha256_in_prefix": "c1944402acda920e30862aa6175e2c2bc1227b353ed2b916e276e062103243e6",
+        "size_in_bytes": 3677
+      },
+      {
+        "_path": "lib/python3.10/site-packages/parasail/include/parasail/matrices/pam190.h",
+        "path_type": "hardlink",
+        "sha256": "5807467f7ae2096674d190b5f797ef7b7003908c5df3c0b2524b1505fc466702",
+        "sha256_in_prefix": "5807467f7ae2096674d190b5f797ef7b7003908c5df3c0b2524b1505fc466702",
+        "size_in_bytes": 3675
+      },
+      {
+        "_path": "lib/python3.10/site-packages/parasail/include/parasail/matrices/pam20.h",
+        "path_type": "hardlink",
+        "sha256": "56bb241958bc89fe1252b42bb942e6f0e8a7ef2fa5607e8adaa8e81583831a1b",
+        "sha256_in_prefix": "56bb241958bc89fe1252b42bb942e6f0e8a7ef2fa5607e8adaa8e81583831a1b",
+        "size_in_bytes": 3667
+      },
+      {
+        "_path": "lib/python3.10/site-packages/parasail/include/parasail/matrices/pam200.h",
+        "path_type": "hardlink",
+        "sha256": "fe1ef43a742877d9e1d1cb8950d44e50a657ad2389bd3c2eff6d601d559c3af6",
+        "sha256_in_prefix": "fe1ef43a742877d9e1d1cb8950d44e50a657ad2389bd3c2eff6d601d559c3af6",
+        "size_in_bytes": 3675
+      },
+      {
+        "_path": "lib/python3.10/site-packages/parasail/include/parasail/matrices/pam210.h",
+        "path_type": "hardlink",
+        "sha256": "ecb26ad1d4d46838b43eb88ada46658ce7ac6d77b2e30687089c2558e307c05f",
+        "sha256_in_prefix": "ecb26ad1d4d46838b43eb88ada46658ce7ac6d77b2e30687089c2558e307c05f",
+        "size_in_bytes": 3675
+      },
+      {
+        "_path": "lib/python3.10/site-packages/parasail/include/parasail/matrices/pam220.h",
+        "path_type": "hardlink",
+        "sha256": "aab9b2b59a2f7bf114d4b6630f08a00334961d0e07093be92f43087a086de7a5",
+        "sha256_in_prefix": "aab9b2b59a2f7bf114d4b6630f08a00334961d0e07093be92f43087a086de7a5",
+        "size_in_bytes": 3675
+      },
+      {
+        "_path": "lib/python3.10/site-packages/parasail/include/parasail/matrices/pam230.h",
+        "path_type": "hardlink",
+        "sha256": "342e62df9aef618ca7f3575a375ed4c97616d111f797ea75e388e1eacfdb8f21",
+        "sha256_in_prefix": "342e62df9aef618ca7f3575a375ed4c97616d111f797ea75e388e1eacfdb8f21",
+        "size_in_bytes": 3676
+      },
+      {
+        "_path": "lib/python3.10/site-packages/parasail/include/parasail/matrices/pam240.h",
+        "path_type": "hardlink",
+        "sha256": "91265fff1f61cab442db319501ec92c21517f57b1b80af81d384abb31dd9f14a",
+        "sha256_in_prefix": "91265fff1f61cab442db319501ec92c21517f57b1b80af81d384abb31dd9f14a",
+        "size_in_bytes": 3676
+      },
+      {
+        "_path": "lib/python3.10/site-packages/parasail/include/parasail/matrices/pam250.h",
+        "path_type": "hardlink",
+        "sha256": "0eebcbbe3309f1d8695eb270dd0a60c3fbed21947c52c4947f73af27e12be42d",
+        "sha256_in_prefix": "0eebcbbe3309f1d8695eb270dd0a60c3fbed21947c52c4947f73af27e12be42d",
+        "size_in_bytes": 3676
+      },
+      {
+        "_path": "lib/python3.10/site-packages/parasail/include/parasail/matrices/pam260.h",
+        "path_type": "hardlink",
+        "sha256": "95bebc310b554f449c0f27f1cdea03f6d024ef1c371be1eda26d04335336e875",
+        "sha256_in_prefix": "95bebc310b554f449c0f27f1cdea03f6d024ef1c371be1eda26d04335336e875",
+        "size_in_bytes": 3676
+      },
+      {
+        "_path": "lib/python3.10/site-packages/parasail/include/parasail/matrices/pam270.h",
+        "path_type": "hardlink",
+        "sha256": "379be83317dda1444a902d5d4ce7bdaa6ce7ee0584b04583368a08026a999d5c",
+        "sha256_in_prefix": "379be83317dda1444a902d5d4ce7bdaa6ce7ee0584b04583368a08026a999d5c",
+        "size_in_bytes": 3678
+      },
+      {
+        "_path": "lib/python3.10/site-packages/parasail/include/parasail/matrices/pam280.h",
+        "path_type": "hardlink",
+        "sha256": "d5c42f58505c3be28576079940fa8de44a2e0622e8408d3f0fccf90871a9832b",
+        "sha256_in_prefix": "d5c42f58505c3be28576079940fa8de44a2e0622e8408d3f0fccf90871a9832b",
+        "size_in_bytes": 3676
+      },
+      {
+        "_path": "lib/python3.10/site-packages/parasail/include/parasail/matrices/pam290.h",
+        "path_type": "hardlink",
+        "sha256": "bbbd1beccda099d165b5dc7c5cb7d31d5a9fb501c02c160ac56f27df619d8e45",
+        "sha256_in_prefix": "bbbd1beccda099d165b5dc7c5cb7d31d5a9fb501c02c160ac56f27df619d8e45",
+        "size_in_bytes": 3676
+      },
+      {
+        "_path": "lib/python3.10/site-packages/parasail/include/parasail/matrices/pam30.h",
+        "path_type": "hardlink",
+        "sha256": "149cf1fd11b5647c1967933985ba1e3cf0c0cb1f02aac0dc0991c1b6d1c47781",
+        "sha256_in_prefix": "149cf1fd11b5647c1967933985ba1e3cf0c0cb1f02aac0dc0991c1b6d1c47781",
+        "size_in_bytes": 3667
+      },
+      {
+        "_path": "lib/python3.10/site-packages/parasail/include/parasail/matrices/pam300.h",
+        "path_type": "hardlink",
+        "sha256": "f697f51f1559f11a153ff3b94a0f4795548b6371c50e0d09cc8b7819171c1a8c",
+        "sha256_in_prefix": "f697f51f1559f11a153ff3b94a0f4795548b6371c50e0d09cc8b7819171c1a8c",
+        "size_in_bytes": 3676
+      },
+      {
+        "_path": "lib/python3.10/site-packages/parasail/include/parasail/matrices/pam310.h",
+        "path_type": "hardlink",
+        "sha256": "276a12d29b11dbae13d266ad9b511de8c957fdf122d317fbd7f5f6b6cda1315b",
+        "sha256_in_prefix": "276a12d29b11dbae13d266ad9b511de8c957fdf122d317fbd7f5f6b6cda1315b",
+        "size_in_bytes": 3676
+      },
+      {
+        "_path": "lib/python3.10/site-packages/parasail/include/parasail/matrices/pam320.h",
+        "path_type": "hardlink",
+        "sha256": "399a3c0a65ddfc7066bdf7f4d778e67811cc387dd2fabfaf1926a9ce99e4a311",
+        "sha256_in_prefix": "399a3c0a65ddfc7066bdf7f4d778e67811cc387dd2fabfaf1926a9ce99e4a311",
+        "size_in_bytes": 3676
+      },
+      {
+        "_path": "lib/python3.10/site-packages/parasail/include/parasail/matrices/pam330.h",
+        "path_type": "hardlink",
+        "sha256": "982ae6dbbfc25d759c0f6a6b8079345e2d16e8f2fa1f0a8fb0c21db662fd61c8",
+        "sha256_in_prefix": "982ae6dbbfc25d759c0f6a6b8079345e2d16e8f2fa1f0a8fb0c21db662fd61c8",
+        "size_in_bytes": 3676
+      },
+      {
+        "_path": "lib/python3.10/site-packages/parasail/include/parasail/matrices/pam340.h",
+        "path_type": "hardlink",
+        "sha256": "43cc2706c91ec39a8693235546088efecd9d7f48f9b1ad11c225e10626d16a27",
+        "sha256_in_prefix": "43cc2706c91ec39a8693235546088efecd9d7f48f9b1ad11c225e10626d16a27",
+        "size_in_bytes": 3676
+      },
+      {
+        "_path": "lib/python3.10/site-packages/parasail/include/parasail/matrices/pam350.h",
+        "path_type": "hardlink",
+        "sha256": "b35c8c09b7aab0716de2d44bda8c467d145d4c2e926669060df16ed7af414370",
+        "sha256_in_prefix": "b35c8c09b7aab0716de2d44bda8c467d145d4c2e926669060df16ed7af414370",
+        "size_in_bytes": 3678
+      },
+      {
+        "_path": "lib/python3.10/site-packages/parasail/include/parasail/matrices/pam360.h",
+        "path_type": "hardlink",
+        "sha256": "31ed043efb62472618623d3cdbc9b01b3d7cd8abaee3696e81dcb9fe0db6354e",
+        "sha256_in_prefix": "31ed043efb62472618623d3cdbc9b01b3d7cd8abaee3696e81dcb9fe0db6354e",
+        "size_in_bytes": 3676
+      },
+      {
+        "_path": "lib/python3.10/site-packages/parasail/include/parasail/matrices/pam370.h",
+        "path_type": "hardlink",
+        "sha256": "fc85e9df86b6771b765df2d456e681cae5433f08634a69753e28df48262c3893",
+        "sha256_in_prefix": "fc85e9df86b6771b765df2d456e681cae5433f08634a69753e28df48262c3893",
+        "size_in_bytes": 3676
+      },
+      {
+        "_path": "lib/python3.10/site-packages/parasail/include/parasail/matrices/pam380.h",
+        "path_type": "hardlink",
+        "sha256": "b4e6af5ff221e2d414a2250952ebe5bd9f3bdf50caf25762766216458d317739",
+        "sha256_in_prefix": "b4e6af5ff221e2d414a2250952ebe5bd9f3bdf50caf25762766216458d317739",
+        "size_in_bytes": 3676
+      },
+      {
+        "_path": "lib/python3.10/site-packages/parasail/include/parasail/matrices/pam390.h",
+        "path_type": "hardlink",
+        "sha256": "17532ed5c333795db17504fe21fa30df182d215f1ed7ad19f6f96e2067311d4a",
+        "sha256_in_prefix": "17532ed5c333795db17504fe21fa30df182d215f1ed7ad19f6f96e2067311d4a",
+        "size_in_bytes": 3676
+      },
+      {
+        "_path": "lib/python3.10/site-packages/parasail/include/parasail/matrices/pam40.h",
+        "path_type": "hardlink",
+        "sha256": "e940bd569ec9fde7388396151c849642dcd978dc08e518b16f384fe51b17ec67",
+        "sha256_in_prefix": "e940bd569ec9fde7388396151c849642dcd978dc08e518b16f384fe51b17ec67",
+        "size_in_bytes": 3667
+      },
+      {
+        "_path": "lib/python3.10/site-packages/parasail/include/parasail/matrices/pam400.h",
+        "path_type": "hardlink",
+        "sha256": "9dd7ec0c36c5bcec71aed5dc4deecbf15a9152697cf83a54f0ea1ef44adfe1b1",
+        "sha256_in_prefix": "9dd7ec0c36c5bcec71aed5dc4deecbf15a9152697cf83a54f0ea1ef44adfe1b1",
+        "size_in_bytes": 3676
+      },
+      {
+        "_path": "lib/python3.10/site-packages/parasail/include/parasail/matrices/pam410.h",
+        "path_type": "hardlink",
+        "sha256": "0fa0c6ac4627958256497f243ac6fc9458a007f24e140d5129d6a744f5f7b8b1",
+        "sha256_in_prefix": "0fa0c6ac4627958256497f243ac6fc9458a007f24e140d5129d6a744f5f7b8b1",
+        "size_in_bytes": 3678
+      },
+      {
+        "_path": "lib/python3.10/site-packages/parasail/include/parasail/matrices/pam420.h",
+        "path_type": "hardlink",
+        "sha256": "bc51c87b35b3d801b9bc8e6101a37deee11890063c342dc4078cb1d2f7259ee8",
+        "sha256_in_prefix": "bc51c87b35b3d801b9bc8e6101a37deee11890063c342dc4078cb1d2f7259ee8",
+        "size_in_bytes": 3678
+      },
+      {
+        "_path": "lib/python3.10/site-packages/parasail/include/parasail/matrices/pam430.h",
+        "path_type": "hardlink",
+        "sha256": "66abb9eb06044c7317abd8e9f813950b6e687e3f0f113e3d4552216a24b7ca1c",
+        "sha256_in_prefix": "66abb9eb06044c7317abd8e9f813950b6e687e3f0f113e3d4552216a24b7ca1c",
+        "size_in_bytes": 3676
+      },
+      {
+        "_path": "lib/python3.10/site-packages/parasail/include/parasail/matrices/pam440.h",
+        "path_type": "hardlink",
+        "sha256": "4a5d648d506de0723ab33d991ba44df82f2d29b944bc0737b1842cfeb568d5c6",
+        "sha256_in_prefix": "4a5d648d506de0723ab33d991ba44df82f2d29b944bc0737b1842cfeb568d5c6",
+        "size_in_bytes": 3676
+      },
+      {
+        "_path": "lib/python3.10/site-packages/parasail/include/parasail/matrices/pam450.h",
+        "path_type": "hardlink",
+        "sha256": "f948d82693a30578a1a920729550d0207dae7ddecda7d1f0839cb1d2fa49e270",
+        "sha256_in_prefix": "f948d82693a30578a1a920729550d0207dae7ddecda7d1f0839cb1d2fa49e270",
+        "size_in_bytes": 3676
+      },
+      {
+        "_path": "lib/python3.10/site-packages/parasail/include/parasail/matrices/pam460.h",
+        "path_type": "hardlink",
+        "sha256": "ddef60023e83d773e0017bf0b9064b06fc202425c176ec18cd2f06bf87c67310",
+        "sha256_in_prefix": "ddef60023e83d773e0017bf0b9064b06fc202425c176ec18cd2f06bf87c67310",
+        "size_in_bytes": 3677
+      },
+      {
+        "_path": "lib/python3.10/site-packages/parasail/include/parasail/matrices/pam470.h",
+        "path_type": "hardlink",
+        "sha256": "7eb8c9f75d227e7c5f0c0b35c8371985f2f0fa8653493b17ec5b018886cd1d0c",
+        "sha256_in_prefix": "7eb8c9f75d227e7c5f0c0b35c8371985f2f0fa8653493b17ec5b018886cd1d0c",
+        "size_in_bytes": 3680
+      },
+      {
+        "_path": "lib/python3.10/site-packages/parasail/include/parasail/matrices/pam480.h",
+        "path_type": "hardlink",
+        "sha256": "163814bd264421ed7d8e55aa3331621d82e095005126e5f7ff5a1df503bf9a21",
+        "sha256_in_prefix": "163814bd264421ed7d8e55aa3331621d82e095005126e5f7ff5a1df503bf9a21",
+        "size_in_bytes": 3680
+      },
+      {
+        "_path": "lib/python3.10/site-packages/parasail/include/parasail/matrices/pam490.h",
+        "path_type": "hardlink",
+        "sha256": "d9f0a946f5af065804b5e965e353b2c05e8c894ea16c61a6b0a28acd4c69209a",
+        "sha256_in_prefix": "d9f0a946f5af065804b5e965e353b2c05e8c894ea16c61a6b0a28acd4c69209a",
+        "size_in_bytes": 3678
+      },
+      {
+        "_path": "lib/python3.10/site-packages/parasail/include/parasail/matrices/pam50.h",
+        "path_type": "hardlink",
+        "sha256": "877ee235a5f95bb5bf268acbb83679c5b4ccb6a66f7f68de4d23f533410bb665",
+        "sha256_in_prefix": "877ee235a5f95bb5bf268acbb83679c5b4ccb6a66f7f68de4d23f533410bb665",
+        "size_in_bytes": 3667
+      },
+      {
+        "_path": "lib/python3.10/site-packages/parasail/include/parasail/matrices/pam500.h",
+        "path_type": "hardlink",
+        "sha256": "68e70d446f14fe44ee585882e0943b892fd81a5377e308bc921869d0ac3d670e",
+        "sha256_in_prefix": "68e70d446f14fe44ee585882e0943b892fd81a5377e308bc921869d0ac3d670e",
+        "size_in_bytes": 3678
+      },
+      {
+        "_path": "lib/python3.10/site-packages/parasail/include/parasail/matrices/pam60.h",
+        "path_type": "hardlink",
+        "sha256": "91f2aa633f8fb24026aafb62e4c92e1fd2596eeb9dc4e1fe8753061a7a323550",
+        "sha256_in_prefix": "91f2aa633f8fb24026aafb62e4c92e1fd2596eeb9dc4e1fe8753061a7a323550",
+        "size_in_bytes": 3667
+      },
+      {
+        "_path": "lib/python3.10/site-packages/parasail/include/parasail/matrices/pam70.h",
+        "path_type": "hardlink",
+        "sha256": "4fa595c7ae039342f1bbac7bd171d6a0583f2cc5418bcec50b797eaeb6a34648",
+        "sha256_in_prefix": "4fa595c7ae039342f1bbac7bd171d6a0583f2cc5418bcec50b797eaeb6a34648",
+        "size_in_bytes": 3667
+      },
+      {
+        "_path": "lib/python3.10/site-packages/parasail/include/parasail/matrices/pam80.h",
+        "path_type": "hardlink",
+        "sha256": "25f58ce6771004db09e1fb6f778c1e6d3723a7ba2a5d97be44fcebf51466fd33",
+        "sha256_in_prefix": "25f58ce6771004db09e1fb6f778c1e6d3723a7ba2a5d97be44fcebf51466fd33",
+        "size_in_bytes": 3667
+      },
+      {
+        "_path": "lib/python3.10/site-packages/parasail/include/parasail/matrices/pam90.h",
+        "path_type": "hardlink",
+        "sha256": "4807a86e20f6280e11edbc59aa1c85dfd5e6ca9183a75eb4b0378212fc4ada5d",
+        "sha256_in_prefix": "4807a86e20f6280e11edbc59aa1c85dfd5e6ca9183a75eb4b0378212fc4ada5d",
+        "size_in_bytes": 3667
+      },
+      {
+        "_path": "lib/python3.10/site-packages/parasail/include/parasail/matrices/pam_map.h",
+        "path_type": "hardlink",
+        "sha256": "b1f54ba46a51e56e7324bfc9c3307193e6f0429b270451a71ea5c6356785a714",
+        "sha256_in_prefix": "b1f54ba46a51e56e7324bfc9c3307193e6f0429b270451a71ea5c6356785a714",
+        "size_in_bytes": 1422
+      },
+      {
+        "_path": "lib/python3.10/site-packages/parasail/include/parasail/matrix_lookup.h",
+        "path_type": "hardlink",
+        "sha256": "4e34439adc03be629216431bb0f5a12f1cad317ebfcc8431925b0e27ca203842",
+        "sha256_in_prefix": "4e34439adc03be629216431bb0f5a12f1cad317ebfcc8431925b0e27ca203842",
+        "size_in_bytes": 4568
+      },
+      {
+        "_path": "lib/python3.10/site-packages/parasail/include/parasail/memory.h",
+        "path_type": "hardlink",
+        "sha256": "d2e32a427afa88b8b01dffc25dec4604027a91ed2ee6e6d53b881b1bd8d9de7c",
+        "sha256_in_prefix": "d2e32a427afa88b8b01dffc25dec4604027a91ed2ee6e6d53b881b1bd8d9de7c",
+        "size_in_bytes": 6465
+      },
+      {
+        "_path": "lib/python3.10/site-packages/parasail/include/parasail/stats.h",
+        "path_type": "hardlink",
+        "sha256": "92570ffa9a94e16e2333941cab4283689dbf12adf9a9da35a2ba5174cce767e6",
+        "sha256_in_prefix": "92570ffa9a94e16e2333941cab4283689dbf12adf9a9da35a2ba5174cce767e6",
+        "size_in_bytes": 1419
+      },
+      {
+        "_path": "lib/python3.10/site-packages/parasail/libparasail.so",
+        "path_type": "hardlink",
+        "sha256": "b699fec90972f2cdbaaabba0e263247201be5a22618af865293469b7abf8cbc7",
+        "sha256_in_prefix": "b699fec90972f2cdbaaabba0e263247201be5a22618af865293469b7abf8cbc7",
+        "size_in_bytes": 12253608
+      }
+    ],
+    "paths_version": 1
+  },
+  "requested_spec": "None",
+  "sha256": "58735530f47878c166fa814a6f698defe643ec9c99790217f59dededa5202b30",
+  "size": 3031235,
+  "subdir": "linux-64",
+  "timestamp": 1717530860000,
+  "url": "https://conda.anaconda.org/bioconda/linux-64/parasail-python-1.3.4-py310hdf79db3_2.tar.bz2",
+  "version": "1.3.4"
+}

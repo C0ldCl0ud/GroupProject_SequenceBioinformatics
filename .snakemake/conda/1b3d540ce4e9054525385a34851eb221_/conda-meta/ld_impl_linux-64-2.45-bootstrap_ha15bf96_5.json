@@ -1,0 +1,52 @@
+{
+  "build": "bootstrap_ha15bf96_5",
+  "build_number": 5,
+  "channel": "https://conda.anaconda.org/conda-forge/linux-64",
+  "constrains": [
+    "binutils_impl_linux-64 2.45"
+  ],
+  "depends": [
+    "__glibc >=2.17,<3.0.a0"
+  ],
+  "extracted_package_dir": "/home/lump/Anwendungen/anaconda3/pkgs/ld_impl_linux-64-2.45-bootstrap_ha15bf96_5",
+  "files": [
+    "bin/x86_64-conda-linux-gnu-ld",
+    "x86_64-conda-linux-gnu/bin/ld"
+  ],
+  "fn": "ld_impl_linux-64-2.45-bootstrap_ha15bf96_5.conda",
+  "license": "GPL-3.0-only",
+  "link": {
+    "source": "/home/lump/Anwendungen/anaconda3/pkgs/ld_impl_linux-64-2.45-bootstrap_ha15bf96_5",
+    "type": 1
+  },
+  "md5": "7a6d3da38d766cffa2105b56e1c5d61c",
+  "name": "ld_impl_linux-64",
+  "package_tarball_full_path": "/home/lump/Anwendungen/anaconda3/pkgs/ld_impl_linux-64-2.45-bootstrap_ha15bf96_5.conda",
+  "paths_data": {
+    "paths": [
+      {
+        "_path": "bin/x86_64-conda-linux-gnu-ld",
+        "file_mode": "binary",
+        "path_type": "hardlink",
+        "prefix_placeholder": "/home/conda/feedstock_root/build_artifacts/binutils_split_1766512649499/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placeh",
+        "sha256": "f3ca5a33f499c21d83e6b07aa7e4d3b9a93fd9969f5d560d7c540a4a81f039aa",
+        "sha256_in_prefix": "afd13995cb1b3c0b4413b3ce857250d7da1067c3a3a3f0e21c9a2f5a283e7be8",
+        "size_in_bytes": 2917192
+      },
+      {
+        "_path": "x86_64-conda-linux-gnu/bin/ld",
+        "path_type": "softlink",
+        "sha256": "f3ca5a33f499c21d83e6b07aa7e4d3b9a93fd9969f5d560d7c540a4a81f039aa",
+        "size_in_bytes": 2917192
+      }
+    ],
+    "paths_version": 1
+  },
+  "requested_spec": "None",
+  "sha256": "39214f6699455d335e692fb8c1e67bb6897ef9593a4a1c0d3a2b776e880161f8",
+  "size": 729347,
+  "subdir": "linux-64",
+  "timestamp": 1766512932000,
+  "url": "https://conda.anaconda.org/conda-forge/linux-64/ld_impl_linux-64-2.45-bootstrap_ha15bf96_5.conda",
+  "version": "2.45"
+}

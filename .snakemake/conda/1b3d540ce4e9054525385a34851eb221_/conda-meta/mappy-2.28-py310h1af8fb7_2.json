@@ -1,0 +1,118 @@
+{
+  "build": "py310h1af8fb7_2",
+  "build_number": 2,
+  "channel": "https://conda.anaconda.org/bioconda/linux-64",
+  "constrains": [],
+  "depends": [
+    "libgcc-ng >=12",
+    "python_abi 3.10.* *_cp310",
+    "python >=3.10,<3.11.0a0",
+    "libzlib >=1.2.13,<2.0a0"
+  ],
+  "extracted_package_dir": "/home/lump/Anwendungen/anaconda3/pkgs/mappy-2.28-py310h1af8fb7_2",
+  "files": [
+    "bin/minimap2.py",
+    "lib/python3.10/site-packages/mappy-2.28.dist-info/INSTALLER",
+    "lib/python3.10/site-packages/mappy-2.28.dist-info/LICENSE.txt",
+    "lib/python3.10/site-packages/mappy-2.28.dist-info/METADATA",
+    "lib/python3.10/site-packages/mappy-2.28.dist-info/RECORD",
+    "lib/python3.10/site-packages/mappy-2.28.dist-info/REQUESTED",
+    "lib/python3.10/site-packages/mappy-2.28.dist-info/WHEEL",
+    "lib/python3.10/site-packages/mappy-2.28.dist-info/direct_url.json",
+    "lib/python3.10/site-packages/mappy-2.28.dist-info/top_level.txt",
+    "lib/python3.10/site-packages/mappy.cpython-310-x86_64-linux-gnu.so"
+  ],
+  "fn": "mappy-2.28-py310h1af8fb7_2.tar.bz2",
+  "license": "MIT",
+  "link": {
+    "source": "/home/lump/Anwendungen/anaconda3/pkgs/mappy-2.28-py310h1af8fb7_2",
+    "type": 1
+  },
+  "md5": "41c2906488c3ebe6dfcdcd2cc44e99ab",
+  "name": "mappy",
+  "package_tarball_full_path": "/home/lump/Anwendungen/anaconda3/pkgs/mappy-2.28-py310h1af8fb7_2.tar.bz2",
+  "paths_data": {
+    "paths": [
+      {
+        "_path": "bin/minimap2.py",
+        "file_mode": "text",
+        "path_type": "hardlink",
+        "prefix_placeholder": "/opt/conda/conda-bld/mappy_1721075297349/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placeho",
+        "sha256": "e3e910070c1ee654ccf813ac384599a9489f0537317844ec351bdcec29091722",
+        "sha256_in_prefix": "67dd4fc772a35afec27303d4d81305721b412d49929e059a745a1d29a43ec75f",
+        "size_in_bytes": 1689
+      },
+      {
+        "_path": "lib/python3.10/site-packages/mappy-2.28.dist-info/INSTALLER",
+        "path_type": "hardlink",
+        "sha256": "d0edee15f91b406f3f99726e44eb990be6e34fd0345b52b910c568e0eef6a2a8",
+        "sha256_in_prefix": "d0edee15f91b406f3f99726e44eb990be6e34fd0345b52b910c568e0eef6a2a8",
+        "size_in_bytes": 5
+      },
+      {
+        "_path": "lib/python3.10/site-packages/mappy-2.28.dist-info/LICENSE.txt",
+        "path_type": "hardlink",
+        "sha256": "b68a701dea24796190ef9e860ff56e79d578c96183722cf4ec3738793e8e75f4",
+        "sha256_in_prefix": "b68a701dea24796190ef9e860ff56e79d578c96183722cf4ec3738793e8e75f4",
+        "size_in_bytes": 1140
+      },
+      {
+        "_path": "lib/python3.10/site-packages/mappy-2.28.dist-info/METADATA",
+        "path_type": "hardlink",
+        "sha256": "acfc9cf69b84c3238d98b8351366a565096baca837460fea3f16abd26e8766c6",
+        "sha256_in_prefix": "acfc9cf69b84c3238d98b8351366a565096baca837460fea3f16abd26e8766c6",
+        "size_in_bytes": 7234
+      },
+      {
+        "_path": "lib/python3.10/site-packages/mappy-2.28.dist-info/RECORD",
+        "path_type": "hardlink",
+        "sha256": "0f295a6555a3024c952fb23bf5e81a831c1ef3cf150075301e12321d5d760dd1",
+        "sha256_in_prefix": "0f295a6555a3024c952fb23bf5e81a831c1ef3cf150075301e12321d5d760dd1",
+        "size_in_bytes": 874
+      },
+      {
+        "_path": "lib/python3.10/site-packages/mappy-2.28.dist-info/REQUESTED",
+        "path_type": "hardlink",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "sha256_in_prefix": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "size_in_bytes": 0
+      },
+      {
+        "_path": "lib/python3.10/site-packages/mappy-2.28.dist-info/WHEEL",
+        "path_type": "hardlink",
+        "sha256": "cd01ce193d496c95b9ea94412e7dda0c5fdbe8ed6f1cf6556a1fc77acaa82355",
+        "sha256_in_prefix": "cd01ce193d496c95b9ea94412e7dda0c5fdbe8ed6f1cf6556a1fc77acaa82355",
+        "size_in_bytes": 104
+      },
+      {
+        "_path": "lib/python3.10/site-packages/mappy-2.28.dist-info/direct_url.json",
+        "path_type": "hardlink",
+        "sha256": "58f9a69f04703c4a8ce289688033579d66a95d1ebc4ab9648ef13926d0e64997",
+        "sha256_in_prefix": "58f9a69f04703c4a8ce289688033579d66a95d1ebc4ab9648ef13926d0e64997",
+        "size_in_bytes": 79
+      },
+      {
+        "_path": "lib/python3.10/site-packages/mappy-2.28.dist-info/top_level.txt",
+        "path_type": "hardlink",
+        "sha256": "0390044129a1e82acabdbc59a9b0f962700e94336d1a02b9137cba747d268990",
+        "sha256_in_prefix": "0390044129a1e82acabdbc59a9b0f962700e94336d1a02b9137cba747d268990",
+        "size_in_bytes": 6
+      },
+      {
+        "_path": "lib/python3.10/site-packages/mappy.cpython-310-x86_64-linux-gnu.so",
+        "path_type": "hardlink",
+        "sha256": "1c2c35f211e9b9f5be4842b7ed0fad3584b8c505eb7baf914bb7dd5d61d66bd3",
+        "sha256_in_prefix": "1c2c35f211e9b9f5be4842b7ed0fad3584b8c505eb7baf914bb7dd5d61d66bd3",
+        "size_in_bytes": 371680
+      }
+    ],
+    "paths_version": 1
+  },
+  "requested_spec": "None",
+  "sha256": "a5f775a9556b198a275407f7ad11f751487b0358994eab06050da2a429694bcf",
+  "size": 177100,
+  "subdir": "linux-64",
+  "timestamp": 1721075500000,
+  "url": "https://conda.anaconda.org/bioconda/linux-64/mappy-2.28-py310h1af8fb7_2.tar.bz2",
+  "version": "2.28"
+}
