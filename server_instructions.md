@@ -17,7 +17,7 @@ or
 
 `/teachstor/share/groupprojectWS25/groupB/`
 
-## condensed workflow before starting to work
+## BEFORE starting to work
 
 The following commands need to be executed, before starting any pipeline on the server.
 You need the `bash` command to start conda service. I put them here to copy/paste them.
@@ -30,7 +30,7 @@ bash
 conda activate metagenomics
 ```
 
-## VERY IMPORTANT after work: change permissions of files
+## AFTER work: change permissions of files
 after uploading or creating files (through running the pipeline etc.) do:
 
 ```
@@ -108,5 +108,6 @@ scp path/to/file/you/want/to/transfer nog:/teachstor/../path/to/copy/to/
 
 This also works the other way around if you want to copy something from the
 server to your laptop. (Basically like "cp")
+
 
 
