@@ -30,6 +30,14 @@ bash
 conda activate metagenomics
 ```
 
+## VERY IMPORTANT after work: change permissions of files
+after uploading or creating files (through running the pipeline etc.) do:
+
+```
+cd teachstor/share/groupprojectWS25/groupB
+chmod -R 770 ./*
+```
+
 ## miniconda
 
 You do not have sudo rights, so you cannot install anything using `sudo apt install`. You always need to either download some installer/binary or install packages using conda.
@@ -101,9 +109,4 @@ scp path/to/file/you/want/to/transfer nog:/teachstor/../path/to/copy/to/
 This also works the other way around if you want to copy something from the
 server to your laptop. (Basically like "cp")
 
-## VERY IMPORTANT: change permissions of files
-after uploading or creating files do:
 
-```
-chmod -R 770 DIRECTORY_NAME
-```
