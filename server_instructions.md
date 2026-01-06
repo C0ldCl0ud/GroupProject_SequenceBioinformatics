@@ -100,12 +100,12 @@ ProxyCommand ssh sshgw -W collins:22
 ```
 
 Then, you can simply enter the server using `ssh nog` / `ssh collins` (you still need to enter your password twice).
-If you have this set up you can use scp like this:
+If you have this set up you can use scp like this from your local bash (not while ssh connected to the server):
 
 ```
-scp path/to/file/you/want/to/transfer nog:/teachstor/../path/to/copy/to/
+scp path/to/file/you/want/to/transfer 'nog:/teachstor/../path/to/copy/to/'
 ```
-
+Note the quotes around the server path.
 This also works the other way around if you want to copy something from the
 server to your laptop. (Basically like "cp")
 
@@ -116,5 +116,6 @@ to check file or directory sizes:
 ```
 du -hs *
 ```
+
 
 
