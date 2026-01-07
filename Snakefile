@@ -479,7 +479,7 @@ rule map_short_single:
 
 rule map_short_coassembly:
     input:
-        idxdir = f"{RESULTS_DIR}/indices/coassembly/short",
+        idxdir = f"{RESULTS_DIR}/indices/coassembly/short/contigs",
         r1 = SHORT_FINAL_R1,
         r2 = SHORT_FINAL_R2
     output:
