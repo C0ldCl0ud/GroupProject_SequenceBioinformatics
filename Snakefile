@@ -162,13 +162,15 @@ rule sra_to_fastq_long:
         sra=f"{RESULTS_DIR}/raw/long/{{sample}}.sra"
     output:
         fq=f"{RESULTS_DIR}/fastq/long/{{sample}}.fq.gz"
+    params:
+        acc=lambda wc: LONG_ACC[wc.sample]
     log:
         f"logs/{DATASET}/fastq/long/{{sample}}.log"
     shell:
         """
         fasterq-dump {input.sra} -O {RESULTS_DIR}/fastq/long 2> {log}
-        gzip -f {RESULTS_DIR}/fastq/long/{wildcards.sample}.fastq
-        mv {RESULTS_DIR}/fastq/long/{wildcards.sample}.fastq.gz {output.fq}
+        gzip -f {RESULTS_DIR}/fastq/long/{wc.sample}.fastq
+        mv {RESULTS_DIR}/fastq/long/{wc.sample}.fastq.gz {output.fq}
         """
 
 ############################################
