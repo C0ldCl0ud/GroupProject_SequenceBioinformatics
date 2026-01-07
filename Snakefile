@@ -16,7 +16,7 @@ SAMPLES = [f"S{i:02d}" for i in range(len(short))]
 #check long read technology
 LONG_TECH = config["long_read_technology"].lower()
 if LONG_TECH == "nanopore":
-    LONG_PREPROCESSED = expand(f"{RESULTS_DIR}/preprocess/long/{{sample}}.final.fq.gz", sample=SAMPLES)
+    LONG_PREPROCESSED = f"{RESULTS_DIR}/preprocess/long/{{sample}}.final.fq.gz"
 elif LONG_TECH == "pacbio":
     LONG_PREPROCESSED = f"{RESULTS_DIR}/fastq/long/{{sample}}.fq.gz"
 else:
@@ -28,8 +28,8 @@ if bool(config.get("remove_human_reads", False)):
     SHORT_FINAL_R2 = f"{RESULTS_DIR}/preprocess/short/{{sample}}_R2.nohuman.fq.gz"
     LONG_FINAL = f"{RESULTS_DIR}/preprocess/long/{{sample}}.nohuman.fq.gz"
 else:
-    SHORT_FINAL_R1 = expand(f"{RESULTS_DIR}/preprocess/short/{{sample}}_R1.fastp.fq.gz", sample=SAMPLES)
-    SHORT_FINAL_R2 = expand(f"{RESULTS_DIR}/preprocess/short/{{sample}}_R2.fastp.fq.gz", sample=SAMPLES)
+    SHORT_FINAL_R1 = f"{RESULTS_DIR}/preprocess/short/{{sample}}_R1.fastp.fq.gz"
+    SHORT_FINAL_R2 = f"{RESULTS_DIR}/preprocess/short/{{sample}}_R2.fastp.fq.gz"
     LONG_FINAL = LONG_PREPROCESSED
 
 #assembly modes
