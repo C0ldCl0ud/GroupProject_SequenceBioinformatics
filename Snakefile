@@ -114,6 +114,8 @@ rule download_short_reads:
         sra=f"{RESULTS_DIR}/raw/short/{{sample}}.sra"
     params:
         acc=lambda wc: SHORT_ACC[wc.sample]
+    conda:
+        "envs/download.yaml"
     log:
         f"logs/{DATASET}/download/short/{{sample}}.log"
     shell:
@@ -126,6 +128,8 @@ rule download_long_reads:
         sra=f"{RESULTS_DIR}/raw/long/{{sample}}.sra"
     params:
         acc=lambda wc: LONG_ACC[wc.sample]
+    conda:
+        "envs/download.yaml"
     log:
         f"logs/{DATASET}/download/long/{{sample}}.log"
     shell:
