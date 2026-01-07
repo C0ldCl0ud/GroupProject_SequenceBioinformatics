@@ -417,7 +417,7 @@ rule assemble_coassembly_short:
 
 rule index_short_single:
     input:
-        contigs = f"{RESULTS_DIR}/assemblies/single/short/{{sample}}/contigs.fasta"
+        contigs = f"{RESULTS_DIR}/assemblies/single/short/{{sample}}_contigs.fasta"
     output:
         idx = directory(f"{RESULTS_DIR}/indices/single/short/{{sample}}")
     conda:
@@ -441,7 +441,7 @@ rule index_short_coassembly:
 
 rule index_hybrid_single:
     input:
-        contigs = f"{RESULTS_DIR}/assemblies/single/hybrid/{{sample}}/contigs.fasta"
+        contigs = f"{RESULTS_DIR}/assemblies/single/hybrid/{{sample}}_contigs.fasta"
     output:
         idx = directory(f"{RESULTS_DIR}/indices/single/hybrid/{{sample}}")
     conda:
