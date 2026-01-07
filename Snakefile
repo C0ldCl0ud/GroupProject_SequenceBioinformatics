@@ -78,7 +78,7 @@ rule all:
 
         # single-sample assemblies
         expand(
-            f"{RESULTS_DIR}/assemblies/single/{{asm_type}}/{{sample}}/contigs.fasta",
+            f"{RESULTS_DIR}/assemblies/single/{{asm_type}}/{{sample}}_contigs.fasta",
             asm_type=["short","long","hybrid"],
             sample=SAMPLES
         ),
@@ -322,7 +322,7 @@ rule assemble_single_short:
         r1=SHORT_FINAL_R1,
         r2=SHORT_FINAL_R2
     output:
-        contigs = f"{RESULTS_DIR}/assemblies/single/short/{{sample}}/contigs.fasta"
+        contigs = f"{RESULTS_DIR}/assemblies/single/short/{{sample}}_contigs.fasta"
     threads: config["threads"]
     log:
         f"logs/{DATASET}/assembly/single/short/{{sample}}.megahit.log"
@@ -343,7 +343,7 @@ rule assemble_single_long:
     input:
         fq=LONG_FINAL
     output:
-        contigs = f"{RESULTS_DIR}/assemblies/single/long/{{sample}}/contigs.fasta"
+        contigs = f"{RESULTS_DIR}/assemblies/single/long/{{sample}}_contigs.fasta"
     threads: config["threads"]
     log:
         f"logs/{DATASET}/assembly/single/long/{{sample}}.flye.log"
@@ -365,7 +365,7 @@ rule assemble_single_hybrid:
         r2=SHORT_FINAL_R2,
         long=LONG_FINAL
     output:
-        contigs = f"{RESULTS_DIR}/assemblies/single/hybrid/{{sample}}/contigs.fasta"
+        contigs = f"{RESULTS_DIR}/assemblies/single/hybrid/{{sample}}_contigs.fasta"
     threads: config["threads"]
     log:
         f"logs/{DATASET}/assembly/single/hybrid/{{sample}}.operams.log"
