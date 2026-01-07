@@ -1,3 +1,6 @@
+wildcard_constraints:
+    sample = "S\\d+"
+
 import os
 from glob import glob
 
