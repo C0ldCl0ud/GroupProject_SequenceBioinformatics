@@ -130,7 +130,7 @@ rule download_long_reads:
         f"logs/{DATASET}/download/long/{{sample}}.log"
     shell:
         """
-        prefetch {{sample}} -O {output.sra}
+        prefetch {{params.acc}} -O {output.sra}
         """
 
 ############################################
@@ -143,18 +143,16 @@ rule sra_to_fastq_short:
     output:
         r1=f"{RESULTS_DIR}/fastq/short/{{sample}}_R1.fq.gz",
         r2=f"{RESULTS_DIR}/fastq/short/{{sample}}_R2.fq.gz"
-    params:
-        acc=lambda wc: SHORT_ACC[wc.sample]
     log:
         f"logs/{DATASET}/fastq/short/{{sample}}.log"
     shell:
         """
         fasterq-dump {input.sra} --split-files -O {RESULTS_DIR}/fastq/short \
         2> {log}
-        gzip -f {RESULTS_DIR}/fastq/short/{wildcards.sample}_1.fastq
-        gzip -f {RESULTS_DIR}/fastq/short/{wildcards.sample}_2.fastq
-        mv {RESULTS_DIR}/fastq/short/{wildcards.sample}_1.fastq.gz {output.r1}
-        mv {RESULTS_DIR}/fastq/short/{wildcards.sample}_2.fastq.gz {output.r2}
+        gzip -f {RESULTS_DIR}/fastq/short/{wc.sample}_1.fastq
+        gzip -f {RESULTS_DIR}/fastq/short/{wc.sample}_2.fastq
+        mv {RESULTS_DIR}/fastq/short/{wc.sample}_1.fastq.gz {output.r1}
+        mv {RESULTS_DIR}/fastq/short/{wc.sample}_2.fastq.gz {output.r2}
         """
 
 rule sra_to_fastq_long:
@@ -162,8 +160,6 @@ rule sra_to_fastq_long:
         sra=f"{RESULTS_DIR}/raw/long/{{sample}}.sra"
     output:
         fq=f"{RESULTS_DIR}/fastq/long/{{sample}}.fq.gz"
-    params:
-        acc=lambda wc: LONG_ACC[wc.sample]
     log:
         f"logs/{DATASET}/fastq/long/{{sample}}.log"
     shell:
