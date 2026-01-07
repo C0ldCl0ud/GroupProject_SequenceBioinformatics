@@ -124,6 +124,8 @@ rule download_short_reads:
 rule download_long_reads:
     output:
         sra=f"{RESULTS_DIR}/raw/long/{{sample}}.sra"
+    params:
+        acc=lambda wc: LONG_ACC[wc.sample]
     log:
         f"logs/{DATASET}/download/long/{{sample}}.log"
     shell:
