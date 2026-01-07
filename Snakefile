@@ -399,8 +399,8 @@ rule assemble_coassembly_short:
     shell:
         """
         megahit \
-          -1 bam_r1 \
-          -2 bam_r2 \
+          -1 {params.bam_r1} \
+          -2 {params.bam_r2} \
           -o {output.contigs} \
           --min-contig-len 1000 \
           -t {threads} \
