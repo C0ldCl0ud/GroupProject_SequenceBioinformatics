@@ -1,7 +1,8 @@
 name: download
 channels:
-  - bioconda
   - conda-forge
+  - bioconda
 dependencies:
 
   - sra-tools
+
