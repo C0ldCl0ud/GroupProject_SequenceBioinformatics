@@ -329,7 +329,7 @@ rule assemble_single_short:
         r1=SHORT_FINAL_R1,
         r2=SHORT_FINAL_R2
     output:
-        f"{RESULTS_DIR}/assemblies/single/short/{{sample}}/contigs.fasta"
+        contigs = f"{RESULTS_DIR}/assemblies/single/short/{{sample}}/contigs.fasta"
     threads: config["threads"]
     log:
         f"logs/{DATASET}/assembly/single/short/{{sample}}.megahit.log"
@@ -340,7 +340,7 @@ rule assemble_single_short:
         megahit \
           -1 {input.r1} \
           -2 {input.r2} \
-          -o {RESULTS_DIR}/assemblies/single/short/{wildcards.sample} \
+          -o {output.contigs} \
           --min-contig-len 1000 \
           -t {threads} \
           > {log} 2>&1
@@ -350,7 +350,7 @@ rule assemble_single_long:
     input:
         fq=LONG_FINAL
     output:
-        f"{RESULTS_DIR}/assemblies/single/long/{{sample}}/contigs.fasta"
+        contigs = f"{RESULTS_DIR}/assemblies/single/long/{{sample}}/contigs.fasta"
     threads: config["threads"]
     log:
         f"logs/{DATASET}/assembly/single/long/{{sample}}.flye.log"
@@ -360,7 +360,7 @@ rule assemble_single_long:
         """
         flye \
           {FLYE_MODE} {input.fq} \
-          --out-dir {RESULTS_DIR}/assemblies/single/long/{wildcards.sample} \
+          --out-dir {output.contigs} \
           --threads {threads} \
           --min-overlap 1000 \
           > {log} 2>&1
@@ -372,7 +372,7 @@ rule assemble_single_hybrid:
         r2=SHORT_FINAL_R2,
         long=LONG_FINAL
     output:
-        f"{RESULTS_DIR}/assemblies/single/hybrid/{{sample}}/contigs.fasta"
+        contigs = f"{RESULTS_DIR}/assemblies/single/hybrid/{{sample}}/contigs.fasta"
     threads: config["threads"]
     log:
         f"logs/{DATASET}/assembly/single/hybrid/{{sample}}.operams.log"
@@ -384,7 +384,7 @@ rule assemble_single_hybrid:
           --short-read1 {input.r1} \
           --short-read2 {input.r2} \
           --long-read {input.long} \
-          --out-dir {RESULTS_DIR}/assemblies/single/hybrid/{wildcards.sample} \
+          --out-dir {output.contigs} \
           --num-threads {threads} \
           > {log} 2>&1
         """
@@ -394,7 +394,7 @@ rule assemble_coassembly_short:
         r1=expand(SHORT_FINAL_R1, sample=SAMPLES),
         r2=expand(SHORT_FINAL_R2, sample=SAMPLES)
     output:
-        f"{RESULTS_DIR}/assemblies/coassembly/short/contigs.fasta"
+        contigs = f"{RESULTS_DIR}/assemblies/coassembly/short/contigs.fasta"
     threads: config["threads"]
     log:
         f"logs/{DATASET}/assembly/coassembly/short.megahit.log"
@@ -408,7 +408,7 @@ rule assemble_coassembly_short:
         megahit \
           -1 bam_r1 \
           -2 bam_r2 \
-          -o {RESULTS_DIR}/assemblies/multi/short \
+          -o {output.contigs} \
           --min-contig-len 1000 \
           -t {threads} \
           > {log} 2>&1
