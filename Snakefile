@@ -130,7 +130,7 @@ rule download_long_reads:
         f"logs/{DATASET}/download/long/{{sample}}.log"
     shell:
         """
-        prefetch {{params.acc}} -O {output.sra}
+        prefetch {params.acc} -O {output.sra}
         """
 
 ############################################
