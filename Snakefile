@@ -513,7 +513,7 @@ rule map_short_multi:
 
 rule map_long_single:
     input:
-        contigs = f"{RESULTS_DIR}/assemblies/single/long/{{sample}}/contigs.fasta",
+        contigs = f"{RESULTS_DIR}/assemblies/single/long/{{sample}}_contigs.fasta",
         reads = LONG_FINAL
     output:
         bam = f"{RESULTS_DIR}/mapping/single/long/{{sample}}.sorted.bam"
@@ -529,7 +529,7 @@ rule map_long_single:
 
 rule map_long_multi:
     input:
-        contigs = f"{RESULTS_DIR}/assemblies/single/long/{{sample}}/contigs.fasta",
+        contigs = f"{RESULTS_DIR}/assemblies/single/long/{{sample}}_contigs.fasta",
         reads = lambda wc: LONG_FINAL.format(sample=wc.other)
     output:
         bam = f"{RESULTS_DIR}/mapping/multi/long/{{sample}}/{{other}}.sorted.bam"
@@ -548,7 +548,7 @@ rule map_long_multi:
 rule map_hybrid_single:
     input:
         idx = f"{RESULTS_DIR}/indices/single/hybrid/{{sample}}/contigs",
-        contigs = f"{RESULTS_DIR}/assemblies/single/hybrid/{{sample}}/contigs.fasta",
+        contigs = f"{RESULTS_DIR}/assemblies/single/hybrid/{{sample}}_contigs.fasta",
         r1 = SHORT_FINAL_R1,
         r2 = SHORT_FINAL_R2,
         long = LONG_FINAL
@@ -574,7 +574,7 @@ rule map_hybrid_single:
 rule map_hybrid_multi:
     input:
         idx = f"{RESULTS_DIR}/indices/single/hybrid/{{sample}}/contigs",
-        contigs = f"{RESULTS_DIR}/assemblies/single/hybrid/{{sample}}/contigs.fasta",
+        contigs = f"{RESULTS_DIR}/assemblies/single/hybrid/{{sample}}_contigs.fasta",
         r1 = lambda wc: SHORT_FINAL_R1,
         r2 = lambda wc: SHORT_FINAL_R2,
         long = lambda wc: LONG_FINAL
