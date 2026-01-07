@@ -422,36 +422,36 @@ rule index_short_single:
     input:
         contigs = f"{RESULTS_DIR}/assemblies/single/short/{{sample}}_contigs.fasta"
     output:
-        idx = directory(f"{RESULTS_DIR}/indices/single/short/{{sample}}")
+        idx = directory(f"{RESULTS_DIR}/indices/single/short/contigs/{{sample}}")
     conda:
         "envs/mapping.yaml"
     shell:
         """
-        bowtie2-build {input.contigs} {output.idx}/contigs
+        bowtie2-build {input.contigs} {output.idx}
         """
 
 rule index_short_coassembly:
     input:
         contigs = f"{RESULTS_DIR}/assemblies/coassembly/short/contigs.fasta"
     output:
-        idxdir = directory(f"{RESULTS_DIR}/indices/coassembly/short")
+        idxdir = directory(f"{RESULTS_DIR}/indices/coassembly/short/contigs")
     conda:
         "envs/mapping.yaml"
     shell:
         """
-        bowtie2-build {input.contigs} {output.idxdir}/contigs
+        bowtie2-build {input.contigs} {output.idxdir}
         """
 
 rule index_hybrid_single:
     input:
         contigs = f"{RESULTS_DIR}/assemblies/single/hybrid/{{sample}}_contigs.fasta"
     output:
-        idx = directory(f"{RESULTS_DIR}/indices/single/hybrid/{{sample}}")
+        idx = directory(f"{RESULTS_DIR}/indices/single/hybrid/contigs/{{sample}}")
     conda:
         "envs/mapping.yaml"
     shell:
         """
-        bowtie2-build {input.contigs} {output.idx}/contigs
+        bowtie2-build {input.contigs} {output.idx}
         """
 
 ############################################
@@ -462,7 +462,7 @@ rule index_hybrid_single:
 
 rule map_short_single:
     input:
-        idx = f"{RESULTS_DIR}/indices/single/short/{{sample}}/contigs",
+        idx = f"{RESULTS_DIR}/indices/single/short/contigs/{{sample}}",
         r1 = SHORT_FINAL_R1,
         r2 = SHORT_FINAL_R2
     output:
@@ -497,7 +497,7 @@ rule map_short_coassembly:
 
 rule map_short_multi:
     input:
-        idx = f"{RESULTS_DIR}/indices/single/short/{{sample}}/contigs",
+        idx = f"{RESULTS_DIR}/indices/single/short/contigs/{{sample}}",
         r1 = lambda wc: SHORT_FINAL_R1,
         r2 = lambda wc: SHORT_FINAL_R2
     output:
