@@ -1,0 +1,6 @@
+name: download
+channels:
+  - bioconda
+  - conda-forge
+dependencies:
+  - sra-toolkit
