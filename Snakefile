@@ -139,39 +139,47 @@ rule download_long_reads:
 
 rule sra_to_fastq_short:
     input:
-        sra=lambda wc: f"{RESULTS_DIR}/raw/short/{wc.sample}/{SHORT_ACC[wc.sample]}.sra"
+        sra_dir = directory(f"{RESULTS_DIR}/raw/short/{{sample}}")
     output:
-        r1=f"{RESULTS_DIR}/fastq/short/{{sample}}_R1.fq.gz",
-        r2=f"{RESULTS_DIR}/fastq/short/{{sample}}_R2.fq.gz"
+        r1 = f"{RESULTS_DIR}/fastq/short/{{sample}}_R1.fq.gz",
+        r2 = f"{RESULTS_DIR}/fastq/short/{{sample}}_R2.fq.gz"
     params:
-        acc=lambda wc: SHORT_ACC[wc.sample]
+        acc = lambda wc: SHORT_ACC[wc.sample]
     conda:
         "envs/download.yaml"
     log:
         f"logs/{DATASET}/fastq/short/{{sample}}.log"
     shell:
         """
-        fasterq-dump {input.sra} --split-files -O {RESULTS_DIR}/fastq/short > {log} 2>&1
+        fasterq-dump {input.sra_dir}/{params.acc}.sra \
+            --split-files \
+            -O {RESULTS_DIR}/fastq/short \
+            > {log} 2>&1
+
         gzip -f {RESULTS_DIR}/fastq/short/{params.acc}_1.fastq
         gzip -f {RESULTS_DIR}/fastq/short/{params.acc}_2.fastq
+
         mv {RESULTS_DIR}/fastq/short/{params.acc}_1.fastq.gz {output.r1}
         mv {RESULTS_DIR}/fastq/short/{params.acc}_2.fastq.gz {output.r2}
         """
 
 rule sra_to_fastq_long:
     input:
-        sra=lambda wc: f"{RESULTS_DIR}/raw/long/{wc.sample}/{LONG_ACC[wc.sample]}.sra"
+        sra_dir = directory(f"{RESULTS_DIR}/raw/long/{{sample}}")
     output:
-        fq=f"{RESULTS_DIR}/fastq/long/{{sample}}.fq.gz"
+        fq = f"{RESULTS_DIR}/fastq/long/{{sample}}.fq.gz"
     params:
-        acc=lambda wc: LONG_ACC[wc.sample]
+        acc = lambda wc: LONG_ACC[wc.sample]
     conda:
         "envs/download.yaml"
     log:
         f"logs/{DATASET}/fastq/long/{{sample}}.log"
     shell:
         """
-        fasterq-dump {input.sra} -O {RESULTS_DIR}/fastq/long > {log} 2>&1
+        fasterq-dump {input.sra_dir}/{params.acc}.sra \
+            -O {RESULTS_DIR}/fastq/long \
+            > {log} 2>&1
+
         gzip -f {RESULTS_DIR}/fastq/long/{params.acc}.fastq
         mv {RESULTS_DIR}/fastq/long/{params.acc}.fastq.gz {output.fq}
         """
