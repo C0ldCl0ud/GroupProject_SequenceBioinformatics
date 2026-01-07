@@ -550,7 +550,7 @@ rule map_long_multi:
 
 rule map_hybrid_single:
     input:
-        idx = f"{RESULTS_DIR}/indices/single/hybrid/{{sample}}/contigs",
+        idx = f"{RESULTS_DIR}/indices/single/hybrid/contigs/{{sample}}",
         contigs = f"{RESULTS_DIR}/assemblies/single/hybrid/{{sample}}_contigs.fasta",
         r1 = SHORT_FINAL_R1,
         r2 = SHORT_FINAL_R2,
@@ -576,7 +576,7 @@ rule map_hybrid_single:
 
 rule map_hybrid_multi:
     input:
-        idx = f"{RESULTS_DIR}/indices/single/hybrid/{{sample}}/contigs",
+        idx = f"{RESULTS_DIR}/indices/single/hybrid/contigs/{{sample}}",
         contigs = f"{RESULTS_DIR}/assemblies/single/hybrid/{{sample}}_contigs.fasta",
         r1 = lambda wc: SHORT_FINAL_R1,
         r2 = lambda wc: SHORT_FINAL_R2,
