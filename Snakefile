@@ -384,8 +384,8 @@ rule assemble_single_hybrid:
 
 rule assemble_coassembly_short:
     input:
-        r1=SHORT_FINAL_R1,
-        r2=SHORT_FINAL_R2
+        r1=expand(SHORT_FINAL_R1, sample=SAMPLES),
+        r2=expand(SHORT_FINAL_R2, sample=SAMPLES)
     output:
         contigs = f"{RESULTS_DIR}/assemblies/coassembly/short/contigs.fasta"
     threads: config["threads"]
