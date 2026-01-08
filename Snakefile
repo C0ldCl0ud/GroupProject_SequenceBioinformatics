@@ -387,7 +387,6 @@ rule assemble_single_hybrid:
     threads: config["threads"]
     log:
         f"logs/{DATASET}/assembly/single/hybrid/{{sample}}.operams.log"
-    tempdir: True
     conda:
         "envs/assembly_operams.yaml"
     shell:
