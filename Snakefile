@@ -546,7 +546,7 @@ rule map_long_single:
 
 rule map_long_multi:
     input:
-        contigs = f"{RESULTS_DIR}/assemblies/single/long/{{sample}}_contigs.fasta",
+        contigs = f"{RESULTS_DIR}/assemblies/single/long/{{sample}}/assembly.fasta",
         reads = lambda wc: LONG_FINAL.format(sample=wc.other)
     output:
         bam = f"{RESULTS_DIR}/mapping/multi/long/{{sample}}/{{other}}.sorted.bam"
