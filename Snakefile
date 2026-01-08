@@ -530,7 +530,7 @@ rule map_short_multi:
 
 rule map_long_single:
     input:
-        contigs = f"{RESULTS_DIR}/assemblies/single/long/{{sample}}_contigs.fasta",
+        contigs = f"{RESULTS_DIR}/assemblies/single/long/{{sample}}/assembly.fasta",
         reads = LONG_FINAL
     output:
         bam = f"{RESULTS_DIR}/mapping/single/long/{{sample}}.sorted.bam"
