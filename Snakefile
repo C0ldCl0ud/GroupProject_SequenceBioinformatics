@@ -683,7 +683,7 @@ rule metabat2_coassembly:
 
 rule metabat2_single:
     input:
-        contigs = f"{RESULTS_DIR}/assemblies/single/{{assembly_type}}/{{sample}}_contigs.fasta",
+        contigs = f"{RESULTS_DIR}/assemblies/single/{{assembly_type}}/{{sample}}/assembly.fasta",
         depth = f"{RESULTS_DIR}/depth/single/{{assembly_type}}/{{sample}}/depth.txt"
     output:
         touch(f"{RESULTS_DIR}/bins/single/metabat2/{{assembly_type}}/{{sample}}/bins.done")
@@ -743,7 +743,7 @@ rule maxbin2_coassembly:
 
 rule maxbin2_single:
     input:
-        contigs = f"{RESULTS_DIR}/assemblies/single/{{assembly_type}}/{{sample}}_contigs.fasta",
+        contigs = f"{RESULTS_DIR}/assemblies/single/{{assembly_type}}/{{sample}}/assembly.fasta",
         depth   = f"{RESULTS_DIR}/depth/single/{{assembly_type}}/{{sample}}/depth.txt"
     output:
         touch(f"{RESULTS_DIR}/bins/single/maxbin2/{{assembly_type}}/{{sample}}/bins.done")
