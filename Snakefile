@@ -106,12 +106,14 @@ rule all:
         expand(f"{RESULTS_DIR}/eval/multi/{{tool}}/{{assembly_type}}/{{sample}}/eval_{{eval_type}}.done",
                 tool=config["binning_tools"],
                 assembly_type=["short","long","hybrid"],
-                sample=SAMPLES),
+                sample=SAMPLES,
+                eval_type=["comp_cont", "tRNA", "rRNA"]),
         # Coassembly eval
         expand(f"{RESULTS_DIR}/eval/coassembly/{{tool}}/{{assembly_type}}/{{sample}}/eval_{{eval_type}}.done",
                 tool=config["binning_tools"],
                 assembly_type=["short","long","hybrid"],
-                sample=SAMPLES),
+                sample=SAMPLES,
+                eval_type=["comp_cont", "tRNA", "rRNA"]),
 
 ############################################
 # 1. Download SRA / dump files
