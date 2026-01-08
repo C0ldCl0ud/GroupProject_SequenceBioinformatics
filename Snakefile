@@ -138,7 +138,7 @@ rule download_long_reads:
 ############################################
 rule sra_to_fastq_short:
     input:
-        sra_dir = directory(f"{RESULTS_DIR}/raw/short/{{sample}}")
+        sra_dir = f"{RESULTS_DIR}/raw/short/{{sample}}"
     output:
         r1 = f"{RESULTS_DIR}/fastq/short/{{sample}}_R1.fq.gz",
         r2 = f"{RESULTS_DIR}/fastq/short/{{sample}}_R2.fq.gz"
@@ -164,7 +164,7 @@ rule sra_to_fastq_short:
 
 rule sra_to_fastq_long:
     input:
-        sra_dir = directory(f"{RESULTS_DIR}/raw/long/{{sample}}")
+        sra_dir = f"{RESULTS_DIR}/raw/long/{{sample}}"
     output:
         fq = f"{RESULTS_DIR}/fastq/long/{{sample}}.fq.gz"
     params:
