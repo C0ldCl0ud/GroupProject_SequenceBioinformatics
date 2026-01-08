@@ -1,7 +1,11 @@
-name: assembly
+name: assembly_operams
 channels:
-  - bioconda
   - conda-forge
-  - rdenise
+  - bioconda
 dependencies:
-  - operams=0.9.0
+  - opera-ms
+  - bwa
+  - samtools
+  - minimap2
+  - blast
+
