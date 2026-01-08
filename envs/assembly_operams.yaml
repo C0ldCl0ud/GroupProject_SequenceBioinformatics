@@ -5,8 +5,10 @@ channels:
   - biobuilds
   - rdenise
 dependencies:
-  - perl=5.28.1
+  - perl
   - operams
+  - perl-app-cpanminus
+
 
 
 
