@@ -1,7 +1,10 @@
 name: assembly_operams
 channels:
   - rdenise
+  - conda-forge
 dependencies:
   - operams
+  - perl-switch
+
 
 
