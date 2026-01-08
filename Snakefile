@@ -394,7 +394,7 @@ rule assemble_single_hybrid:
           --short-read1 {input.r1} \
           --short-read2 {input.r2} \
           --long-read {input.long} \
-          --out-dir {f"{RESULTS_DIR}/assemblies/single/hybrid/{{sample}}} \
+          --out-dir f"{RESULTS_DIR}/assemblies/single/hybrid/{{sample}} \
           --num-threads {threads} \
           > {log} 2>&1
         """
