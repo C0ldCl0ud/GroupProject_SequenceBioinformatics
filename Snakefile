@@ -400,6 +400,7 @@ rule assemble_single_hybrid:
           --long-read $long_unzipped \
           --out-dir {RESULTS_DIR}/assemblies/single/hybrid/{wildcards.sample} \
           --num-processors {threads} \
+          --no-ref-clustering \
           > {log} 2>&1
 
         rm -f $long_unzipped
