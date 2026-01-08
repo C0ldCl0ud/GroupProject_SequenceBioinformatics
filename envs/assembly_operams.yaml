@@ -4,8 +4,9 @@ channels:
   - bioconda
   - rdenise
 dependencies:
-  - perl=5.30
+  - perl=5.28
   - operams
+
 
 
 
