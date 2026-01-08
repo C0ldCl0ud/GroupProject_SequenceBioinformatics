@@ -350,7 +350,7 @@ rule assemble_single_short:
         megahit \
           -1 {input.r1} \
           -2 {input.r2} \
-          -o {RESULTS_DIR}/assemblies/single/long/{wildcards.sample} \
+          -o {RESULTS_DIR}/assemblies/single/short/{wildcards.sample} \
           --min-contig-len 1000 \
           -t {threads} \
           > {log} 2>&1
