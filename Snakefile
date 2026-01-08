@@ -347,6 +347,7 @@ rule assemble_single_short:
         "envs/assembly.yaml"
     shell:
         """
+        rm -rf {RESULTS_DIR}/assemblies/single/short/{wildcards.sample}
         megahit \
           -1 {input.r1} \
           -2 {input.r2} \
