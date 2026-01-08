@@ -2,10 +2,12 @@ name: assembly_operams
 channels:
   - conda-forge
   - bioconda
+  - biobuilds
   - rdenise
 dependencies:
-  - perl=5.28
+  - perl=5.28.1
   - operams
+
 
 
 
