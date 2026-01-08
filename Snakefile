@@ -397,7 +397,7 @@ rule assemble_single_hybrid:
           --short-read2 {input.r2} \
           --long-read {input.long} \
           --out-dir {RESULTS_DIR}/assemblies/single/hybrid/{wildcards.sample} \
-          --num-threads {threads} \
+          --num-processors {threads} \
           > {log} 2>&1
         """
 
