@@ -382,7 +382,7 @@ rule assemble_single_hybrid:
         r2=SHORT_FINAL_R2,
         long=LONG_FINAL
     output:
-        contigs = f"{RESULTS_DIR}/assemblies/single/hybrid/{{sample}}_contigs.fasta"
+        contigs = f"{RESULTS_DIR}/assemblies/single/hybrid/{{sample}}/assembly.fasta"
     threads: config["threads"]
     log:
         f"logs/{DATASET}/assembly/single/hybrid/{{sample}}.operams.log"
@@ -394,7 +394,7 @@ rule assemble_single_hybrid:
           --short-read1 {input.r1} \
           --short-read2 {input.r2} \
           --long-read {input.long} \
-          --out-dir {output.contigs} \
+          --out-dir {f"{RESULTS_DIR}/assemblies/single/hybrid/{{sample}}} \
           --num-threads {threads} \
           > {log} 2>&1
         """
