@@ -392,7 +392,7 @@ rule assemble_single_hybrid:
     shell:
         """
         rm -rf {RESULTS_DIR}/assemblies/single/hybrid/{wildcards.sample}
-        opera-ms \
+        perl /teachstor/share/groupprojectWS25/groupB/software/OPERA-MS/OPERA-MS.pl \
           --short-read1 {input.r1} \
           --short-read2 {input.r2} \
           --long-read {input.long} \
