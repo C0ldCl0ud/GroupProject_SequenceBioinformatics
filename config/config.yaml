@@ -1,5 +1,5 @@
 dataset: cheese
-threads: 16
+threads: 4
 long_read_technology: pacbio   # pacbio | nanopore (human_gut_II, activated_sludge)
 binning_tools:
   - metabat2
