@@ -86,7 +86,7 @@ rule all:
             sample=SAMPLES
         ),
 
-        # multi-sample assembly
+        # multi-sample assembly TODO: this comment says multi-sample assembly, but in the line below it says coassembly. is this right?
         f"{RESULTS_DIR}/assemblies/coassembly/short/contigs.fasta",
 
 
@@ -94,12 +94,24 @@ rule all:
         expand(f"{RESULTS_DIR}/bins/coassembly/{{tool}}/bins.done",tool=config["binning_tools"]),
         expand(f"{RESULTS_DIR}/bins/single/{{tool}}/{{assembly_type}}/{{sample}}/bins.done", tool=config["binning_tools"], assembly_type=["short", "long", "hybrid"], sample=SAMPLES),
         expand(f"{RESULTS_DIR}/bins/multi/{{tool}}/{{assembly_type}}/{{sample}}/bins.done", tool=config["binning_tools"], sample=SAMPLES, assembly_type=["short", "long", "hybrid"])
-        # QC
-        # Single-sample QC
-        #expand(f"{RESULTS_DIR}/qc/single/{{assembly_type}}/{{sample}}/qc.done",
-               #assembly_type=["short","long","hybrid"], sample=SAMPLES),
-        # Multi-sample QC
-        #f"{RESULTS_DIR}/qc/multi/short/qc.done",
+        
+        # evaluation
+        # Single-sample eval
+        expand(f"{RESULTS_DIR}/eval/single/{{tool}}/{{assembly_type}}/{{sample}}/eval_{{eval_type}}.done",
+                tool=config["binning_tools"],
+                assembly_type=["short","long","hybrid"],
+                sample=SAMPLES,
+                eval_type=["comp_cont", "tRNA", "rRNA"]),
+        # Multi-sample eval
+        expand(f"{RESULTS_DIR}/eval/multi/{{tool}}/{{assembly_type}}/{{sample}}/eval_{{eval_type}}.done",
+                tool=config["binning_tools"],
+                assembly_type=["short","long","hybrid"],
+                sample=SAMPLES),
+        # Coassembly eval
+        expand(f"{RESULTS_DIR}/eval/coassembly/{{tool}}/{{assembly_type}}/{{sample}}/eval_{{eval_type}}.done",
+                tool=config["binning_tools"],
+                assembly_type=["short","long","hybrid"],
+                sample=SAMPLES),
 
 ############################################
 # 1. Download SRA / dump files
@@ -1450,35 +1462,211 @@ rule comebin_multi:
         touch {output}
         """
 
+
+
 ############################################
-# 6. Quality control
+# 6. Evaluation for rank scoring
 ############################################
 
-# Single-sample QC (short, long, hybrid)
-rule qc_single:
+
+############################################
+# 6.1 Completeness and Contamination - CheckM 2
+############################################
+
+# Single-sample Evaluation (short, long, hybrid)
+rule eval_comp_cont_single:
     input:
-        assembly=lambda wc: f"{RESULTS_DIR}/assemblies/single/{wc.assembly_type}/{wc.sample}/contigs.fasta"
+        binning = lambda wc: f"{RESULTS_DIR}/bins/single/{wc.tool}/{wc.assembly_type}/{wc.sample}"
     output:
-        touch(f"{RESULTS_DIR}/qc/single/{{assembly_type}}/{{sample}}/qc.done")
+        touch(f"{RESULTS_DIR}/eval/single/{{tool}}/{{assembly_type}}/{{sample}}/eval_comp_cont.done")
     log:
-        f"logs/{DATASET}/qc/single/{{assembly_type}}/{{sample}}.log"
+        f"logs/{DATASET}/eval/single/{{tool}}/{{assembly_type}}/{{sample}}.comp_cont.log"
+    threads: config["threads"]
+    conda:
+        "envs/evaluation.yaml"
     shell:
         """
-        quast {input.assembly} -o qc_tmp_{wildcards.sample} > {log} 2>&1
-        # you could move or copy results if needed
+        outdir={RESULTS_DIR}/eval/single/{{tool}}/{{assembly_type}}/{{sample}}
+        checkm2 predict --threads {threads} --input {input.binning} --output-directory $outdir
         touch {output}
         """
 
-# Multi-sample QC (multi_short)
-rule qc_multi:
+# Multi-sample Evaluation (short, long, hybrid)
+rule eval_comp_cont_multi:
     input:
-        assembly=f"{RESULTS_DIR}/assemblies/multi/short/contigs.fasta"
+        binning = lambda wc: f"{RESULTS_DIR}/bins/multi/{wc.tool}/{wc.assembly_type}/{wc.sample}"
     output:
-        touch(f"{RESULTS_DIR}/qc/multi/short/qc.done")
+        touch(f"{RESULTS_DIR}/eval/multi/{{tool}}/{{assembly_type}}/{{sample}}/eval_comp_cont.done")
     log:
-        f"logs/{DATASET}/qc/multi_short.log"
+        f"logs/{DATASET}/eval/multi/{{tool}}/{{assembly_type}}/{{sample}}.comp_cont.log"
+    threads: config["threads"]
+    conda:
+        "envs/evaluation.yaml"
     shell:
         """
-        quast {input.assembly} -o qc_tmp_multi_short > {log} 2>&1
+        outdir={RESULTS_DIR}/eval/multi/{{tool}}/{{assembly_type}}/{{sample}}
+        checkm2 predict --threads {threads} --input {input.binning} --output-directory $outdir
+        touch {output}
+        """
+
+# Co-Assembly Evaluation (short, long, hybrid)
+rule eval_comp_cont_coassembly:
+    input:
+        binning = lambda wc: f"{RESULTS_DIR}/bins/coassembly/{wc.tool}/{wc.assembly_type}/{wc.sample}"
+    output:
+        touch(f"{RESULTS_DIR}/eval/coassembly/{{tool}}/{{assembly_type}}/{{sample}}/eval_comp_cont.done")
+    log:
+        f"logs/{DATASET}/eval/coassembly/{{tool}}/{{assembly_type}}/{{sample}}.comp_cont.log"
+    threads: config["threads"]
+    conda:
+        "envs/evaluation.yaml"
+    shell:
+        """
+        outdir={RESULTS_DIR}/eval/coassembly/{{tool}}/{{assembly_type}}/{{sample}}
+        checkm2 predict --threads {threads} --input {input.binning} --output-directory $outdir
+        touch {output}
+        """
+        
+############################################
+# 6.2 tRNA count - Aragorn
+############################################
+
+# Single-sample Evaluation (short, long, hybrid)
+rule eval_tRNA_single:
+    input:
+        binning = lambda wc: f"{RESULTS_DIR}/bins/single/{wc.tool}/{wc.assembly_type}/{wc.sample}"
+    output:
+        touch(f"{RESULTS_DIR}/eval/single/{{tool}}/{{assembly_type}}/{{sample}}/eval_tRNA.done")
+    log:
+        f"logs/{DATASET}/eval/single/{{tool}}/{{assembly_type}}/{{sample}}.tRNA_count.log"
+    conda:
+        "envs/evaluation.yaml"
+    shell:
+        """
+        outfile={RESULTS_DIR}/eval/single/{{tool}}/{{assembly_type}}/{{sample}}/tRNA_count.txt
+        
+        count=$(aragorn -t -w "$f" | grep -c '^')
+        echo -e "$count" >> $outfile
+        
+        touch {output}
+        """
+
+# Multi-sample Evaluation (short, long, hybrid)
+rule eval_tRNA_multi:
+    input:
+        binning = lambda wc: f"{RESULTS_DIR}/bins/multi/{wc.tool}/{wc.assembly_type}/{wc.sample}"
+    output:
+        touch(f"{RESULTS_DIR}/eval/multi/{{tool}}/{{assembly_type}}/{{sample}}/eval_tRNA.done")
+    log:
+        f"logs/{DATASET}/eval/multi/{{tool}}/{{assembly_type}}/{{sample}}.tRNA_count.log"
+    conda:
+        "envs/evaluation.yaml"
+    shell:
+        """
+        outfile={RESULTS_DIR}/eval/multi/{{tool}}/{{assembly_type}}/{{sample}}/tRNA_count.txt
+        
+        count=$(aragorn -t -w "$f" | grep -c '^')
+        echo -e "$count" >> $outfile
+        
+        touch {output}
+        """
+
+# Co-Assembly Evaluation (short, long, hybrid)
+rule eval_tRNA_coassembly:
+    input:
+        binning = lambda wc: f"{RESULTS_DIR}/bins/coassembly/{wc.tool}/{wc.assembly_type}/{wc.sample}"
+    output:
+        touch(f"{RESULTS_DIR}/eval/coassembly/{{tool}}/{{assembly_type}}/{{sample}}/eval_tRNA.done")
+    log:
+        f"logs/{DATASET}/eval/coassembly/{{tool}}/{{assembly_type}}/{{sample}}.tRNA_count.log"
+    conda:
+        "envs/evaluation.yaml"
+    shell:
+        """
+        outfile={RESULTS_DIR}/eval/coassembly/{{tool}}/{{assembly_type}}/{{sample}}/tRNA_count.txt
+        
+        count=$(aragorn -t -w "$f" | grep -c '^')
+        echo -e "$count" >> $outfile
+        
+        touch {output}
+        """
+
+
+############################################
+# 6.3 Presence of rRNAs - Barrnap
+############################################
+
+# Single-sample Evaluation (short, long, hybrid)
+rule eval_rRNA_single:
+    input:
+        binning = lambda wc: f"{RESULTS_DIR}/bins/single/{wc.tool}/{wc.assembly_type}/{wc.sample}"
+    output:
+        touch(f"{RESULTS_DIR}/eval/single/{{tool}}/{{assembly_type}}/{{sample}}/eval_rRNA.done")
+    log:
+        f"logs/{DATASET}/eval/single/{{tool}}/{{assembly_type}}/{{sample}}.rRNA.log"
+    threads: config["threads"]
+    conda:
+        "envs/evaluation.yaml"
+    shell:
+        """
+        outfile={RESULTS_DIR}/eval/single/{{tool}}/{{assembly_type}}/{{sample}}.barrnap.gff3
+        
+        barrnap --threads {threads} --quiet bin.fasta > $outfile
+        if grep -E "rRNA.*5S" bin_barrnap.gff3 >/dev/null && grep -E "rRNA.*16S" bin_barrnap.gff3 >/dev/null && grep -E "rRNA.*23S" bin_barrnap.gff3 >/dev/null; then
+                all_present = 1
+        else all_present = 0;
+        fi
+        $all_present > all_rRNA_present.txt
+        
+        touch {output}
+        """
+
+# Multi-sample Evaluation (short, long, hybrid)
+rule eval_rRNA_multi:
+    input:
+        binning = lambda wc: f"{RESULTS_DIR}/bins/multi/{wc.tool}/{wc.assembly_type}/{wc.sample}"
+    output:
+        touch(f"{RESULTS_DIR}/eval/multi/{{tool}}/{{assembly_type}}/{{sample}}/eval_rRNA.done")
+    log:
+        f"logs/{DATASET}/eval/multi/{{tool}}/{{assembly_type}}/{{sample}}.rRNA.log"
+    threads: config["threads"]
+    conda:
+        "envs/evaluation.yaml"
+    shell:
+        """
+        outfile={RESULTS_DIR}/eval/multi/{{tool}}/{{assembly_type}}/{{sample}}.barrnap.gff3
+        
+        barrnap --threads {threads} --quiet bin.fasta > $outfile
+        if grep -E "rRNA.*5S" bin_barrnap.gff3 >/dev/null && grep -E "rRNA.*16S" bin_barrnap.gff3 >/dev/null && grep -E "rRNA.*23S" bin_barrnap.gff3 >/dev/null; then
+                all_present = 1
+        else all_present = 0;
+        fi
+        $all_present > all_rRNA_present.txt
+        
+        touch {output}
+        """
+
+# Co-Assembly Evaluation (short, long, hybrid)
+rule eval_rRNA_coassembly:
+    input:
+        binning = lambda wc: f"{RESULTS_DIR}/bins/coassembly/{wc.tool}/{wc.assembly_type}/{wc.sample}"
+    output:
+        touch(f"{RESULTS_DIR}/eval/coassembly/{{tool}}/{{assembly_type}}/{{sample}}/eval_rRNA.done")
+    log:
+        f"logs/{DATASET}/eval/coassembly/{{tool}}/{{assembly_type}}/{{sample}}.rRNA.log"
+    threads: config["threads"]
+    conda:
+        "envs/evaluation.yaml"
+    shell:
+        """
+        outfile={RESULTS_DIR}/eval/coassembly/{{tool}}/{{assembly_type}}/{{sample}}.barrnap.gff3
+        
+        barrnap --threads {threads} --quiet bin.fasta > $outfile
+        if grep -E "rRNA.*5S" bin_barrnap.gff3 >/dev/null && grep -E "rRNA.*16S" bin_barrnap.gff3 >/dev/null && grep -E "rRNA.*23S" bin_barrnap.gff3 >/dev/null; then
+                all_present = 1
+        else all_present = 0;
+        fi
+        $all_present > all_rRNA_present.txt
+        
         touch {output}
         """
