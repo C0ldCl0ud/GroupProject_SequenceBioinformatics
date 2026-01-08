@@ -109,9 +109,8 @@ rule all:
                 sample=SAMPLES,
                 eval_type=["comp_cont", "tRNA", "rRNA"]),
         # Coassembly eval
-        expand(f"{RESULTS_DIR}/eval/coassembly/{{tool}}/{{assembly_type}}/{{sample}}/eval_{{eval_type}}.done",
+        expand(f"{RESULTS_DIR}/eval/coassembly/{{tool}}/{{sample}}/eval_{{eval_type}}.done",
                 tool=config["binning_tools"],
-                assembly_type=["short","long","hybrid"],
                 sample=SAMPLES,
                 eval_type=["comp_cont", "tRNA", "rRNA"]),
 
@@ -1514,17 +1513,17 @@ rule eval_comp_cont_multi:
 # Co-Assembly Evaluation (short, long, hybrid)
 rule eval_comp_cont_coassembly:
     input:
-        binning = lambda wc: f"{RESULTS_DIR}/bins/coassembly/{wc.tool}/{wc.assembly_type}/{wc.sample}"
+        binning = lambda wc: f"{RESULTS_DIR}/bins/coassembly/{wc.tool}/{wc.sample}"
     output:
-        touch(f"{RESULTS_DIR}/eval/coassembly/{{tool}}/{{assembly_type}}/{{sample}}/eval_comp_cont.done")
+        touch(f"{RESULTS_DIR}/eval/coassembly/{{tool}}/{{sample}}/eval_comp_cont.done")
     log:
-        f"logs/{DATASET}/eval/coassembly/{{tool}}/{{assembly_type}}/{{sample}}.comp_cont.log"
+        f"logs/{DATASET}/eval/coassembly/{{tool}}/{{sample}}.comp_cont.log"
     threads: config["threads"]
     conda:
         "envs/evaluation.yaml"
     shell:
         """
-        outdir={RESULTS_DIR}/eval/coassembly/{{tool}}/{{assembly_type}}/{{sample}}
+        outdir={RESULTS_DIR}/eval/coassembly/{{tool}}/{{sample}}
         checkm2 predict --threads {threads} --input {input.binning} --output-directory $outdir
         touch {output}
         """
@@ -1576,16 +1575,16 @@ rule eval_tRNA_multi:
 # Co-Assembly Evaluation (short, long, hybrid)
 rule eval_tRNA_coassembly:
     input:
-        binning = lambda wc: f"{RESULTS_DIR}/bins/coassembly/{wc.tool}/{wc.assembly_type}/{wc.sample}"
+        binning = lambda wc: f"{RESULTS_DIR}/bins/coassembly/{wc.tool}/{wc.sample}"
     output:
-        touch(f"{RESULTS_DIR}/eval/coassembly/{{tool}}/{{assembly_type}}/{{sample}}/eval_tRNA.done")
+        touch(f"{RESULTS_DIR}/eval/coassembly/{{tool}}/{{sample}}/eval_tRNA.done")
     log:
-        f"logs/{DATASET}/eval/coassembly/{{tool}}/{{assembly_type}}/{{sample}}.tRNA_count.log"
+        f"logs/{DATASET}/eval/coassembly/{{tool}}/{{sample}}.tRNA_count.log"
     conda:
         "envs/evaluation.yaml"
     shell:
         """
-        outfile={RESULTS_DIR}/eval/coassembly/{{tool}}/{{assembly_type}}/{{sample}}/tRNA_count.txt
+        outfile={RESULTS_DIR}/eval/coassembly/{{tool}}/{{sample}}/tRNA_count.txt
         
         count=$(aragorn -t -w "$f" | grep -c '^')
         echo -e "$count" >> $outfile
@@ -1651,17 +1650,17 @@ rule eval_rRNA_multi:
 # Co-Assembly Evaluation (short, long, hybrid)
 rule eval_rRNA_coassembly:
     input:
-        binning = lambda wc: f"{RESULTS_DIR}/bins/coassembly/{wc.tool}/{wc.assembly_type}/{wc.sample}"
+        binning = lambda wc: f"{RESULTS_DIR}/bins/coassembly/{wc.tool}/{wc.sample}"
     output:
-        touch(f"{RESULTS_DIR}/eval/coassembly/{{tool}}/{{assembly_type}}/{{sample}}/eval_rRNA.done")
+        touch(f"{RESULTS_DIR}/eval/coassembly/{{tool}}/{{sample}}/eval_rRNA.done")
     log:
-        f"logs/{DATASET}/eval/coassembly/{{tool}}/{{assembly_type}}/{{sample}}.rRNA.log"
+        f"logs/{DATASET}/eval/coassembly/{{tool}}/{{sample}}.rRNA.log"
     threads: config["threads"]
     conda:
         "envs/evaluation.yaml"
     shell:
         """
-        outfile={RESULTS_DIR}/eval/coassembly/{{tool}}/{{assembly_type}}/{{sample}}.barrnap.gff3
+        outfile={RESULTS_DIR}/eval/coassembly/{{tool}}/{{sample}}.barrnap.gff3
         
         barrnap --threads {threads} --quiet bin.fasta > $outfile
         if grep -E "rRNA.*5S" bin_barrnap.gff3 >/dev/null && grep -E "rRNA.*16S" bin_barrnap.gff3 >/dev/null && grep -E "rRNA.*23S" bin_barrnap.gff3 >/dev/null; then
