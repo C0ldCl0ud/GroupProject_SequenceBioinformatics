@@ -387,18 +387,23 @@ rule assemble_single_hybrid:
     threads: config["threads"]
     log:
         f"logs/{DATASET}/assembly/single/hybrid/{{sample}}.operams.log"
+    tempdir: True
     conda:
         "envs/assembly_operams.yaml"
     shell:
         """
+        long_unzipped=$(mktemp)
+        gunzip -c {input.long} > $long_unzipped
         rm -rf {RESULTS_DIR}/assemblies/single/hybrid/{wildcards.sample}
         perl /teachstor/share/groupprojectWS25/groupB/software/OPERA-MS/OPERA-MS.pl \
           --short-read1 {input.r1} \
           --short-read2 {input.r2} \
-          --long-read {input.long} \
+          --long-read $long_unzipped \
           --out-dir {RESULTS_DIR}/assemblies/single/hybrid/{wildcards.sample} \
           --num-processors {threads} \
           > {log} 2>&1
+
+        rm -f $long_unzipped
         """
 
 rule assemble_coassembly_short:
