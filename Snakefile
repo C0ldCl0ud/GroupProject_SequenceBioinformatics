@@ -358,9 +358,9 @@ rule assemble_single_short:
 
 rule assemble_single_long:
     input:
-        fq=LONG_FINAL
+        fq = LONG_FINAL
     output:
-        contigs = f"{RESULTS_DIR}/assemblies/single/long/{{sample}}_contigs.fasta"
+        contigs = f"{RESULTS_DIR}/assemblies/single/long/{{sample}}/assembly.fasta"
     threads: config["threads"]
     log:
         f"logs/{DATASET}/assembly/single/long/{{sample}}.flye.log"
@@ -370,7 +370,7 @@ rule assemble_single_long:
         """
         flye \
           {FLYE_MODE} {input.fq} \
-          --out-dir {output.contigs} \
+          --out-dir {RESULTS_DIR}/assemblies/single/long/{wildcards.sample} \
           --threads {threads} \
           --min-overlap 1000 \
           > {log} 2>&1
