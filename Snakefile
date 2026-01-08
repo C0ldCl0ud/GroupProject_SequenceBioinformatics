@@ -339,7 +339,7 @@ rule assemble_single_short:
         r1=SHORT_FINAL_R1,
         r2=SHORT_FINAL_R2
     output:
-        contigs = f"{RESULTS_DIR}/assemblies/single/short/{{sample}}_contigs.fasta"
+        contigs = f"{RESULTS_DIR}/assemblies/single/short/{{sample}}/assembly.fasta"
     threads: config["threads"]
     log:
         f"logs/{DATASET}/assembly/single/short/{{sample}}.megahit.log"
@@ -350,7 +350,7 @@ rule assemble_single_short:
         megahit \
           -1 {input.r1} \
           -2 {input.r2} \
-          -o {output.contigs} \
+          -o {RESULTS_DIR}/assemblies/single/long/{wildcards.sample} \
           --min-contig-len 1000 \
           -t {threads} \
           > {log} 2>&1
