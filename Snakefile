@@ -81,7 +81,7 @@ rule all:
 
         # single-sample assemblies
         expand(
-            f"{RESULTS_DIR}/assemblies/single/{{asm_type}}/{{sample}}_contigs.fasta",
+            f"{RESULTS_DIR}/assemblies/single/{{asm_type}}/{{sample}}/assembly.fasta",
             asm_type=["short","long","hybrid"],
             sample=SAMPLES
         ),
