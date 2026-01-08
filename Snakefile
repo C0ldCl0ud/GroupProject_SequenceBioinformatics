@@ -832,7 +832,7 @@ rule concoct_coassembly:
 
 rule concoct_single:
     input:
-        contigs = f"{RESULTS_DIR}/assemblies/single/{{assembly_type}}/{{sample}}_contigs.fasta",
+        contigs = f"{RESULTS_DIR}/assemblies/single/{{assembly_type}}/{{sample}}/assembly.fasta",
         bam = f"{RESULTS_DIR}/mapping/single/{{assembly_type}}/{{sample}}/{{sample}}.sorted.bam"
     output:
         touch(f"{RESULTS_DIR}/bins/single/concoct/{{assembly_type}}/{{sample}}/bins.done")
@@ -875,7 +875,7 @@ rule concoct_single:
 
 rule concoct_multi:
     input:
-        contigs = f"{RESULTS_DIR}/assemblies/single/{{assembly_type}}/{{sample}}_contigs.fasta",
+        contigs = f"{RESULTS_DIR}/assemblies/single/{{assembly_type}}/{{sample}}/assembly.fasta",
         bams = lambda wc: expand(
             f"{RESULTS_DIR}/mapping/multi/{wc.assembly_type}/{wc.sample}/{{other}}.sorted.bam",
             other=SAMPLES
@@ -950,7 +950,7 @@ rule vamb_coassembly:
 
 rule vamb_single:
     input:
-        contigs = f"{RESULTS_DIR}/assemblies/single/{{assembly_type}}/{{sample}}_contigs.fasta",
+        contigs = f"{RESULTS_DIR}/assemblies/single/{{assembly_type}}/{{sample}}/assembly.fasta",
         depth   = f"{RESULTS_DIR}/depth/single/{{assembly_type}}/{{sample}}/depth.txt"
     output:
         touch(f"{RESULTS_DIR}/bins/single/vamb/{{assembly_type}}/{{sample}}/bins.done")
@@ -975,7 +975,7 @@ rule vamb_single:
 
 rule vamb_multi:
     input:
-        contigs = f"{RESULTS_DIR}/assemblies/single/{{assembly_type}}/{{sample}}_contigs.fasta",
+        contigs = f"{RESULTS_DIR}/assemblies/single/{{assembly_type}}/{{sample}}/assembly.fasta",
         depth   = f"{RESULTS_DIR}/depth/multi/{{assembly_type}}/{{sample}}/depth.txt"
     output:
         touch(f"{RESULTS_DIR}/bins/multi/vamb/{{assembly_type}}/{{sample}}/bins.done")
@@ -1030,7 +1030,7 @@ rule climb_coassembly:
 
 rule climb_single:
     input:
-        contigs = f"{RESULTS_DIR}/assemblies/single/{{assembly_type}}/{{sample}}_contigs.fasta",
+        contigs = f"{RESULTS_DIR}/assemblies/single/{{assembly_type}}/{{sample}}/assembly.fasta",
         depth   = f"{RESULTS_DIR}/depth/single/{{assembly_type}}/{{sample}}/depth.txt"
     output:
         touch(f"{RESULTS_DIR}/bins/single/climb/{{assembly_type}}/{{sample}}/bins.done")
@@ -1056,7 +1056,7 @@ rule climb_single:
 
 rule climb_multi:
     input:
-        contigs = f"{RESULTS_DIR}/assemblies/single/{{assembly_type}}/{{sample}}_contigs.fasta",
+        contigs = f"{RESULTS_DIR}/assemblies/single/{{assembly_type}}/{{sample}}/assembly.fasta",
         depth   = f"{RESULTS_DIR}/depth/multi/{{assembly_type}}/{{sample}}/depth.txt"
     output:
         touch(f"{RESULTS_DIR}/bins/multi/climb/{{assembly_type}}/{{sample}}/bins.done")
@@ -1124,7 +1124,7 @@ rule metadecoder_coassembly:
 
 rule metadecoder_single:
     input:
-        contigs = f"{RESULTS_DIR}/assemblies/single/{{assembly_type}}/{{sample}}_contigs.fasta",
+        contigs = f"{RESULTS_DIR}/assemblies/single/{{assembly_type}}/{{sample}}/assembly.fasta",
         sam = f"{RESULTS_DIR}/mapping/single/{{assembly_type}}/{{sample}}/{{sample}}.sorted.bam"
     output:
         touch(f"{RESULTS_DIR}/bins/single/metadecoder/{{assembly_type}}/{{sample}}/bins.done")
@@ -1158,7 +1158,7 @@ rule metadecoder_single:
 
 rule metadecoder_multi:
     input:
-        contigs = f"{RESULTS_DIR}/assemblies/single/{{assembly_type}}/{{sample}}_contigs.fasta",
+        contigs = f"{RESULTS_DIR}/assemblies/single/{{assembly_type}}/{{sample}}/assembly.fasta",
         sams = lambda wc: expand(
             f"{RESULTS_DIR}/mapping/multi/{wc.assembly_type}/{wc.sample}/{{rep}}.sorted.bam",
             rep=SAMPLES
@@ -1223,7 +1223,7 @@ rule binny_coassembly:
 
 rule binny_single:
     input:
-        config = f"{RESULTS_DIR}/assemblies/single/{{assembly_type}}/{{sample}}_contigs.fasta"
+        config = f"{RESULTS_DIR}/assemblies/single/{{assembly_type}}/{{sample}}/assembly.fasta"
     output:
         touch(f"{RESULTS_DIR}/bins/single/binny/{{assembly_type}}/{{sample}}/bins.done")
     threads: config["threads"]
@@ -1246,7 +1246,7 @@ rule binny_single:
 
 rule binny_multi:
     input:
-        config = f"{RESULTS_DIR}/assemblies/single/{{assembly_type}}/{{sample}}_contigs.fasta"
+        config = f"{RESULTS_DIR}/assemblies/single/{{assembly_type}}/{{sample}}/assembly.fasta"
     output:
         touch(f"{RESULTS_DIR}/bins/multi/binny/{{assembly_type}}/{{sample}}/bins.done")
     threads: config["threads"]
@@ -1308,7 +1308,7 @@ rule metabinner_coassembly:
 
 rule metabinner_single:
     input:
-        contigs = f"{RESULTS_DIR}/assemblies/single/{{assembly_type}}/{{sample}}_contigs.fasta",
+        contigs = f"{RESULTS_DIR}/assemblies/single/{{assembly_type}}/{{sample}}/assembly.fasta",
         coverage = f"{RESULTS_DIR}/depth/single/{{assembly_type}}/{{sample}}/depth.txt"
     output:
         touch(f"{RESULTS_DIR}/bins/single/metabinner/{{assembly_type}}/{{sample}}/bins.done")
@@ -1341,7 +1341,7 @@ rule metabinner_single:
 
 rule metabinner_multi:
     input:
-        contigs = f"{RESULTS_DIR}/assemblies/single/{{assembly_type}}/{{sample}}_contigs.fasta",
+        contigs = f"{RESULTS_DIR}/assemblies/single/{{assembly_type}}/{{sample}}/assembly.fasta",
         coverage = f"{RESULTS_DIR}/depth/multi/{{assembly_type}}/{{sample}}/depth.txt"
     output:
         touch(f"{RESULTS_DIR}/bins/multi/metabinner/{{assembly_type}}/{{sample}}/bins.done")
@@ -1404,7 +1404,7 @@ rule semibin2_coassembly:
 
 rule semibin2_single:
     input:
-        contigs = f"{RESULTS_DIR}/assemblies/single/{{assembly_type}}/{{sample}}_contigs.fasta",
+        contigs = f"{RESULTS_DIR}/assemblies/single/{{assembly_type}}/{{sample}}/assembly.fasta",
         bam = f"{RESULTS_DIR}/mapping/single/{{assembly_type}}/{{sample}}/{{sample}}.sorted.bam"
     output:
         touch(f"{RESULTS_DIR}/bins/single/semibin2/{{assembly_type}}/{{sample}}/bins.done")
@@ -1428,7 +1428,7 @@ rule semibin2_single:
 
 rule semibin2_multi:
     input:
-        contigs = f"{RESULTS_DIR}/assemblies/single/{{assembly_type}}/{{sample}}_contigs.fasta",
+        contigs = f"{RESULTS_DIR}/assemblies/single/{{assembly_type}}/{{sample}}/assembly.fasta",
         bams = lambda wc: expand(
             f"{RESULTS_DIR}/mapping/multi/{wc.assembly_type}/{wc.sample}/{{other}}.sorted.bam",
             other=SAMPLES
@@ -1485,7 +1485,7 @@ rule comebin_coassembly:
 
 rule comebin_single:
     input:
-        contigs = f"{RESULTS_DIR}/assemblies/single/{{assembly_type}}/{{sample}}_contigs.fasta",
+        contigs = f"{RESULTS_DIR}/assemblies/single/{{assembly_type}}/{{sample}}/assembly.fasta",
         bam = f"{RESULTS_DIR}/mapping/single/{{assembly_type}}/{{sample}}/{{sample}}.sorted.bam"
     output:
         touch(f"{RESULTS_DIR}/bins/single/comebin/{{assembly_type}}/{{sample}}/bins.done")
@@ -1508,7 +1508,7 @@ rule comebin_single:
 
 rule comebin_multi:
     input:
-        contigs = f"{RESULTS_DIR}/assemblies/single/{{assembly_type}}/{{sample}}_contigs.fasta",
+        contigs = f"{RESULTS_DIR}/assemblies/single/{{assembly_type}}/{{sample}}/assembly.fasta",
         bams = lambda wc: expand(
             f"{RESULTS_DIR}/mapping/multi/{wc.assembly_type}/{wc.sample}/{{other}}.sorted.bam",
             other=SAMPLES
