@@ -999,89 +999,7 @@ rule vamb_multi:
         """
 
 ############################################
-# 5.8. CLIMB
-############################################
-
-rule climb_coassembly:
-    input:
-        contigs = f"{RESULTS_DIR}/assemblies/coassembly/short/contigs.fasta",
-        depth   = f"{RESULTS_DIR}/depth/coassembly/depth.txt"
-    output:
-        touch(f"{RESULTS_DIR}/bins/coassembly/climb/bins.done")
-    threads: config["threads"]
-    conda:
-        "envs/binning.yaml"
-    shell:
-        """
-        outdir={RESULTS_DIR}/bins/coassembly/climb
-        mkdir -p $outdir
-
-        vamb \
-          --contrastive \
-          --outdir $outdir \
-          --fasta {input.contigs} \
-          --jgi {input.depth} \
-          --minfasta 200000 \
-          -m 2000 \
-          --threads {threads}
-
-        touch {output}
-        """
-
-rule climb_single:
-    input:
-        contigs = f"{RESULTS_DIR}/assemblies/single/{{assembly_type}}/{{sample}}/assembly.fasta",
-        depth   = f"{RESULTS_DIR}/depth/single/{{assembly_type}}/{{sample}}/depth.txt"
-    output:
-        touch(f"{RESULTS_DIR}/bins/single/climb/{{assembly_type}}/{{sample}}/bins.done")
-    threads: config["threads"]
-    conda:
-        "envs/binning.yaml"
-    shell:
-        """
-        outdir={RESULTS_DIR}/bins/single/climb/{wildcards.assembly_type}/{wildcards.sample}
-        mkdir -p $outdir
-
-        vamb \
-          --contrastive \
-          --outdir $outdir \
-          --fasta {input.contigs} \
-          --jgi {input.depth} \
-          --minfasta 200000 \
-          -m 2000 \
-          --threads {threads}
-
-        touch {output}
-        """
-
-rule climb_multi:
-    input:
-        contigs = f"{RESULTS_DIR}/assemblies/single/{{assembly_type}}/{{sample}}/assembly.fasta",
-        depth   = f"{RESULTS_DIR}/depth/multi/{{assembly_type}}/{{sample}}/depth.txt"
-    output:
-        touch(f"{RESULTS_DIR}/bins/multi/climb/{{assembly_type}}/{{sample}}/bins.done")
-    threads: config["threads"]
-    conda:
-        "envs/binning.yaml"
-    shell:
-        """
-        outdir={RESULTS_DIR}/bins/multi/climb/{wildcards.assembly_type}/{wildcards.sample}
-        mkdir -p $outdir
-
-        vamb \
-          --contrastive \
-          --outdir $outdir \
-          --fasta {input.contigs} \
-          --jgi {input.depth} \
-          --minfasta 200000 \
-          -m 2000 \
-          --threads {threads}
-
-        touch {output}
-        """
-
-############################################
-# 5.9. MetaDecoder
+# 5.8. MetaDecoder
 ############################################
 
 rule metadecoder_coassembly:
@@ -1195,7 +1113,7 @@ rule metadecoder_multi:
         """
 
 ############################################
-# 5.10. BINNY
+# 5.9. BINNY
 ############################################
 
 rule binny_coassembly:
@@ -1268,7 +1186,7 @@ rule binny_multi:
         """
 
 ############################################
-# 5.11. MetaBinner
+# 5.10. MetaBinner
 ############################################
 
 # TODO metabinner_path in shell command should probably be: $CONDA_PREFIX/bin/MetaBinner
@@ -1373,7 +1291,7 @@ rule metabinner_multi:
         """
 
 ############################################
-# 5.12. SemiBin2
+# 5.11. SemiBin2
 ############################################
 
 rule semibin2_coassembly:
@@ -1457,7 +1375,7 @@ rule semibin2_multi:
         """
 
 ############################################
-# 5.13. COMEBin
+# 5.12. COMEBin
 ############################################
 
 rule comebin_coassembly:
