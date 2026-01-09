@@ -411,7 +411,7 @@ rule assemble_coassembly_short:
         r1=expand(SHORT_FINAL_R1, sample=SAMPLES),
         r2=expand(SHORT_FINAL_R2, sample=SAMPLES)
     output:
-        contigs = f"{RESULTS_DIR}/assemblies/coassembly/short/contigs.fa"
+        contigs = f"{RESULTS_DIR}/assemblies/coassembly/short/assembly.fasta"
     threads: config["threads"]
     log:
         f"logs/{DATASET}/assembly/coassembly/short.megahit.log"
@@ -424,7 +424,7 @@ rule assemble_coassembly_short:
         megahit \
           -1 {','.join(input.r1)} \
           -2 {','.join(input.r2)} \
-          -o {params.outdir} \
+          -o {RESULTS_DIR}/assemblies/coassembly/short \
           --min-contig-len 1000 \
           -t {threads} \
           > {log} 2>&1
