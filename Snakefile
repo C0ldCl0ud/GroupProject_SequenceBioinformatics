@@ -378,6 +378,7 @@ rule assemble_single_long:
           --out-dir {RESULTS_DIR}/assemblies/single/long/{wildcards.sample} \
           --threads {threads} \
           --min-overlap 1000 \
+          --meta \
           > {log} 2>&1
         """
 
@@ -437,6 +438,7 @@ rule assemble_coassembly_short:
           -o {params.tmpdir} \
           --min-contig-len 1000 \
           -t {threads} \
+          --no-polishing \
           > {log} 2>&1
 
         mkdir -p $(dirname {output.contigs})
