@@ -672,7 +672,7 @@ rule depth_multi:
 
 rule metabat2_coassembly:
     input:
-        contigs = f"{RESULTS_DIR}/assemblies/coassembly/short/contigs.fasta",
+        contigs = f"{RESULTS_DIR}/assemblies/coassembly/short/assembly.fasta",
         depth = f"{RESULTS_DIR}/depth/coassembly/depth.txt"
     output:
         touch(f"{RESULTS_DIR}/bins/coassembly/metabat2/bins.done")
@@ -729,7 +729,7 @@ rule metabat2_multi:
 
 rule maxbin2_coassembly:
     input:
-        contigs = f"{RESULTS_DIR}/assemblies/coassembly/short/contigs.fasta",
+        contigs = f"{RESULTS_DIR}/assemblies/coassembly/short/assembly.fasta",
         depth   = f"{RESULTS_DIR}/depth/coassembly/depth.txt"
     output:
         touch(f"{RESULTS_DIR}/bins/coassembly/maxbin2/bins.done")
@@ -793,7 +793,7 @@ rule maxbin2_multi:
 
 rule concoct_coassembly:
     input:
-        contigs = f"{RESULTS_DIR}/assemblies/coassembly/short_contigs.fasta",
+        contigs = f"{RESULTS_DIR}/assemblies/coassembly/short/assembly.fasta",
         bams = expand(
             f"{RESULTS_DIR}/mapping/coassembly/short/{{sample}}.sorted.bam",
             sample=SAMPLES
@@ -932,7 +932,7 @@ rule concoct_multi:
 
 rule vamb_coassembly:
     input:
-        contigs = f"{RESULTS_DIR}/assemblies/coassembly/short/contigs.fasta",
+        contigs = f"{RESULTS_DIR}/assemblies/coassembly/short/assembly.fasta",
         depth   = f"{RESULTS_DIR}/depth/coassembly/depth.txt"
     output:
         touch(f"{RESULTS_DIR}/bins/coassembly/vamb/bins.done")
@@ -1011,7 +1011,7 @@ rule vamb_multi:
 
 rule metadecoder_coassembly:
     input:
-        contigs = f"{RESULTS_DIR}/assemblies/coassembly/short/contigs.fasta",
+        contigs = f"{RESULTS_DIR}/assemblies/coassembly/short/assembly.fasta",
         sams = expand(
             f"{RESULTS_DIR}/mapping/coassembly/short/{{sample}}.sorted.bam",
             sample=SAMPLES
@@ -1125,7 +1125,7 @@ rule metadecoder_multi:
 
 rule binny_coassembly:
     input:
-        config = f"{RESULTS_DIR}/assemblies/coassembly/short/contigs.fasta"
+        config = f"{RESULTS_DIR}/assemblies/coassembly/short/assembly.fasta"
     output:
         touch(f"{RESULTS_DIR}/bins/coassembly/binny/bins.done")
     threads: config["threads"]
@@ -1200,7 +1200,7 @@ rule binny_multi:
 
 rule metabinner_coassembly:
     input:
-        contigs = f"{RESULTS_DIR}/assemblies/coassembly/short/contigs.fasta",
+        contigs = f"{RESULTS_DIR}/assemblies/coassembly/short/assembly.fasta",
         coverage = f"{RESULTS_DIR}/depth/coassembly/depth.txt"
     output:
         touch(f"{RESULTS_DIR}/bins/coassembly/metabinner/bins.done")
@@ -1303,7 +1303,7 @@ rule metabinner_multi:
 
 rule semibin2_coassembly:
     input:
-        contigs = f"{RESULTS_DIR}/assemblies/coassembly/short/contigs.fasta",
+        contigs = f"{RESULTS_DIR}/assemblies/coassembly/short/assembly.fasta",
         bams = expand(f"{RESULTS_DIR}/mapping/coassembly/short/{{sample}}.sorted.bam", sample=SAMPLES)
     output:
         touch(f"{RESULTS_DIR}/bins/coassembly/semibin2/bins.done")
@@ -1387,7 +1387,7 @@ rule semibin2_multi:
 
 rule comebin_coassembly:
     input:
-        contigs = f"{RESULTS_DIR}/assemblies/coassembly/short/contigs.fasta",
+        contigs = f"{RESULTS_DIR}/assemblies/coassembly/short/assembly.fasta",
         bams_dir = expand(f"{RESULTS_DIR}/mapping/coassembly/short/{{sample}}.sorted.bam", sample=SAMPLES)
     output:
         touch(f"{RESULTS_DIR}/bins/coassembly/comebin/bins.done")
