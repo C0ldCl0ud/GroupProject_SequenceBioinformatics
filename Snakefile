@@ -332,8 +332,6 @@ rule remove_human_long:
 # 4. Assemblies
 ############################################
 
-# 4.1 Single-sample assemblies
-
 rule assemble_single_short:
     input:
         r1=SHORT_FINAL_R1,
@@ -345,18 +343,22 @@ rule assemble_single_short:
         f"logs/{DATASET}/assembly/single/short/{{sample}}.megahit.log"
     conda:
         "envs/assembly.yaml"
+    params:
+        tmpdir = lambda wc: f"{RESULTS_DIR}/assemblies/single/short/{wc.sample}_tmp"
     shell:
-        """
-        rm -rf {RESULTS_DIR}/assemblies/single/short/{wildcards.sample}
+        r"""
+        rm -rf {params.tmpdir}
+
         megahit \
           -1 {input.r1} \
           -2 {input.r2} \
-          -o {RESULTS_DIR}/assemblies/single/short/{wildcards.sample} \
+          -o {params.tmpdir} \
           --min-contig-len 1000 \
           -t {threads} \
           > {log} 2>&1
 
-        ln -sf {RESULTS_DIR}/assemblies/single/short/{wildcards.sample}/final.contigs.fa {output.contigs}
+        mkdir -p $(dirname {output.contigs})
+        cp {params.tmpdir}/final.contigs.fa {output.contigs}
         """
 
 rule assemble_single_long:
@@ -418,18 +420,23 @@ rule assemble_coassembly_short:
     conda:
         "envs/assembly.yaml"
     params:
-        outdir = f"{RESULTS_DIR}/assemblies/coassembly/short",
+        tmpdir = f"{RESULTS_DIR}/assemblies/coassembly/short_tmp",
         r1 = lambda wc, input: ",".join(input.r1),
         r2 = lambda wc, input: ",".join(input.r2)
     shell:
-        """
+        r"""
+        rm -rf {params.tmpdir}
+
         megahit \
           -1 {params.r1} \
           -2 {params.r2} \
-          -o {params.outdir} \
+          -o {params.tmpdir} \
           --min-contig-len 1000 \
           -t {threads} \
           > {log} 2>&1
+
+        mkdir -p $(dirname {output.contigs})
+        cp {params.tmpdir}/final.contigs.fa {output.contigs}
         """
 
 ############################################
