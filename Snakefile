@@ -748,7 +748,7 @@ rule maxbin2_coassembly:
         run_MaxBin.pl \
           -contig {input.contigs} \
           -abund_list {input.depth} \
-          -o {RESULTS_DIR}/bins/coassembly/maxbin2/bin \
+          -out {RESULTS_DIR}/bins/coassembly/maxbin2/bin \
           -thread {threads}
         touch {output}
         """
@@ -768,7 +768,7 @@ rule maxbin2_single:
         run_MaxBin.pl \
           -contig {input.contigs} \
           -abund {input.depth} \
-          -o {RESULTS_DIR}/bins/single/maxbin2/{wildcards.assembly_type}/{wildcards.sample}/bin \
+          -out {RESULTS_DIR}/bins/single/maxbin2/{wildcards.assembly_type}/{wildcards.sample}/bin \
           -thread {threads}
         touch {output}
         """
@@ -788,7 +788,7 @@ rule maxbin2_multi:
         run_MaxBin.pl \
           -contig {input.contigs} \
           -abund_list {input.depth} \
-          -o {RESULTS_DIR}/bins/multi/maxbin2/{wildcards.assembly_type}/{wildcards.sample}/bin \
+          -out {RESULTS_DIR}/bins/multi/maxbin2/{wildcards.assembly_type}/{wildcards.sample}/bin \
           -thread {threads}
         touch {output}
         """
