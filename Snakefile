@@ -383,6 +383,8 @@ rule assemble_single_long:
 
 rule assemble_single_hybrid:
     input:
+        r1=SHORT_FINAL_R1,
+        r2=SHORT_FINAL_R2,
         contigs = f"{RESULTS_DIR}/assemblies/single/short/{{sample}}/assembly.fasta",
         long=LONG_FINAL
     output:
@@ -398,7 +400,9 @@ rule assemble_single_hybrid:
         gunzip -c {input.long} > $long_unzipped
         rm -rf {RESULTS_DIR}/assemblies/single/hybrid/{wildcards.sample}
         perl /teachstor/share/groupprojectWS25/groupB/software/OPERA-MS/OPERA-MS.pl \
-          --contig-file {input.contig}
+          --contig-file {input.contig} \
+          --short-read1 {input.r1} \
+          --short-read2 {input.r2} \
           --long-read $long_unzipped \
           --out-dir {RESULTS_DIR}/assemblies/single/hybrid/{wildcards.sample} \
           --num-processors {threads} \
