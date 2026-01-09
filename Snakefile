@@ -452,7 +452,7 @@ rule index_short_single:
 
 rule index_short_coassembly:
     input:
-        contigs = f"{RESULTS_DIR}/assemblies/coassembly/short/contigs.fasta"
+        contigs = f"{RESULTS_DIR}/assemblies/coassembly/short/assembly.fasta"
     output:
         idxdir = directory(f"{RESULTS_DIR}/indices/coassembly/short/contigs")
     conda:
