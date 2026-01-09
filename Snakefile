@@ -355,6 +355,8 @@ rule assemble_single_short:
           --min-contig-len 1000 \
           -t {threads} \
           > {log} 2>&1
+
+        ln -sf {RESULTS_DIR}/assemblies/single/short/{wildcards.sample}/final.contigs.fa {output.contigs}
         """
 
 rule assemble_single_long:
