@@ -418,13 +418,15 @@ rule assemble_coassembly_short:
     conda:
         "envs/assembly.yaml"
     params:
-        outdir = f"{RESULTS_DIR}/assemblies/coassembly/short"
+        outdir = f"{RESULTS_DIR}/assemblies/coassembly/short",
+        r1 = lambda wc, input: ",".join(input.r1),
+        r2 = lambda wc, input: ",".join(input.r2)
     shell:
         """
         megahit \
-          -1 {','.join(input.r1)} \
-          -2 {','.join(input.r2)} \
-          -o {RESULTS_DIR}/assemblies/coassembly/short \
+          -1 {params.r1} \
+          -2 {params.r2} \
+          -o {params.outdir} \
           --min-contig-len 1000 \
           -t {threads} \
           > {log} 2>&1
