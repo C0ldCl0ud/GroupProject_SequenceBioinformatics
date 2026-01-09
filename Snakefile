@@ -381,7 +381,7 @@ rule assemble_single_long:
 
 rule assemble_single_hybrid:
     input:
-        contigs = f"{RESULTS_DIR}/assemblies/single/short/{{sample}}/assembly.fasta"
+        contigs = f"{RESULTS_DIR}/assemblies/single/short/{{sample}}/assembly.fasta",
         long=LONG_FINAL
     output:
         contigs = f"{RESULTS_DIR}/assemblies/single/hybrid/{{sample}}/assembly.fasta"
