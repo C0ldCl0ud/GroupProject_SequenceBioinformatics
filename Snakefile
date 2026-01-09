@@ -87,7 +87,7 @@ rule all:
         ),
 
         # multi-sample assembly
-        f"{RESULTS_DIR}/assemblies/coassembly/short/contigs.fasta",
+        f"{RESULTS_DIR}/assemblies/coassembly/short/assembly.fasta",
 
 
         # binning
