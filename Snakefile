@@ -143,23 +143,39 @@ rule sra_to_fastq_short:
         r1 = f"{RESULTS_DIR}/fastq/short/{{sample}}_R1.fq.gz",
         r2 = f"{RESULTS_DIR}/fastq/short/{{sample}}_R2.fq.gz"
     params:
-        acc = lambda wc: SHORT_ACC[wc.sample]
+        acc = lambda wc: SHORT_ACC[wc.sample],
+        debug = config.get("debug", False),
+        n = config.get("debug_reads", 200000),
+        seed = config.get("debug_seed", 42)
     conda:
         "envs/download.yaml"
     log:
         f"logs/{DATASET}/fastq/short/{{sample}}.log"
     shell:
-        """
+        r"""
         fasterq-dump {input.sra_dir}/{params.acc}/{params.acc}.sra \
             --split-files \
             -O {RESULTS_DIR}/fastq/short \
             > {log} 2>&1
 
-        gzip -f {RESULTS_DIR}/fastq/short/{params.acc}_1.fastq
-        gzip -f {RESULTS_DIR}/fastq/short/{params.acc}_2.fastq
+        if [ "{params.debug}" = "True" ]; then
+            seqtk sample -s{params.seed} \
+                {RESULTS_DIR}/fastq/short/{params.acc}_1.fastq {params.n} \
+                | gzip -c > {output.r1}
 
-        mv {RESULTS_DIR}/fastq/short/{params.acc}_1.fastq.gz {output.r1}
-        mv {RESULTS_DIR}/fastq/short/{params.acc}_2.fastq.gz {output.r2}
+            seqtk sample -s{params.seed} \
+                {RESULTS_DIR}/fastq/short/{params.acc}_2.fastq {params.n} \
+                | gzip -c > {output.r2}
+
+            rm {RESULTS_DIR}/fastq/short/{params.acc}_1.fastq
+            rm {RESULTS_DIR}/fastq/short/{params.acc}_2.fastq
+        else
+            gzip -f {RESULTS_DIR}/fastq/short/{params.acc}_1.fastq
+            gzip -f {RESULTS_DIR}/fastq/short/{params.acc}_2.fastq
+
+            mv {RESULTS_DIR}/fastq/short/{params.acc}_1.fastq.gz {output.r1}
+            mv {RESULTS_DIR}/fastq/short/{params.acc}_2.fastq.gz {output.r2}
+        fi
         """
 
 rule sra_to_fastq_long:
