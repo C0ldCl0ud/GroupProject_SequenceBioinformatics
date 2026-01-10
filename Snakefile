@@ -401,7 +401,7 @@ rule assemble_single_hybrid:
         gunzip -c {input.long} > $long_unzipped
         rm -rf {RESULTS_DIR}/assemblies/single/hybrid/{wildcards.sample}
         perl /teachstor/share/groupprojectWS25/groupB/software/OPERA-MS/OPERA-MS.pl \
-          --contig-file {input.contig} \
+          --contig-file {input.contigs} \
           --short-read1 {input.r1} \
           --short-read2 {input.r2} \
           --long-read $long_unzipped \
