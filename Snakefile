@@ -63,9 +63,9 @@ rule all:
         expand(f"{RESULTS_DIR}/raw/short/{{sample}}", sample=SAMPLES),
         expand(f"{RESULTS_DIR}/raw/long/{{sample}}", sample=SAMPLES),
 
-        expand(f"{RESULTS_DIR}/fastq/short/{{sample}}_R1.fq.gz", sample=SAMPLES),
-        expand(f"{RESULTS_DIR}/fastq/short/{{sample}}_R2.fq.gz", sample=SAMPLES),
-        expand(f"{RESULTS_DIR}/fastq/long/{{sample}}.fq.gz", sample=SAMPLES),
+        #expand(f"{RESULTS_DIR}/fastq/short/{{sample}}_R1.fq.gz", sample=SAMPLES),
+        #expand(f"{RESULTS_DIR}/fastq/short/{{sample}}_R2.fq.gz", sample=SAMPLES),
+        #expand(f"{RESULTS_DIR}/fastq/long/{{sample}}.fq.gz", sample=SAMPLES),
 
         #expand(f"{RESULTS_DIR}/preprocess/short/{{sample}}_R1.fastp.fq.gz", sample=SAMPLES),
         #expand(f"{RESULTS_DIR}/preprocess/short/{{sample}}_R2.fastp.fq.gz", sample=SAMPLES),
@@ -80,20 +80,20 @@ rule all:
         #expand(f"{RESULTS_DIR}/preprocess/long/{{sample}}.nohuman.fq.gz", sample=SAMPLES),
 
         # single-sample assemblies
-        expand(
-            f"{RESULTS_DIR}/assemblies/single/{{asm_type}}/{{sample}}/assembly.fasta",
-            asm_type=["short","long","hybrid"],
-            sample=SAMPLES
-        ),
+        #expand(
+        #    f"{RESULTS_DIR}/assemblies/single/{{asm_type}}/{{sample}}/assembly.fasta",
+        #    asm_type=["short","long","hybrid"],
+        #    sample=SAMPLES
+        #),
 
         # multi-sample assembly
-        f"{RESULTS_DIR}/assemblies/coassembly/short/assembly.fasta",
+        #f"{RESULTS_DIR}/assemblies/coassembly/short/assembly.fasta",
 
 
         # binning
-        expand(f"{RESULTS_DIR}/bins/coassembly/{{tool}}/bins.done",tool=config["binning_tools"]),
-        expand(f"{RESULTS_DIR}/bins/single/{{tool}}/{{assembly_type}}/{{sample}}/bins.done", tool=config["binning_tools"], assembly_type=["short", "long", "hybrid"], sample=SAMPLES),
-        expand(f"{RESULTS_DIR}/bins/multi/{{tool}}/{{assembly_type}}/{{sample}}/bins.done", tool=config["binning_tools"], sample=SAMPLES, assembly_type=["short", "long", "hybrid"])
+        #expand(f"{RESULTS_DIR}/bins/coassembly/{{tool}}/bins.done",tool=config["binning_tools"]),
+        #expand(f"{RESULTS_DIR}/bins/single/{{tool}}/{{assembly_type}}/{{sample}}/bins.done", tool=config["binning_tools"], assembly_type=["short", "long", "hybrid"], sample=SAMPLES),
+        #expand(f"{RESULTS_DIR}/bins/multi/{{tool}}/{{assembly_type}}/{{sample}}/bins.done", tool=config["binning_tools"], sample=SAMPLES, assembly_type=["short", "long", "hybrid"])
         # QC
         # Single-sample QC
         #expand(f"{RESULTS_DIR}/qc/single/{{assembly_type}}/{{sample}}/qc.done",
