@@ -145,7 +145,7 @@ rule sra_to_fastq_short:
     params:
         acc = lambda wc: SHORT_ACC[wc.sample],
         debug = config.get("debug", False),
-        n = config.get("debug_reads", 200000),
+        n = config.get("debug_reads_short", 200000),
         seed = config.get("debug_seed", 42)
     conda:
         "envs/download.yaml"
@@ -186,7 +186,7 @@ rule sra_to_fastq_long:
     params:
         acc = lambda wc: LONG_ACC[wc.sample],
         debug = config.get("debug", False),
-        n = config.get("debug_reads", 200000),
+        n = config.get("debug_reads_long", 5000),
         seed = config.get("debug_seed", 42)
     conda:
         "envs/download.yaml"
