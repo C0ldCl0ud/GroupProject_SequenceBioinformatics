@@ -494,6 +494,7 @@ rule index_short_single:
         "envs/mapping.yaml"
     shell:
         """
+        mkdir -p {output.idx}
         bowtie2-build {input.contigs} {output.idx}/{wildcards.sample}
         """
 
@@ -506,6 +507,7 @@ rule index_short_coassembly:
         "envs/mapping.yaml"
     shell:
         """
+        mkdir -p {output.idxdir}
         bowtie2-build {input.contigs} {output.idxdir}
         """
 
@@ -518,6 +520,7 @@ rule index_hybrid_single:
         "envs/mapping.yaml"
     shell:
         """
+        mkdir -p {output.idx}
         bowtie2-build {input.contigs} {output.idx}/{wildcards.sample}
         """
 
