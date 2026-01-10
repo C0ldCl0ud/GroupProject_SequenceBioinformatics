@@ -396,28 +396,28 @@ rule assemble_single_hybrid:
     conda:
         "envs/assembly_operams.yaml"
     shell:
-    """
-    export TMPDIR={RESULTS_DIR}/tmp/{wildcards.sample}
-    mkdir -p $TMPDIR
+        """
+        export TMPDIR={RESULTS_DIR}/tmp/{wildcards.sample}
+        mkdir -p $TMPDIR
 
-    long_unzipped=$(mktemp --suffix=.fastq -p $TMPDIR)
-    gunzip -c {input.long} > $long_unzipped
+        long_unzipped=$(mktemp --suffix=.fastq -p $TMPDIR)
+        gunzip -c {input.long} > $long_unzipped
 
-    rm -rf {RESULTS_DIR}/assemblies/single/hybrid/{wildcards.sample}
+        rm -rf {RESULTS_DIR}/assemblies/single/hybrid/{wildcards.sample}
 
-    perl /teachstor/share/groupprojectWS25/groupB/software/OPERA-MS/OPERA-MS.pl \
-      --contig-file {input.contigs} \
-      --short-read1 {input.r1} \
-      --short-read2 {input.r2} \
-      --long-read $long_unzipped \
-      --no-polishing \
-      --out-dir {RESULTS_DIR}/assemblies/single/hybrid/{wildcards.sample} \
-      --num-processors {threads} \
-      --no-ref-clustering \
-      > {log} 2>&1
+        perl /teachstor/share/groupprojectWS25/groupB/software/OPERA-MS/OPERA-MS.pl \
+          --contig-file {input.contigs} \
+          --short-read1 {input.r1} \
+          --short-read2 {input.r2} \
+          --long-read $long_unzipped \
+          --no-polishing \
+          --out-dir {RESULTS_DIR}/assemblies/single/hybrid/{wildcards.sample} \
+          --num-processors {threads} \
+          --no-ref-clustering \
+          > {log} 2>&1
 
-    rm -f $long_unzipped
-    """
+        rm -f $long_unzipped
+        """
 
 rule assemble_coassembly_short:
     input:
