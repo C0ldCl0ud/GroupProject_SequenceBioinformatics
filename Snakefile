@@ -419,7 +419,7 @@ rule assemble_single_hybrid:
         contigs = f"{RESULTS_DIR}/assemblies/single/hybrid/{{sample}}/assembly.fasta"
     threads: config["threads"]
     params:
-        cores = 16
+        cores = 20
     log:
         f"logs/{DATASET}/assembly/single/hybrid/{{sample}}.operams.log"
     conda:
