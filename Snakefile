@@ -790,7 +790,7 @@ rule maxbin2_coassembly:
           -contig {input.contigs} \
           -abund_list {input.depth} \
           -out {RESULTS_DIR}/bins/coassembly/maxbin2/bin \
-          -thread {threads}
+          -thread 2
         touch {output}
         """
 
@@ -814,7 +814,7 @@ rule maxbin2_single:
           -contig {input.contigs} \
           -abund {input.depth} \
           -out {RESULTS_DIR}/bins/single/maxbin2/{wildcards.assembly_type}/{wildcards.sample}/bin \
-          -thread {threads} \
+          -thread 2 \
           > {log} 2>&1
 
         touch {output}
@@ -836,7 +836,7 @@ rule maxbin2_multi:
           -contig {input.contigs} \
           -abund_list {input.depth} \
           -out {RESULTS_DIR}/bins/multi/maxbin2/{wildcards.assembly_type}/{wildcards.sample}/bin \
-          -thread {threads}
+          -thread 2
         touch {output}
         """
 
