@@ -417,9 +417,7 @@ rule assemble_single_hybrid:
         long=LONG_FINAL
     output:
         contigs = f"{RESULTS_DIR}/assemblies/single/hybrid/{{sample}}/assembly.fasta"
-    threads: config["threads"]
-    params:
-        cores = 20
+    threads: 20
     log:
         f"logs/{DATASET}/assembly/single/hybrid/{{sample}}.operams.log"
     conda:
@@ -441,7 +439,7 @@ rule assemble_single_hybrid:
           --long-read $long_unzipped \
           --no-polishing \
           --out-dir {RESULTS_DIR}/assemblies/single/hybrid/{wildcards.sample} \
-          --num-processors {params.cores} \
+          --num-processors {threads} \
           --no-ref-clustering \
           > {log} 2>&1
 
