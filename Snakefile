@@ -184,19 +184,30 @@ rule sra_to_fastq_long:
     output:
         fq = f"{RESULTS_DIR}/fastq/long/{{sample}}.fq.gz"
     params:
-        acc = lambda wc: LONG_ACC[wc.sample]
+        acc = lambda wc: LONG_ACC[wc.sample],
+        debug = config.get("debug", False),
+        n = config.get("debug_reads", 200000),
+        seed = config.get("debug_seed", 42)
     conda:
         "envs/download.yaml"
     log:
         f"logs/{DATASET}/fastq/long/{{sample}}.log"
     shell:
-        """
+        r"""
         fasterq-dump {input.sra_dir}/{params.acc}/{params.acc}.sra \
             -O {RESULTS_DIR}/fastq/long \
             > {log} 2>&1
 
-        gzip -f {RESULTS_DIR}/fastq/long/{params.acc}.fastq
-        mv {RESULTS_DIR}/fastq/long/{params.acc}.fastq.gz {output.fq}
+        if [ "{params.debug}" = "True" ]; then
+            seqtk sample -s{params.seed} \
+                {RESULTS_DIR}/fastq/long/{params.acc}.fastq {params.n} \
+                | gzip -c > {output.fq}
+
+            rm {RESULTS_DIR}/fastq/long/{params.acc}.fastq
+        else
+            gzip -f {RESULTS_DIR}/fastq/long/{params.acc}.fastq
+            mv {RESULTS_DIR}/fastq/long/{params.acc}.fastq.gz {output.fq}
+        fi
         """
 
 ############################################
