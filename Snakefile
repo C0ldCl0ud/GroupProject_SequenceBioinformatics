@@ -405,6 +405,7 @@ rule assemble_single_hybrid:
           --short-read1 {input.r1} \
           --short-read2 {input.r2} \
           --long-read $long_unzipped \
+          --no-polishing \
           --out-dir {RESULTS_DIR}/assemblies/single/hybrid/{wildcards.sample} \
           --num-processors {threads} \
           --no-ref-clustering \
@@ -438,7 +439,6 @@ rule assemble_coassembly_short:
           -o {params.tmpdir} \
           --min-contig-len 1000 \
           -t {threads} \
-          --no-polishing \
           > {log} 2>&1
 
         mkdir -p $(dirname {output.contigs})
