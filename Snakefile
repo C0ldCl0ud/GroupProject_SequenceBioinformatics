@@ -803,14 +803,20 @@ rule maxbin2_single:
     threads: config["threads"]
     conda:
         "envs/binning.yaml"
+    log:
+        f"logs/{DATASET}/binning/maxbin2/single/{{assembly_type}}/{{sample}}.log"
     shell:
         """
+        mkdir -p $(dirname {log})
         mkdir -p {RESULTS_DIR}/bins/single/maxbin2/{wildcards.assembly_type}/{wildcards.sample}
+
         run_MaxBin.pl \
           -contig {input.contigs} \
           -abund {input.depth} \
           -out {RESULTS_DIR}/bins/single/maxbin2/{wildcards.assembly_type}/{wildcards.sample}/bin \
-          -thread {threads}
+          -thread {threads} \
+          > {log} 2>&1
+
         touch {output}
         """
 
