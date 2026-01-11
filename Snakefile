@@ -91,9 +91,9 @@ rule all:
 
 
         # binning
-        expand(f"{RESULTS_DIR}/bins/coassembly/{{tool}}/bins.done",tool=config["binning_tools"]),
-        expand(f"{RESULTS_DIR}/bins/single/{{tool}}/{{assembly_type}}/{{sample}}/bins.done", tool=config["binning_tools"], assembly_type=["short", "long", "hybrid"], sample=SAMPLES),
-        expand(f"{RESULTS_DIR}/bins/multi/{{tool}}/{{assembly_type}}/{{sample}}/bins.done", tool=config["binning_tools"], sample=SAMPLES, assembly_type=["short", "long", "hybrid"]),
+        #expand(f"{RESULTS_DIR}/bins/coassembly/{{tool}}/bins.done",tool=config["binning_tools"]),
+        #expand(f"{RESULTS_DIR}/bins/single/{{tool}}/{{assembly_type}}/{{sample}}/bins.done", tool=config["binning_tools"], assembly_type=["short", "long", "hybrid"], sample=SAMPLES),
+        #expand(f"{RESULTS_DIR}/bins/multi/{{tool}}/{{assembly_type}}/{{sample}}/bins.done", tool=config["binning_tools"], sample=SAMPLES, assembly_type=["short", "long", "hybrid"]),
         
         # evaluation
         # Single-sample eval
@@ -417,7 +417,7 @@ rule assemble_coassembly_short:
         r1=expand(SHORT_FINAL_R1, sample=SAMPLES),
         r2=expand(SHORT_FINAL_R2, sample=SAMPLES)
     output:
-        contigs = f"{RESULTS_DIR}/assemblies/coassembly/short/contigs.fa"
+        contigs = f"{RESULTS_DIR}/assemblies/coassembly/short/contigs.fasta"
     threads: config["threads"]
     log:
         f"logs/{DATASET}/assembly/coassembly/short.megahit.log"
@@ -693,21 +693,24 @@ rule metabat2_coassembly:
         touch {output}
         """
 
+# WORK1
 rule metabat2_single:
     input:
         contigs = f"{RESULTS_DIR}/assemblies/single/{{assembly_type}}/{{sample}}/assembly.fasta",
         depth = f"{RESULTS_DIR}/depth/single/{{assembly_type}}/{{sample}}/depth.txt"
     output:
-        touch(f"{RESULTS_DIR}/bins/single/metabat2/{{assembly_type}}/{{sample}}/bins.done")
+        directory(f"{RESULTS_DIR}/bins/single/metabat2/{{assembly_type}}/{{sample}}")
     threads: config["threads"]
     conda:
         "envs/binning.yaml"
     shell:
         """
+        ourdir = "{RESULTS_DIR}/bins/single/{{tool}}/{{assembly_type}}/{{sample}}/bin"
+        
         mkdir -p {RESULTS_DIR}/bins/single/metabat2/{wildcards.assembly_type}/{wildcards.sample}
         metabat2 -t {threads} -i {input.contigs} -a {input.depth} \
-          -o {RESULTS_DIR}/bins/single/metabat2/{wildcards.assembly_type}/{wildcards.sample}/bin
-        touch {output}
+          -o $outdir
+        printf "%s " ${outdir}.*.fa > ${outdir}/bins_manifest.txt
         """
 
 rule metabat2_multi:
@@ -738,7 +741,7 @@ rule maxbin2_coassembly:
         contigs = f"{RESULTS_DIR}/assemblies/coassembly/short/contigs.fasta",
         depth   = f"{RESULTS_DIR}/depth/coassembly/depth.txt"
     output:
-        touch(f"{RESULTS_DIR}/bins/coassembly/maxbin2/bins.done")
+        f"{RESULTS_DIR}/bins/coassembly/maxbin2/bins"
     threads: config["threads"]
     conda:
         "envs/binning.yaml"
@@ -748,9 +751,8 @@ rule maxbin2_coassembly:
         run_MaxBin.pl \
           -contig {input.contigs} \
           -abund_list {input.depth} \
-          -out {RESULTS_DIR}/bins/coassembly/maxbin2/bin \
+          -out {output} \
           -thread {threads}
-        touch {output}
         """
 
 rule maxbin2_single:
@@ -758,7 +760,7 @@ rule maxbin2_single:
         contigs = f"{RESULTS_DIR}/assemblies/single/{{assembly_type}}/{{sample}}/assembly.fasta",
         depth   = f"{RESULTS_DIR}/depth/single/{{assembly_type}}/{{sample}}/depth.txt"
     output:
-        touch(f"{RESULTS_DIR}/bins/single/maxbin2/{{assembly_type}}/{{sample}}/bins.done")
+        f"{RESULTS_DIR}/bins/single/maxbin2/{{assembly_type}}/{{sample}}/bins"
     threads: config["threads"]
     conda:
         "envs/binning.yaml"
@@ -768,9 +770,8 @@ rule maxbin2_single:
         run_MaxBin.pl \
           -contig {input.contigs} \
           -abund {input.depth} \
-          -out {RESULTS_DIR}/bins/single/maxbin2/{wildcards.assembly_type}/{wildcards.sample}/bin \
+          -out {output} \
           -thread {threads}
-        touch {output}
         """
 
 rule maxbin2_multi:
@@ -1469,15 +1470,21 @@ rule comebin_multi:
 # 6. Evaluation for rank scoring
 ############################################
 
+import glob
+BIN_FILES_SINGLE = lambda wildcards: sorted(glob.glob(f"{RESULTS_DIR}/bins/single/{{tool}}/{{assembly_type}}/{{sample}}/bin.*.fa"))
+BIN_FILES_MULTI = lambda wildcards: sorted(glob.glob(f"{RESULTS_DIR}/bins/multi/{{tool}}/{{assembly_type}}/{{sample}}/bin.*.fa"))
+BIN_FILES_COASSEMBLY = lambda wildcards: sorted(glob.glob(f"{RESULTS_DIR}/bins/coassembly/{{tool}}/{{sample}}/bin.*.fa"))
+
 
 ############################################
 # 6.1 Completeness and Contamination - CheckM 2
 ############################################
 
+# WORK2
 # Single-sample Evaluation (short, long, hybrid)
 rule eval_comp_cont_single:
     input:
-        binning = lambda wc: f"{RESULTS_DIR}/bins/single/{wc.tool}/{wc.assembly_type}/{wc.sample}"
+        bins = BIN_FILES_SINGLE
     output:
         touch(f"{RESULTS_DIR}/eval/single/{{tool}}/{{assembly_type}}/{{sample}}/eval_comp_cont.done")
     log:
@@ -1488,14 +1495,14 @@ rule eval_comp_cont_single:
     shell:
         """
         outdir={RESULTS_DIR}/eval/single/{{tool}}/{{assembly_type}}/{{sample}}
-        checkm2 predict --threads {threads} --input {input.binning} --output-directory $outdir
+        checkm2 predict --threads {threads} --input {input.bins} --output-directory $outdir
         touch {output}
         """
 
 # Multi-sample Evaluation (short, long, hybrid)
 rule eval_comp_cont_multi:
     input:
-        binning = lambda wc: f"{RESULTS_DIR}/bins/multi/{wc.tool}/{wc.assembly_type}/{wc.sample}"
+        bins = BIN_FILES_MULTI
     output:
         touch(f"{RESULTS_DIR}/eval/multi/{{tool}}/{{assembly_type}}/{{sample}}/eval_comp_cont.done")
     log:
@@ -1506,14 +1513,14 @@ rule eval_comp_cont_multi:
     shell:
         """
         outdir={RESULTS_DIR}/eval/multi/{{tool}}/{{assembly_type}}/{{sample}}
-        checkm2 predict --threads {threads} --input {input.binning} --output-directory $outdir
+        checkm2 predict --threads {threads} --input {input.bins} --output-directory $outdir
         touch {output}
         """
 
 # Co-Assembly Evaluation (short, long, hybrid)
 rule eval_comp_cont_coassembly:
     input:
-        binning = lambda wc: f"{RESULTS_DIR}/bins/coassembly/{wc.tool}/{wc.sample}"
+        bins = BIN_FILES_COASSEMBLY
     output:
         touch(f"{RESULTS_DIR}/eval/coassembly/{{tool}}/{{sample}}/eval_comp_cont.done")
     log:
@@ -1524,7 +1531,7 @@ rule eval_comp_cont_coassembly:
     shell:
         """
         outdir={RESULTS_DIR}/eval/coassembly/{{tool}}/{{sample}}
-        checkm2 predict --threads {threads} --input {input.binning} --output-directory $outdir
+        checkm2 predict --threads {threads} --input {input.bins} --output-directory $outdir
         touch {output}
         """
         
@@ -1535,7 +1542,7 @@ rule eval_comp_cont_coassembly:
 # Single-sample Evaluation (short, long, hybrid)
 rule eval_tRNA_single:
     input:
-        binning = lambda wc: f"{RESULTS_DIR}/bins/single/{wc.tool}/{wc.assembly_type}/{wc.sample}"
+        bins = BIN_FILES_SINGLE
     output:
         touch(f"{RESULTS_DIR}/eval/single/{{tool}}/{{assembly_type}}/{{sample}}/eval_tRNA.done")
     log:
@@ -1544,10 +1551,12 @@ rule eval_tRNA_single:
         "envs/evaluation.yaml"
     shell:
         """
-        outfile={RESULTS_DIR}/eval/single/{{tool}}/{{assembly_type}}/{{sample}}/tRNA_count.txt
+        for filename in {input.bins}; do
+                outfile=${{filename}}.tRNA_count.txt
         
-        count=$(aragorn -t -w "$f" | grep -c '^')
-        echo -e "$count" >> $outfile
+                count=$(aragorn -t -w "$filename" | grep -c '^')
+                echo -e "$count" >> $outfile
+        done
         
         touch {output}
         """
@@ -1555,7 +1564,7 @@ rule eval_tRNA_single:
 # Multi-sample Evaluation (short, long, hybrid)
 rule eval_tRNA_multi:
     input:
-        binning = lambda wc: f"{RESULTS_DIR}/bins/multi/{wc.tool}/{wc.assembly_type}/{wc.sample}"
+        bins = BIN_FILES_MULTI
     output:
         touch(f"{RESULTS_DIR}/eval/multi/{{tool}}/{{assembly_type}}/{{sample}}/eval_tRNA.done")
     log:
@@ -1564,10 +1573,12 @@ rule eval_tRNA_multi:
         "envs/evaluation.yaml"
     shell:
         """
-        outfile={RESULTS_DIR}/eval/multi/{{tool}}/{{assembly_type}}/{{sample}}/tRNA_count.txt
+        for filename in {input.bins}; do
+                outfile=${{filename}}.tRNA_count.txt
         
-        count=$(aragorn -t -w "$f" | grep -c '^')
-        echo -e "$count" >> $outfile
+                count=$(aragorn -t -w "$filename" | grep -c '^')
+                echo -e "$count" >> $outfile
+        done
         
         touch {output}
         """
@@ -1575,7 +1586,7 @@ rule eval_tRNA_multi:
 # Co-Assembly Evaluation (short, long, hybrid)
 rule eval_tRNA_coassembly:
     input:
-        binning = lambda wc: f"{RESULTS_DIR}/bins/coassembly/{wc.tool}/{wc.sample}"
+        bins = BIN_FILES_COASSEMBLY
     output:
         touch(f"{RESULTS_DIR}/eval/coassembly/{{tool}}/{{sample}}/eval_tRNA.done")
     log:
@@ -1584,10 +1595,12 @@ rule eval_tRNA_coassembly:
         "envs/evaluation.yaml"
     shell:
         """
-        outfile={RESULTS_DIR}/eval/coassembly/{{tool}}/{{sample}}/tRNA_count.txt
+        for filename in {input.bins}; do
+                outfile=${{filename}}.tRNA_count.txt
         
-        count=$(aragorn -t -w "$f" | grep -c '^')
-        echo -e "$count" >> $outfile
+                count=$(aragorn -t -w "$filename" | grep -c '^')
+                echo -e "$count" >> $outfile
+        done
         
         touch {output}
         """
@@ -1600,7 +1613,7 @@ rule eval_tRNA_coassembly:
 # Single-sample Evaluation (short, long, hybrid)
 rule eval_rRNA_single:
     input:
-        binning = lambda wc: f"{RESULTS_DIR}/bins/single/{wc.tool}/{wc.assembly_type}/{wc.sample}"
+        bins = BIN_FILES_SINGLE
     output:
         touch(f"{RESULTS_DIR}/eval/single/{{tool}}/{{assembly_type}}/{{sample}}/eval_rRNA.done")
     log:
@@ -1610,14 +1623,19 @@ rule eval_rRNA_single:
         "envs/evaluation.yaml"
     shell:
         """
-        outfile={RESULTS_DIR}/eval/single/{{tool}}/{{assembly_type}}/{{sample}}.barrnap.gff3
-        
-        barrnap --threads {threads} --quiet bin.fasta > $outfile
-        if grep -E "rRNA.*5S" bin_barrnap.gff3 >/dev/null && grep -E "rRNA.*16S" bin_barrnap.gff3 >/dev/null && grep -E "rRNA.*23S" bin_barrnap.gff3 >/dev/null; then
+        for filename in {input.bins}; do
+            
+            outfile=${{filename}}.barrnap.gff3
+            
+            barrnap --threads {threads} --quiet "$filename" > $outfile
+            
+            if grep -E "rRNA.*5S" $outfile >/dev/null && grep -E "rRNA.*16S" $outfile >/dev/null && grep -E "rRNA.*23S" $outfile >/dev/null; then
                 all_present = 1
-        else all_present = 0;
-        fi
-        $all_present > all_rRNA_present.txt
+            else all_present = 0;
+            fi
+            $all_present > ${{filename}}.all_rRNA_present.txt
+            
+        done
         
         touch {output}
         """
@@ -1625,7 +1643,7 @@ rule eval_rRNA_single:
 # Multi-sample Evaluation (short, long, hybrid)
 rule eval_rRNA_multi:
     input:
-        binning = lambda wc: f"{RESULTS_DIR}/bins/multi/{wc.tool}/{wc.assembly_type}/{wc.sample}"
+        bins = BIN_FILES_MULTI
     output:
         touch(f"{RESULTS_DIR}/eval/multi/{{tool}}/{{assembly_type}}/{{sample}}/eval_rRNA.done")
     log:
@@ -1635,14 +1653,19 @@ rule eval_rRNA_multi:
         "envs/evaluation.yaml"
     shell:
         """
-        outfile={RESULTS_DIR}/eval/multi/{{tool}}/{{assembly_type}}/{{sample}}.barrnap.gff3
-        
-        barrnap --threads {threads} --quiet bin.fasta > $outfile
-        if grep -E "rRNA.*5S" bin_barrnap.gff3 >/dev/null && grep -E "rRNA.*16S" bin_barrnap.gff3 >/dev/null && grep -E "rRNA.*23S" bin_barrnap.gff3 >/dev/null; then
+        for filename in {input.bins}; do
+            
+            outfile=${{filename}}.barrnap.gff3
+            
+            barrnap --threads {threads} --quiet "$filename" > $outfile
+            
+            if grep -E "rRNA.*5S" $outfile >/dev/null && grep -E "rRNA.*16S" $outfile >/dev/null && grep -E "rRNA.*23S" $outfile >/dev/null; then
                 all_present = 1
-        else all_present = 0;
-        fi
-        $all_present > all_rRNA_present.txt
+            else all_present = 0;
+            fi
+            $all_present > ${{filename}}.all_rRNA_present.txt
+            
+        done
         
         touch {output}
         """
@@ -1650,7 +1673,7 @@ rule eval_rRNA_multi:
 # Co-Assembly Evaluation (short, long, hybrid)
 rule eval_rRNA_coassembly:
     input:
-        binning = lambda wc: f"{RESULTS_DIR}/bins/coassembly/{wc.tool}/{wc.sample}"
+        bins = BIN_FILES_COASSEMBLY
     output:
         touch(f"{RESULTS_DIR}/eval/coassembly/{{tool}}/{{sample}}/eval_rRNA.done")
     log:
@@ -1660,14 +1683,19 @@ rule eval_rRNA_coassembly:
         "envs/evaluation.yaml"
     shell:
         """
-        outfile={RESULTS_DIR}/eval/coassembly/{{tool}}/{{sample}}.barrnap.gff3
-        
-        barrnap --threads {threads} --quiet bin.fasta > $outfile
-        if grep -E "rRNA.*5S" bin_barrnap.gff3 >/dev/null && grep -E "rRNA.*16S" bin_barrnap.gff3 >/dev/null && grep -E "rRNA.*23S" bin_barrnap.gff3 >/dev/null; then
+        for filename in {input.bins}; do
+            
+            outfile=${{filename}}.barrnap.gff3
+            
+            barrnap --threads {threads} --quiet "$filename" > $outfile
+            
+            if grep -E "rRNA.*5S" $outfile >/dev/null && grep -E "rRNA.*16S" $outfile >/dev/null && grep -E "rRNA.*23S" $outfile >/dev/null; then
                 all_present = 1
-        else all_present = 0;
-        fi
-        $all_present > all_rRNA_present.txt
+            else all_present = 0;
+            fi
+            $all_present > ${{filename}}.all_rRNA_present.txt
+            
+        done
         
         touch {output}
         """
