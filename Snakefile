@@ -107,7 +107,7 @@ rule all:
 
 rule download_short_reads:
     output:
-        sra=f"{RESULTS_DIR}/raw/short/{{sample}}"
+        sra=directory(f"{RESULTS_DIR}/raw/short/{{sample}}")
     params:
         acc=lambda wc: SHORT_ACC[wc.sample]
     conda:
@@ -121,7 +121,7 @@ rule download_short_reads:
 
 rule download_long_reads:
     output:
-        sra_dir = f"{RESULTS_DIR}/raw/long/{{sample}}"
+        sra_dir = directory(f"{RESULTS_DIR}/raw/long/{{sample}}")
     params:
         acc = lambda wc: LONG_ACC[wc.sample]
     conda:
