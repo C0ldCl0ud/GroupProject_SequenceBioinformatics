@@ -81,14 +81,15 @@ rule all:
         #expand(f"{RESULTS_DIR}/preprocess/long/{{sample}}.nohuman.fq.gz", sample=SAMPLES),
 
         # single-sample assemblies
-        #expand(
-        #    f"{RESULTS_DIR}/assemblies/single/{{asm_type}}/{{sample}}/assembly.fasta",
-        #    asm_type=["short","long","hybrid"],
-        #    sample=SAMPLES
-        #),
+        expand(
+            f"{RESULTS_DIR}/assemblies/single/{{asm_type}}/{{sample}}/assembly.fasta",
+            asm_type=["short","long"],
+            #asm_type=["short","long","hybrid"],
+            sample=SAMPLES
+        ),
 
         # multi-sample assembly
-        #f"{RESULTS_DIR}/assemblies/coassembly/short/assembly.fasta",
+        f"{RESULTS_DIR}/assemblies/coassembly/short/assembly.fasta",
 
 
         # binning
