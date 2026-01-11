@@ -68,7 +68,7 @@ rule all:
         expand(f"{RESULTS_DIR}/fastq/long/{{sample}}.fq.gz", sample=SAMPLES),
 
         expand(f"{RESULTS_DIR}/preprocess/short/{{sample}}_R1.fastp.fq.gz", sample=SAMPLES),
-        expand(f"{RESULTS_DIR}/preprocess/short/{{sample}}_R2.fastp.fq.gz", sample=SAMPLES),
+        expand(f"{RESULTS_DIR}/preprocess/short/{{sample}}_R2.fastp.fq.gz", sample=SAMPLES)
         #expand(f"{RESULTS_DIR}/preprocess/long/{{sample}}.qcat.fq.gz", sample=SAMPLES),
 
         #expand(f"{RESULTS_DIR}/preprocess/long/{{sample}}.filtlong1.fq.gz", sample=SAMPLES),
