@@ -424,8 +424,8 @@ rule assemble_single_hybrid:
     log:
         f"logs/{DATASET}/assembly/single/hybrid/{{sample}}.operams.log"
     container:
-        #"containers/operams.simg"
-        "docker://operams:0.9.0"
+        #"containers/operams.simg" # remote server
+        "containers/operams.sif"   # local machine
     shell:
         """
         set -euo pipefail
