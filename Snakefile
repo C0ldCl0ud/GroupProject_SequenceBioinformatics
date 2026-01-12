@@ -449,6 +449,7 @@ rule assemble_single_hybrid:
           --no-ref-clustering \
           > {log} 2>&1
 
+        cp {RESULTS_DIR}/assemblies/single/hybrid/{wildcards.sample}/contigs.fasta {output.contigs}
         rm -f "$long_unzipped"
         """
 
