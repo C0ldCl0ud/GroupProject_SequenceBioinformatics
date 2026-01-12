@@ -155,7 +155,7 @@ rule sra_to_fastq_short:
     log:
         f"logs/{DATASET}/fastq/short/{{sample}}.log"
     shell:
-        r"""
+        """
         fasterq-dump {input.sra_dir}/{params.acc}/{params.acc}.sra \
             --split-files \
             -O {RESULTS_DIR}/fastq/short \
@@ -196,7 +196,7 @@ rule sra_to_fastq_long:
     log:
         f"logs/{DATASET}/fastq/long/{{sample}}.log"
     shell:
-        r"""
+        """
         fasterq-dump {input.sra_dir}/{params.acc}/{params.acc}.sra \
             -O {RESULTS_DIR}/fastq/long \
             > {log} 2>&1
@@ -376,7 +376,7 @@ rule assemble_single_short:
     params:
         tmpdir = lambda wc: f"{RESULTS_DIR}/assemblies/single/short/{wc.sample}_tmp"
     shell:
-        r"""
+        """
         rm -rf {params.tmpdir}
 
         megahit \
@@ -425,8 +425,8 @@ rule assemble_single_hybrid:
         f"logs/{DATASET}/assembly/single/hybrid/{{sample}}.operams.log"
     container:
         "containers/operams.sif"
-shell:
-        r"""
+    shell:
+        """
         set -euo pipefail
 
         export TMPDIR={RESULTS_DIR}/tmp/{wildcards.sample}
@@ -467,7 +467,7 @@ rule assemble_coassembly_short:
         r1 = lambda wc, input: ",".join(input.r1),
         r2 = lambda wc, input: ",".join(input.r2)
     shell:
-        r"""
+        """
         rm -rf {params.tmpdir}
 
         megahit \
