@@ -427,6 +427,8 @@ rule assemble_single_hybrid:
         "containers/operams.simg"
     shell:
         """
+        export PATH=/operams/tools_opera_ms:$PATH
+
         set -euo pipefail
 
         export TMPDIR={RESULTS_DIR}/tmp/{wildcards.sample}
