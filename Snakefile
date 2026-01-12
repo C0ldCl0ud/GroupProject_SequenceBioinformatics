@@ -414,29 +414,37 @@ rule assemble_single_long:
 
 rule assemble_single_hybrid:
     input:
-        r1=SHORT_FINAL_R1,
-        r2=SHORT_FINAL_R2,
-        contigs=f"{RESULTS_DIR}/assemblies/single/short/{{sample}}/assembly.fasta",
-        long=LONG_FINAL
+        r1 = SHORT_FINAL_R1,
+        r2 = SHORT_FINAL_R2,
+        contigs = f"{RESULTS_DIR}/assemblies/single/short/{{sample}}/assembly.fasta",
+        long = LONG_FINAL
     output:
-        contigs=f"{RESULTS_DIR}/assemblies/single/hybrid/{{sample}}/assembly.fasta"
+        contigs = f"{RESULTS_DIR}/assemblies/single/hybrid/{{sample}}/assembly.fasta"
     threads: 20
     log:
         f"logs/{DATASET}/assembly/single/hybrid/{{sample}}.operams.log"
+    conda:
+        "envs/assembly.yaml"  # rule-specific conda env with racon, minimap2, mummer
     container:
         "containers/operams.simg"
     shell:
         """
         set -euo pipefail
 
+        # make host conda binaries visible inside the container
+        export SINGULARITY_BINDPATH=$CONDA_PREFIX/bin
+
         export TMPDIR={RESULTS_DIR}/tmp/{wildcards.sample}
         mkdir -p "$TMPDIR"
 
+        # unzip long reads
         long_unzipped=$(mktemp --suffix=.fastq -p "$TMPDIR")
         gunzip -c {input.long} > "$long_unzipped"
 
+        # remove old output dir if it exists
         rm -rf {RESULTS_DIR}/assemblies/single/hybrid/{wildcards.sample}
 
+        # run OPERA-MS inside the container
         perl /operams/OPERA-MS.pl \
           --contig-file {input.contigs} \
           --short-read1 {input.r1} \
@@ -449,9 +457,10 @@ rule assemble_single_hybrid:
           > {log} 2>&1
 
         rm -f "$long_unzipped"
+
+        # ensure Snakemake sees the contigs
         cp {RESULTS_DIR}/assemblies/single/hybrid/{wildcards.sample}/contigs.fasta \
            {output.contigs}
-
         """
 
 rule assemble_coassembly_short:
