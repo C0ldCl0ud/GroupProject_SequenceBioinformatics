@@ -425,7 +425,7 @@ rule assemble_single_hybrid:
         f"logs/{DATASET}/assembly/single/hybrid/{{sample}}.operams.log"
     container:
         "containers/operams.sif"
-    shell:
+shell:
         r"""
         set -euo pipefail
 
@@ -437,7 +437,7 @@ rule assemble_single_hybrid:
 
         rm -rf {RESULTS_DIR}/assemblies/single/hybrid/{wildcards.sample}
 
-        OPERA-MS.pl \
+        perl /operams/OPERA-MS.pl \
           --contig-file {input.contigs} \
           --short-read1 {input.r1} \
           --short-read2 {input.r2} \
