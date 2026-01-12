@@ -427,22 +427,17 @@ rule assemble_single_hybrid:
         "containers/operams.simg"
     shell:
         """
-        export PATH=/operams/tools_opera_ms:$PATH
-
         set -euo pipefail
 
         export TMPDIR={RESULTS_DIR}/tmp/{wildcards.sample}
         mkdir -p "$TMPDIR"
 
-        # Unzip long reads
         long_unzipped=$(mktemp --suffix=.fastq -p "$TMPDIR")
         gunzip -c {input.long} > "$long_unzipped"
 
-        # Remove previous output
         rm -rf {RESULTS_DIR}/assemblies/single/hybrid/{wildcards.sample}
 
-        # Call OPERA-MS via wrapper
-        scripts/run_operams.sh \
+        perl /operams/OPERA-MS.pl \
           --contig-file {input.contigs} \
           --short-read1 {input.r1} \
           --short-read2 {input.r2} \
@@ -454,10 +449,6 @@ rule assemble_single_hybrid:
           > {log} 2>&1
 
         rm -f "$long_unzipped"
-
-        # Copy final contigs to Snakemake output
-        cp {RESULTS_DIR}/assemblies/single/hybrid/{wildcards.sample}/contigs.fasta \
-           {output.contigs}
         """
 
 rule assemble_coassembly_short:
