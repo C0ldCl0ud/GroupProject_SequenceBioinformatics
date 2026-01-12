@@ -449,6 +449,9 @@ rule assemble_single_hybrid:
           > {log} 2>&1
 
         rm -f "$long_unzipped"
+        cp {RESULTS_DIR}/assemblies/single/hybrid/{wildcards.sample}/contigs.fasta \
+           {output.contigs}
+
         """
 
 rule assemble_coassembly_short:
