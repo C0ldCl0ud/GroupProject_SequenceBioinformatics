@@ -416,37 +416,39 @@ rule assemble_single_hybrid:
     input:
         r1=SHORT_FINAL_R1,
         r2=SHORT_FINAL_R2,
-        contigs = f"{RESULTS_DIR}/assemblies/single/short/{{sample}}/assembly.fasta",
+        contigs=f"{RESULTS_DIR}/assemblies/single/short/{{sample}}/assembly.fasta",
         long=LONG_FINAL
     output:
-        contigs = f"{RESULTS_DIR}/assemblies/single/hybrid/{{sample}}/assembly.fasta"
+        contigs=f"{RESULTS_DIR}/assemblies/single/hybrid/{{sample}}/assembly.fasta"
     threads: 20
     log:
         f"logs/{DATASET}/assembly/single/hybrid/{{sample}}.operams.log"
-    conda:
-        "envs/assembly_operams.yaml"
+    container:
+        "containers/operams.sif"
     shell:
-        """
-        export TMPDIR={RESULTS_DIR}/tmp/{wildcards.sample}
-        mkdir -p $TMPDIR
+        r"""
+        set -euo pipefail
 
-        long_unzipped=$(mktemp --suffix=.fastq -p $TMPDIR)
-        gunzip -c {input.long} > $long_unzipped
+        export TMPDIR={RESULTS_DIR}/tmp/{wildcards.sample}
+        mkdir -p "$TMPDIR"
+
+        long_unzipped=$(mktemp --suffix=.fastq -p "$TMPDIR")
+        gunzip -c {input.long} > "$long_unzipped"
 
         rm -rf {RESULTS_DIR}/assemblies/single/hybrid/{wildcards.sample}
 
-        perl /teachstor/share/groupprojectWS25/groupB/software/OPERA-MS/OPERA-MS.pl \
+        OPERA-MS.pl \
           --contig-file {input.contigs} \
           --short-read1 {input.r1} \
           --short-read2 {input.r2} \
-          --long-read $long_unzipped \
+          --long-read "$long_unzipped" \
           --no-polishing \
           --out-dir {RESULTS_DIR}/assemblies/single/hybrid/{wildcards.sample} \
           --num-processors {threads} \
           --no-ref-clustering \
           > {log} 2>&1
 
-        rm -f $long_unzipped
+        rm -f "$long_unzipped"
         """
 
 rule assemble_coassembly_short:
