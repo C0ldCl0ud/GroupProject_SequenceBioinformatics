@@ -420,7 +420,7 @@ rule assemble_single_hybrid:
         long=LONG_FINAL
     output:
         contigs=f"{RESULTS_DIR}/assemblies/single/hybrid/{{sample}}/assembly.fasta"
-    threads: 20
+    threads: 16
     log:
         f"logs/{DATASET}/assembly/single/hybrid/{{sample}}.operams.log"
     container:
@@ -432,12 +432,15 @@ rule assemble_single_hybrid:
         export TMPDIR={RESULTS_DIR}/tmp/{wildcards.sample}
         mkdir -p "$TMPDIR"
 
+        # Unzip long reads
         long_unzipped=$(mktemp --suffix=.fastq -p "$TMPDIR")
         gunzip -c {input.long} > "$long_unzipped"
 
+        # Remove previous output
         rm -rf {RESULTS_DIR}/assemblies/single/hybrid/{wildcards.sample}
 
-        perl /operams/OPERA-MS.pl \
+        # Call OPERA-MS via wrapper
+        scripts/run_operams.sh \
           --contig-file {input.contigs} \
           --short-read1 {input.r1} \
           --short-read2 {input.r2} \
@@ -449,6 +452,8 @@ rule assemble_single_hybrid:
           > {log} 2>&1
 
         rm -f "$long_unzipped"
+
+        # Copy final contigs to Snakemake output
         cp {RESULTS_DIR}/assemblies/single/hybrid/{wildcards.sample}/contigs.fasta \
            {output.contigs}
         """
