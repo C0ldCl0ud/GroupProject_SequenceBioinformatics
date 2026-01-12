@@ -424,7 +424,7 @@ rule assemble_single_hybrid:
     log:
         f"logs/{DATASET}/assembly/single/hybrid/{{sample}}.operams.log"
     container:
-        "containers/operams.img"
+        "containers/operams.simg"
     shell:
         """
         set -euo pipefail
