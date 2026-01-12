@@ -425,8 +425,6 @@ rule assemble_single_hybrid:
         f"logs/{DATASET}/assembly/single/hybrid/{{sample}}.operams.log"
     container:
         "containers/operams.simg"
-    singularity_args:
-        "--bind {host_conda_bin}:/usr/local/bin".format(host_conda_bin=os.environ["CONDA_PREFIX"] + "/bin")
     shell:
         """
         set -euo pipefail
