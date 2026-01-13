@@ -1,6 +1,9 @@
 # Ignore all directories
 #data/*/
 
+# Ignore Snakemake temporary files and conda environments
+.snakemake/
+
 # Ignore all files
 #data/*
 
