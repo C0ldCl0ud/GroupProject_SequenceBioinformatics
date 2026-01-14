@@ -426,6 +426,8 @@ rule assemble_single_long:
     threads: 4
     log:
         f"logs/{DATASET}/assembly/single/long/{{sample}}.flye.log"
+    resources:
+        ram=10
     conda:
         "envs/assembly.yaml"
     shell:
