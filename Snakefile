@@ -1040,8 +1040,7 @@ rule vamb_coassembly:
           --fasta {input.contigs} \
           --jgi {input.depth} \
           --minfasta {VAMB_MINFASTA} \
-          -m {VAMB_MINCONTIGS} \
-          --no-vae
+          -m {VAMB_MINCONTIGS}
 
         touch {output}
         """
@@ -1065,8 +1064,7 @@ rule vamb_single:
           --fasta {input.contigs} \
           --jgi {input.depth} \
           --minfasta {VAMB_MINFASTA} \
-          -m {VAMB_MINCONTIGS} \
-          --no-vae
+          -m {VAMB_MINCONTIGS}
 
         touch {output}
         """
@@ -1090,8 +1088,7 @@ rule vamb_multi:
           --fasta {input.contigs} \
           --jgi {input.depth} \
           --minfasta {VAMB_MINFASTA} \
-          -m {VAMB_MINCONTIGS} \
-          --no-vae
+          -m {VAMB_MINCONTIGS}
 
         touch {output}
         """
