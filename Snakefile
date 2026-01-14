@@ -670,7 +670,8 @@ rule map_hybrid_multi:
         "envs/mapping.yaml"
     shell:
         """
-        bowtie2 -x {input.idx.rsplit('.',1)[0]} -1 {input.r1} -2 {input.r2} -p {threads} |
+        PREFIX=$(basename {input.idx} .1.bt2)
+        bowtie2 -x {RESULTS_DIR}/indices/single/hybrid/contigs/$PREFIX -1 {input.r1} -2 {input.r2} -p {threads} |
         samtools sort -@ {threads} -o short_{wildcards.sample}_{wildcards.other}.bam
 
         minimap2 -ax map-hifi {input.contigs} {input.long} -t {threads} |
