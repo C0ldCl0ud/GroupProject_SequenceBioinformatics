@@ -502,7 +502,7 @@ rule index_short_single:
     shell:
         """
         mkdir -p {RESULTS_DIR}/indices/single/short/contigs
-        bowtie2-build {input.contigs} {output.idx}/{wildcards.sample}
+        bowtie2-build {input.contigs} {RESULTS_DIR}/indices/single/short/contigs/{wildcards.sample}
         """
 
 rule index_short_coassembly:
@@ -529,7 +529,7 @@ rule index_hybrid_single:
     shell:
         """
         mkdir -p {RESULTS_DIR}/indices/single/hybrid/contigs
-        bowtie2-build {input.contigs} {output.idx}/{wildcards.sample}
+        bowtie2-build {input.contigs} {RESULTS_DIR}/indices/single/hybrid/contigs/{wildcards.sample}
         """
 
 ############################################
