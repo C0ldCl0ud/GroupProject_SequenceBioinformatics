@@ -423,7 +423,7 @@ rule assemble_single_long:
         fq = LONG_FINAL
     output:
         contigs = f"{RESULTS_DIR}/assemblies/single/long/{{sample}}/assembly.fasta"
-    threads: 4
+    threads: 8
     log:
         f"logs/{DATASET}/assembly/single/long/{{sample}}.flye.log"
     resources:
