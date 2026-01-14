@@ -185,17 +185,16 @@ rule sra_to_fastq_short:
         set -euo pipefail
 
         SRA="{input.sra_dir}/{params.acc}/{params.acc}.sra"
-
         TMP_R1="{output.r1}.tmp"
         TMP_R2="{output.r2}.tmp"
 
         if [ "{params.debug}" = "True" ]; then
-            fasterq-dump "$SRA" --split-files -O - 2>> {log} \
+            fasterq-dump --split-files --stdout "$SRA" 2>> {log} \
                 | tee >(seqtk sample -s{params.seed} - {params.n} | gzip > "$TMP_R1") \
                       >(seqtk sample -s{params.seed} - {params.n} | gzip > "$TMP_R2") \
                 > /dev/null
         else
-            fasterq-dump "$SRA" --split-files -O - 2>> {log} \
+            fasterq-dump --split-files --stdout "$SRA" 2>> {log} \
                 | tee >(gzip > "$TMP_R1") \
                       >(gzip > "$TMP_R2") \
                 > /dev/null
@@ -224,17 +223,17 @@ rule sra_to_fastq_long:
     shell:
         """
         TMP="{output.fq}.tmp"
+
         if [ "{params.debug}" = "True" ]; then
-            fasterq-dump {input.sra_dir}/{params.acc}/{params.acc}.sra -O - \
-                | seqtk sample -s{params.seed} - {params.n} \
-                | gzip > "$TMP" 2>> {log}
+            fasterq-dump --stdout {input.sra_dir}/{params.acc}/{params.acc}.sra \
+            | seqtk sample -s{params.seed} - {params.n} \
+            | gzip -c > "$TMP" 2>> {log}
         else
-            fasterq-dump {input.sra_dir}/{params.acc}/{params.acc}.sra -O - \
-                | gzip > "$TMP" 2>> {log}
+            fasterq-dump --stdout {input.sra_dir}/{params.acc}/{params.acc}.sra \
+            | gzip -c > "$TMP" 2>> {log}
         fi
 
         mv "$TMP" "{output.fq}"
-
         """
 
 ############################################
