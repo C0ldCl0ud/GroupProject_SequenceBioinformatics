@@ -911,7 +911,7 @@ rule concoct_coassembly:
 rule concoct_single:
     input:
         contigs = f"{RESULTS_DIR}/assemblies/single/{{assembly_type}}/{{sample}}/assembly.fasta",
-        bam = f"{RESULTS_DIR}/mapping/single/{{assembly_type}}/{{sample}}/{{sample}}.sorted.bam"
+        bam = f"{RESULTS_DIR}/mapping/single/{{assembly_type}}/{{sample}}.sorted.bam"
     output:
         touch(f"{RESULTS_DIR}/bins/single/concoct/{{assembly_type}}/{{sample}}/bins.done")
     threads: config["threads"]
@@ -955,7 +955,7 @@ rule concoct_multi:
     input:
         contigs = f"{RESULTS_DIR}/assemblies/single/{{assembly_type}}/{{sample}}/assembly.fasta",
         bams = lambda wc: expand(
-            f"{RESULTS_DIR}/mapping/multi/{wc.assembly_type}/{wc.sample}/{{other}}.sorted.bam",
+            f"{RESULTS_DIR}/mapping/multi/{wc.assembly_type}/{{other}}.sorted.bam",
             other=SAMPLES
         )
     output:
