@@ -1,5 +1,5 @@
-dataset: debug
-debug: true
+dataset: cheese
+debug: false
 debug_reads_short: 100000
 debug_reads_long: 5000
 debug_seed: 42
@@ -17,6 +17,5 @@ long_read_technology: pacbio   # pacbio | nanopore (human_gut_II, activated_slud
 binning_tools:
   - metabat2
   - maxbin2
-  - concoct
 hg38_index: data/human_assembly/bow2_idx/GRCh38_index
 remove_human_reads: false
