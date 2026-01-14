@@ -185,23 +185,24 @@ rule sra_to_fastq_short:
         set -euo pipefail
 
         SRA="{input.sra_dir}/{params.acc}/{params.acc}.sra"
-        TMP_R1="{output.r1}.tmp"
-        TMP_R2="{output.r2}.tmp"
+        OUTDIR="{RESULTS_DIR}/fastq/short"
+        R1_UNZ="{OUTDIR}/{params.acc}_1.fastq"
+        R2_UNZ="{OUTDIR}/{params.acc}_2.fastq"
+
+        # 1. Extract FASTQ
+        fasterq-dump --split-files "$SRA" -O "$OUTDIR" 2>> {log}
 
         if [ "{params.debug}" = "True" ]; then
-            fasterq-dump --split-files --stdout "$SRA" 2>> {log} \
-                | tee >(seqtk sample -s{params.seed} - {params.n} | gzip > "$TMP_R1") \
-                      >(seqtk sample -s{params.seed} - {params.n} | gzip > "$TMP_R2") \
-                > /dev/null
+            # 2. Downsample for debug
+            seqtk sample -s{params.seed} "$R1_UNZ" {params.n} | gzip > "{output.r1}"
+            seqtk sample -s{params.seed} "$R2_UNZ" {params.n} | gzip > "{output.r2}"
+            rm "$R1_UNZ" "$R2_UNZ"
         else
-            fasterq-dump --split-files --stdout "$SRA" 2>> {log} \
-                | tee >(gzip > "$TMP_R1") \
-                      >(gzip > "$TMP_R2") \
-                > /dev/null
+            # 2. Just gzip the original FASTQ
+            gzip -c "$R1_UNZ" > "{output.r1}"
+            gzip -c "$R2_UNZ" > "{output.r2}"
+            rm "$R1_UNZ" "$R2_UNZ"
         fi
-
-        mv "$TMP_R1" "{output.r1}"
-        mv "$TMP_R2" "{output.r2}"
         """
 
 rule sra_to_fastq_long:
@@ -222,18 +223,21 @@ rule sra_to_fastq_long:
         disk_io=1
     shell:
         """
-        TMP="{output.fq}.tmp"
+        set -euo pipefail
+
+        SRA="{input.sra_dir}/{params.acc}/{params.acc}.sra"
+        UNZ="{RESULTS_DIR}/fastq/long/{params.acc}.fastq"
+
+        # 1. Extract FASTQ
+        fasterq-dump "$SRA" -O "{RESULTS_DIR}/fastq/long" 2>> {log}
 
         if [ "{params.debug}" = "True" ]; then
-            fasterq-dump --stdout {input.sra_dir}/{params.acc}/{params.acc}.sra \
-            | seqtk sample -s{params.seed} - {params.n} \
-            | gzip -c > "$TMP" 2>> {log}
+            seqtk sample -s{params.seed} "$UNZ" {params.n} | gzip > "{output.fq}"
+            rm "$UNZ"
         else
-            fasterq-dump --stdout {input.sra_dir}/{params.acc}/{params.acc}.sra \
-            | gzip -c > "$TMP" 2>> {log}
+            gzip -c "$UNZ" > "{output.fq}"
+            rm "$UNZ"
         fi
-
-        mv "$TMP" "{output.fq}"
         """
 
 ############################################
