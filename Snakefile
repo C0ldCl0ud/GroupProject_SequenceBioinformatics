@@ -523,7 +523,7 @@ rule index_hybrid_single:
     input:
         contigs = f"{RESULTS_DIR}/assemblies/single/hybrid/{{sample}}/assembly.fasta"
     output:
-        idx = f"{RESULTS_DIR}/indices/single/hybrid/contigs/{{sample}}.1.bt2")
+        idx = f"{RESULTS_DIR}/indices/single/hybrid/contigs/{{sample}}.1.bt2"
     conda:
         "envs/mapping.yaml"
     shell:
