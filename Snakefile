@@ -496,12 +496,12 @@ rule index_short_single:
     input:
         contigs = f"{RESULTS_DIR}/assemblies/single/short/{{sample}}/assembly.fasta"
     output:
-        idx = directory(f"{RESULTS_DIR}/indices/single/short/contigs/{{sample}}")
+        idx = f"{RESULTS_DIR}/indices/single/short/contigs/{{sample}}.1.bt2"
     conda:
         "envs/mapping.yaml"
     shell:
         """
-        mkdir -p {output.idx}
+        mkdir -p {RESULTS_DIR}/indices/single/short/contigs
         bowtie2-build {input.contigs} {output.idx}/{wildcards.sample}
         """
 
@@ -523,12 +523,12 @@ rule index_hybrid_single:
     input:
         contigs = f"{RESULTS_DIR}/assemblies/single/hybrid/{{sample}}/assembly.fasta"
     output:
-        idx = directory(f"{RESULTS_DIR}/indices/single/hybrid/contigs/{{sample}}")
+        idx = f"{RESULTS_DIR}/indices/single/hybrid/contigs/{{sample}}.1.bt2")
     conda:
         "envs/mapping.yaml"
     shell:
         """
-        mkdir -p {output.idx}
+        mkdir -p {RESULTS_DIR}/indices/single/hybrid/contigs
         bowtie2-build {input.contigs} {output.idx}/{wildcards.sample}
         """
 
