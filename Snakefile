@@ -447,7 +447,7 @@ rule assemble_single_hybrid:
         long=LONG_FINAL
     output:
         contigs=f"{RESULTS_DIR}/assemblies/single/hybrid/{{sample}}/assembly.fasta"
-    threads: 16
+    threads: 4
     log:
         f"logs/{DATASET}/assembly/single/hybrid/{{sample}}.operams.log"
     container:
