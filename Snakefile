@@ -1009,7 +1009,7 @@ rule vamb_coassembly:
         touch(f"{RESULTS_DIR}/bins/coassembly/vamb/bins.done")
     threads: config["threads"]
     conda:
-        "envs/binning.yaml"
+        "envs/binning_vamb.yaml"
     shell:
         """
         outdir={RESULTS_DIR}/bins/coassembly/vamb
@@ -1034,7 +1034,7 @@ rule vamb_single:
         touch(f"{RESULTS_DIR}/bins/single/vamb/{{assembly_type}}/{{sample}}/bins.done")
     threads: config["threads"]
     conda:
-        "envs/binning.yaml"
+        "envs/binning_vamb.yaml"
     shell:
         """
         outdir={RESULTS_DIR}/bins/single/vamb/{wildcards.assembly_type}/{wildcards.sample}
@@ -1059,7 +1059,7 @@ rule vamb_multi:
         touch(f"{RESULTS_DIR}/bins/multi/vamb/{{assembly_type}}/{{sample}}/bins.done")
     threads: config["threads"]
     conda:
-        "envs/binning.yaml"
+        "envs/binning_vamb.yaml"
     shell:
         """
         outdir={RESULTS_DIR}/bins/multi/vamb/{wildcards.assembly_type}/{wildcards.sample}
