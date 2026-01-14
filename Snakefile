@@ -568,7 +568,7 @@ rule map_short_coassembly:
     shell:
         """
         # remove '/contigs' because idxprefix is now the prefix itself
-        bowtie2 -x {str/input.idxprefix).rsplit('.',1)[0]} \
+        bowtie2 -x {str(input.idxprefix).rsplit('.',1)[0]} \
           -1 {input.r1} -2 {input.r2} -p {threads} |
         samtools sort -@ {threads} -o {output.bam}
         samtools index {output.bam}
