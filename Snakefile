@@ -423,7 +423,7 @@ rule assemble_single_long:
         fq = LONG_FINAL
     output:
         contigs = f"{RESULTS_DIR}/assemblies/single/long/{{sample}}/assembly.fasta"
-    threads: config["threads"]
+    threads: 4
     log:
         f"logs/{DATASET}/assembly/single/long/{{sample}}.flye.log"
     conda:
@@ -447,7 +447,7 @@ rule assemble_single_hybrid:
         long=LONG_FINAL
     output:
         contigs=f"{RESULTS_DIR}/assemblies/single/hybrid/{{sample}}/assembly.fasta"
-    threads: 4
+    threads: 16
     log:
         f"logs/{DATASET}/assembly/single/hybrid/{{sample}}.operams.log"
     container:
