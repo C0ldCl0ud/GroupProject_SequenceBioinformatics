@@ -185,28 +185,24 @@ rule sra_to_fastq_short:
         disk_io=1
     shell:
         """
-        fasterq-dump {input.sra_dir}/{params.acc}/{params.acc}.sra \
-            --split-files \
-            -O {RESULTS_DIR}/fastq/short \
-            > {log} 2>&1
+        set -euo pipefail
+
+        SRA_FILE="{input.sra_dir}/{params.acc}/{params.acc}.sra"
+        R1="{output.r1}"
+        R2="{output.r2}"
 
         if [ "{params.debug}" = "True" ]; then
-            seqtk sample -s{params.seed} \
-                {RESULTS_DIR}/fastq/short/{params.acc}_1.fastq {params.n} \
-                | gzip -c > {output.r1}
-
-            seqtk sample -s{params.seed} \
-                {RESULTS_DIR}/fastq/short/{params.acc}_2.fastq {params.n} \
-                | gzip -c > {output.r2}
-
-            rm {RESULTS_DIR}/fastq/short/{params.acc}_1.fastq
-            rm {RESULTS_DIR}/fastq/short/{params.acc}_2.fastq
+            # debug: sample n reads directly
+            fasterq-dump "$SRA_FILE" --split-files -O - 2>> {log} \
+                | tee >(seqtk sample -s{params.seed} - {params.n} | gzip > "$R1") \
+                      >(seqtk sample -s{params.seed} - {params.n} | gzip > "$R2") \
+                > /dev/null
         else
-            gzip -f {RESULTS_DIR}/fastq/short/{params.acc}_1.fastq
-            gzip -f {RESULTS_DIR}/fastq/short/{params.acc}_2.fastq
-
-            mv {RESULTS_DIR}/fastq/short/{params.acc}_1.fastq.gz {output.r1}
-            mv {RESULTS_DIR}/fastq/short/{params.acc}_2.fastq.gz {output.r2}
+            # full dataset, pipe directly to gzipped R1/R2
+            fasterq-dump "$SRA_FILE" --split-files -O - 2>> {log} \
+                | tee >(gzip > "$R1") \
+                      >(gzip > "$R2") \
+                > /dev/null
         fi
         """
 
@@ -228,19 +224,13 @@ rule sra_to_fastq_long:
         disk_io=1
     shell:
         """
-        fasterq-dump {input.sra_dir}/{params.acc}/{params.acc}.sra \
-            -O {RESULTS_DIR}/fastq/long \
-            > {log} 2>&1
-
         if [ "{params.debug}" = "True" ]; then
-            seqtk sample -s{params.seed} \
-                {RESULTS_DIR}/fastq/long/{params.acc}.fastq {params.n} \
-                | gzip -c > {output.fq}
-
-            rm {RESULTS_DIR}/fastq/long/{params.acc}.fastq
+            fasterq-dump {input.sra_dir}/{params.acc}/{params.acc}.sra -O - \
+                | seqtk sample -s{params.seed} - {params.n} \
+                | gzip > {output.fq} 2>> {log}
         else
-            gzip -f {RESULTS_DIR}/fastq/long/{params.acc}.fastq
-            mv {RESULTS_DIR}/fastq/long/{params.acc}.fastq.gz {output.fq}
+            fasterq-dump {input.sra_dir}/{params.acc}/{params.acc}.sra -O - \
+                | gzip > {output.fq} 2>> {log}
         fi
         """
 
