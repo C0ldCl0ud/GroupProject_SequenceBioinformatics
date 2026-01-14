@@ -1,9 +1,6 @@
 wildcard_constraints: 
     sample = "S\\d+"
 
-resources = {
-    "disk_io": 4
-}
 import os
 from glob import glob
 
