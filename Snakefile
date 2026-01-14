@@ -1041,7 +1041,7 @@ rule vamb_coassembly:
           --jgi {input.depth} \
           --minfasta {VAMB_MINFASTA} \
           -m {VAMB_MINCONTIGS} \
-          --batchsize {VAMB_BATCHSIZE}
+          --batch-size {VAMB_BATCHSIZE}
 
         touch {output}
         """
@@ -1066,7 +1066,7 @@ rule vamb_single:
           --jgi {input.depth} \
           --minfasta {VAMB_MINFASTA} \
           -m {VAMB_MINCONTIGS} \
-          --batchsize {VAMB_BATCHSIZE}
+          --batch-size {VAMB_BATCHSIZE}
 
         touch {output}
         """
@@ -1091,7 +1091,7 @@ rule vamb_multi:
           --jgi {input.depth} \
           --minfasta {VAMB_MINFASTA} \
           -m {VAMB_MINCONTIGS} \
-          --batchsize {VAMB_BATCHSIZE}
+          --batch-size {VAMB_BATCHSIZE}
 
         touch {output}
         """
