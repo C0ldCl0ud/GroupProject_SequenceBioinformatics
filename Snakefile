@@ -445,8 +445,8 @@ rule assemble_single_hybrid:
     log:
         f"logs/{DATASET}/assembly/single/hybrid/{{sample}}.operams.log"
     container:
-        #"containers/operams.simg" # remote server
-        "containers/operams.sif"   # local machine
+        "containers/operams.simg" # remote server
+        #"containers/operams.sif"   # local machine
     shell:
         """
         set -euo pipefail
