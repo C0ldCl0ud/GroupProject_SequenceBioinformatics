@@ -7,6 +7,7 @@ threads: 16
 long_read_technology: pacbio   # pacbio | nanopore (human_gut_II, activated_sludge)
 binning_tools:
   - metabat2
+  - maxbin2
   - concoct
 hg38_index: data/human_assembly/bow2_idx/GRCh38_index
 remove_human_reads: false
