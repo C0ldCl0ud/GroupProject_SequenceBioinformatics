@@ -876,6 +876,7 @@ rule concoct_coassembly:
         "envs/binning.yaml"
     shell:
         """
+        export OPENBLAS_VERBOSE=0
         outdir={RESULTS_DIR}/bins/coassembly/concoct
         mkdir -p $outdir
 
@@ -919,6 +920,7 @@ rule concoct_single:
         "envs/binning.yaml"
     shell:
         """
+        export OPENBLAS_VERBOSE=0
         outdir={RESULTS_DIR}/bins/single/concoct/{wildcards.assembly_type}/{wildcards.sample}
         mkdir -p $outdir
 
@@ -965,6 +967,7 @@ rule concoct_multi:
         "envs/binning.yaml"
     shell:
         """
+        export OPENBLAS_VERBOSE=0
         outdir={RESULTS_DIR}/bins/multi/concoct/{wildcards.assembly_type}/{wildcards.sample}
         mkdir -p $outdir
 
