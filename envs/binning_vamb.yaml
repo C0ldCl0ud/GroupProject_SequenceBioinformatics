@@ -1,7 +1,8 @@
-name: binning
+name: binning_vamb
 channels:
   - bioconda
   - conda-forge
 dependencies:
   - vamb=4.1.3
+
 
