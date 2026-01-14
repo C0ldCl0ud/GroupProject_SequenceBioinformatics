@@ -1020,8 +1020,7 @@ rule vamb_coassembly:
           --fasta {input.contigs} \
           --jgi {input.depth} \
           --minfasta 200000 \
-          -m 2000 \
-          --threads {threads}
+          -m 2000
 
         touch {output}
         """
@@ -1045,8 +1044,7 @@ rule vamb_single:
           --fasta {input.contigs} \
           --jgi {input.depth} \
           --minfasta 200000 \
-          -m 2000 \
-          --threads {threads}
+          -m 2000
 
         touch {output}
         """
@@ -1070,8 +1068,7 @@ rule vamb_multi:
           --fasta {input.contigs} \
           --jgi {input.depth} \
           --minfasta 200000 \
-          -m 2000 \
-          --threads {threads}
+          -m 2000
 
         touch {output}
         """
