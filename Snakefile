@@ -1,9 +1,7 @@
-# Global wildcard constraints
-wildcard_constraints = {
-    "sample": r"S\d+"
-}
+global_wildcard_constraints:
+    sample = "S\\d+"
 
-# Global resources
+# Optional: global resources (Python dict)
 resources = {
     "disk_io": 4
 }
