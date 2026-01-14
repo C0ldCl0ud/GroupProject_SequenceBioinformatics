@@ -1,9 +1,12 @@
-wildcard_constraints:
-    sample = "S\\d+"
+# Global wildcard constraints
+wildcard_constraints = {
+    "sample": r"S\d+"
+}
 
-resources:
-    disk_io = 4
-
+# Global resources
+resources = {
+    "disk_io": 4
+}
 import os
 from glob import glob
 
