@@ -550,7 +550,7 @@ rule map_short_single:
         "envs/mapping.yaml"
     shell:
         """
-        PREFIX=$(basename {input.idxprefix} .1.bt2)
+        PREFIX=$(basename {input.idx} .1.bt2)
         bowtie2 -x {RESULTS_DIR}/indices/single/short/contigs/$PREFIX -1 {input.r1} -2 {input.r2} -p {threads} |
         samtools sort -@ {threads} -o {output.bam}
         samtools index {output.bam}
@@ -588,7 +588,7 @@ rule map_short_multi:
         "envs/mapping.yaml"
     shell:
         """
-        PREFIX=$(basename {input.idxprefix} .1.bt2)
+        PREFIX=$(basename {input.idx} .1.bt2)
         bowtie2 -x {RESULTS_DIR}/indices/single/short/contigs/$PREFIX -1 {input.r1} -2 {input.r2} -p {threads} |
         samtools sort -@ {threads} -o {output.bam}
         samtools index {output.bam}
