@@ -852,7 +852,7 @@ rule maxbin2_multi:
         echo {input.depth}
         run_MaxBin.pl \
           -contig {input.contigs} \
-          -abund_list {input.depth} \
+          -abund {input.depth} \
           -out {RESULTS_DIR}/bins/multi/maxbin2/{wildcards.assembly_type}/{wildcards.sample}/bin \
           -thread 2
         touch {output}
