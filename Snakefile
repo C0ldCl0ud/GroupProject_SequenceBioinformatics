@@ -955,7 +955,7 @@ rule concoct_multi:
     input:
         contigs = f"{RESULTS_DIR}/assemblies/single/{{assembly_type}}/{{sample}}/assembly.fasta",
         bams = lambda wc: expand(
-            f"{RESULTS_DIR}/mapping/multi/{wc.assembly_type}/{{sample}}/{{other}}.sorted.bam",
+            f"{RESULTS_DIR}/mapping/multi/{wc.assembly_type}/{wc.sample}/{{other}}.sorted.bam",
             other=SAMPLES
         )
     output:
