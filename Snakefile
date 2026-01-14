@@ -1030,11 +1030,11 @@ rule vamb_coassembly:
         rm -rf "$outdir"
 
         vamb \
-          --outdir $outdir \
+          --outdir "$outdir" \
           --fasta {input.contigs} \
           --jgi {input.depth} \
-          --minfasta 200000 \
-          -m 2000
+          --minfasta {VAMB_MINFASTA} \
+          -m {VAMB_MINCONTIGS}
 
         touch {output}
         """
@@ -1054,11 +1054,11 @@ rule vamb_single:
         rm -rf "$outdir"
 
         vamb \
-          --outdir $outdir \
+          --outdir "$outdir" \
           --fasta {input.contigs} \
           --jgi {input.depth} \
-          --minfasta 200000 \
-          -m 2000
+          --minfasta {VAMB_MINFASTA} \
+          -m {VAMB_MINCONTIGS}
 
         touch {output}
         """
@@ -1078,11 +1078,11 @@ rule vamb_multi:
         rm -rf "$outdir"
 
         vamb \
-          --outdir $outdir \
+          --outdir "$outdir" \
           --fasta {input.contigs} \
           --jgi {input.depth} \
-          --minfasta 200000 \
-          -m 2000
+          --minfasta {VAMB_MINFASTA} \
+          -m {VAMB_MINCONTIGS}
 
         touch {output}
         """
