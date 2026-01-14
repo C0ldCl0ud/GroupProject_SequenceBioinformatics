@@ -5,12 +5,14 @@ channels:
   - defaults
 dependencies:
   - python=3.11
-  - pytorch
-  - cudnn
-  - git
   - pip
+  - cython
+  - gcc_linux-64
+  - gxx_linux-64
+  - make
   - pip:
     - git+https://github.com/RasmussenLab/vamb.git@v3.0.9
+
 
 
 
