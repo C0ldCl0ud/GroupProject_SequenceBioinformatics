@@ -550,7 +550,8 @@ rule map_short_single:
         "envs/mapping.yaml"
     shell:
         """
-        bowtie2 -x {str(input.idx).rsplit('.',1)[0]} -1 {input.r1} -2 {input.r2} -p {threads} |
+        PREFIX=$(basename {input.idxprefix} .1.bt2)
+        bowtie2 -x {RESULTS_DIR}/indices/single/short/contigs/$PREFIX -1 {input.r1} -2 {input.r2} -p {threads} |
         samtools sort -@ {threads} -o {output.bam}
         samtools index {output.bam}
         """
@@ -567,8 +568,8 @@ rule map_short_coassembly:
         "envs/mapping.yaml"
     shell:
         """
-        # remove '/contigs' because idxprefix is now the prefix itself
-        bowtie2 -x {str(input.idxprefix).rsplit('.',1)[0]} \
+        PREFIX=$(basename {input.idxprefix} .1.bt2)
+        bowtie2 -x results/debug/indices/coassembly/short/contigs/$PREFIX \
           -1 {input.r1} -2 {input.r2} -p {threads} |
         samtools sort -@ {threads} -o {output.bam}
         samtools index {output.bam}
@@ -587,7 +588,8 @@ rule map_short_multi:
         "envs/mapping.yaml"
     shell:
         """
-        bowtie2 -x {str(input.idx).rsplit('.',1)[0]} -1 {input.r1} -2 {input.r2} -p {threads} |
+        PREFIX=$(basename {input.idxprefix} .1.bt2)
+        bowtie2 -x {RESULTS_DIR}/indices/single/short/contigs/$PREFIX -1 {input.r1} -2 {input.r2} -p {threads} |
         samtools sort -@ {threads} -o {output.bam}
         samtools index {output.bam}
         """
