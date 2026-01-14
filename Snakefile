@@ -1,7 +1,6 @@
-global_wildcard_constraints:
+wildcard_constraints: 
     sample = "S\\d+"
 
-# Optional: global resources (Python dict)
 resources = {
     "disk_io": 4
 }
