@@ -187,23 +187,25 @@ rule sra_to_fastq_short:
         """
         set -euo pipefail
 
-        SRA_FILE="{input.sra_dir}/{params.acc}/{params.acc}.sra"
-        R1="{output.r1}"
-        R2="{output.r2}"
+        SRA="{input.sra_dir}/{params.acc}/{params.acc}.sra"
+
+        TMP_R1="{output.r1}.tmp"
+        TMP_R2="{output.r2}.tmp"
 
         if [ "{params.debug}" = "True" ]; then
-            # debug: sample n reads directly
-            fasterq-dump "$SRA_FILE" --split-files -O - 2>> {log} \
-                | tee >(seqtk sample -s{params.seed} - {params.n} | gzip > "$R1") \
-                      >(seqtk sample -s{params.seed} - {params.n} | gzip > "$R2") \
+            fasterq-dump "$SRA" --split-files -O - 2>> {log} \
+                | tee >(seqtk sample -s{params.seed} - {params.n} | gzip > "$TMP_R1") \
+                      >(seqtk sample -s{params.seed} - {params.n} | gzip > "$TMP_R2") \
                 > /dev/null
         else
-            # full dataset, pipe directly to gzipped R1/R2
-            fasterq-dump "$SRA_FILE" --split-files -O - 2>> {log} \
-                | tee >(gzip > "$R1") \
-                      >(gzip > "$R2") \
+            fasterq-dump "$SRA" --split-files -O - 2>> {log} \
+                | tee >(gzip > "$TMP_R1") \
+                      >(gzip > "$TMP_R2") \
                 > /dev/null
         fi
+
+        mv "$TMP_R1" "{output.r1}"
+        mv "$TMP_R2" "{output.r2}"
         """
 
 rule sra_to_fastq_long:
@@ -224,14 +226,18 @@ rule sra_to_fastq_long:
         disk_io=1
     shell:
         """
+        TMP="{output.fq}.tmp"
         if [ "{params.debug}" = "True" ]; then
             fasterq-dump {input.sra_dir}/{params.acc}/{params.acc}.sra -O - \
                 | seqtk sample -s{params.seed} - {params.n} \
-                | gzip > {output.fq} 2>> {log}
+                | gzip > "$TMP" 2>> {log}
         else
             fasterq-dump {input.sra_dir}/{params.acc}/{params.acc}.sra -O - \
-                | gzip > {output.fq} 2>> {log}
+                | gzip > "$TMP" 2>> {log}
         fi
+
+        mv "$TMP" "{output.fq}"
+
         """
 
 ############################################
