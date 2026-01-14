@@ -1012,8 +1012,8 @@ rule vamb_coassembly:
         "envs/binning_vamb.yaml"
     shell:
         """
+        rm -rf {output}
         outdir={RESULTS_DIR}/bins/coassembly/vamb
-        mkdir -p $outdir
 
         vamb \
           --outdir $outdir \
@@ -1037,7 +1037,6 @@ rule vamb_single:
     shell:
         """
         outdir={RESULTS_DIR}/bins/single/vamb/{wildcards.assembly_type}/{wildcards.sample}
-        mkdir -p $outdir
 
         vamb \
           --outdir $outdir \
@@ -1061,7 +1060,6 @@ rule vamb_multi:
     shell:
         """
         outdir={RESULTS_DIR}/bins/multi/vamb/{wildcards.assembly_type}/{wildcards.sample}
-        mkdir -p $outdir
 
         vamb \
           --outdir $outdir \
