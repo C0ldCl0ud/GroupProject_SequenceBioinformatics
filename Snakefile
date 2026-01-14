@@ -68,6 +68,12 @@ VAMB_MINCONTIGS = (
     config["vamb"]["prod"]["mincontigs"]
 )
 
+VAMB_BATCHSIZE = (
+    config["vamb"]["debug"]["batchsize"]
+    if DEBUG else
+    config["vamb"]["prod"]["batchsize"]
+)
+
 ############################################
 # Rule order / final targets
 ############################################
@@ -1034,7 +1040,8 @@ rule vamb_coassembly:
           --fasta {input.contigs} \
           --jgi {input.depth} \
           --minfasta {VAMB_MINFASTA} \
-          -m {VAMB_MINCONTIGS}
+          -m {VAMB_MINCONTIGS} \
+          --batchsize {VAMB_BATCHSIZE}
 
         touch {output}
         """
@@ -1058,7 +1065,8 @@ rule vamb_single:
           --fasta {input.contigs} \
           --jgi {input.depth} \
           --minfasta {VAMB_MINFASTA} \
-          -m {VAMB_MINCONTIGS}
+          -m {VAMB_MINCONTIGS} \
+          --batchsize {VAMB_BATCHSIZE}
 
         touch {output}
         """
@@ -1082,7 +1090,8 @@ rule vamb_multi:
           --fasta {input.contigs} \
           --jgi {input.depth} \
           --minfasta {VAMB_MINFASTA} \
-          -m {VAMB_MINCONTIGS}
+          -m {VAMB_MINCONTIGS} \
+          --batchsize {VAMB_BATCHSIZE}
 
         touch {output}
         """
