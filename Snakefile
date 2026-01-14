@@ -186,8 +186,8 @@ rule sra_to_fastq_short:
 
         SRA="{input.sra_dir}/{params.acc}/{params.acc}.sra"
         OUTDIR="{RESULTS_DIR}/fastq/short"
-        R1_UNZ="{OUTDIR}/{params.acc}_1.fastq"
-        R2_UNZ="{OUTDIR}/{params.acc}_2.fastq"
+        R1_UNZ="{$OUTDIR}/{params.acc}_1.fastq"
+        R2_UNZ="{$OUTDIR}/{params.acc}_2.fastq"
 
         # 1. Extract FASTQ
         fasterq-dump --split-files "$SRA" -O "$OUTDIR" 2>> {log}
