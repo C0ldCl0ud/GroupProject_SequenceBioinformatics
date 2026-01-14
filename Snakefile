@@ -805,7 +805,7 @@ rule maxbin2_coassembly:
         mkdir -p {RESULTS_DIR}/bins/coassembly/maxbin2
         run_MaxBin.pl \
           -contig {input.contigs} \
-          -abund_list {input.depth} \
+          -abund {input.depth} \
           -out {RESULTS_DIR}/bins/coassembly/maxbin2/bin \
           -thread 2
         touch {output}
