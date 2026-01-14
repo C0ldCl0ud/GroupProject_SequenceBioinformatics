@@ -8,7 +8,7 @@ vamb:
     minfasta: 200000
     mincontigs: 2000
   debug:
-    minfasta: 200
+    minfasta: 20
     mincontigs: 100
 threads: 16
 long_read_technology: pacbio   # pacbio | nanopore (human_gut_II, activated_sludge)
