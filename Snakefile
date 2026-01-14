@@ -849,6 +849,7 @@ rule maxbin2_multi:
     shell:
         """
         mkdir -p {RESULTS_DIR}/bins/multi/maxbin2/{wildcards.assembly_type}/{wildcards.sample}
+        echo {input.depth}
         run_MaxBin.pl \
           -contig {input.contigs} \
           -abund_list {input.depth} \
