@@ -1,6 +1,9 @@
 wildcard_constraints:
     sample = "S\\d+"
 
+resources:
+    disk_io = 4
+
 import os
 from glob import glob
 
@@ -137,6 +140,8 @@ rule download_short_reads:
         "envs/download.yaml"
     log:
         f"logs/{DATASET}/download/short/{{sample}}.log"
+    resources:
+        disk_io=1
     shell:
         """
         prefetch {params.acc} -O {output.sra} > {log} 2>&1
@@ -151,6 +156,8 @@ rule download_long_reads:
         "envs/download.yaml"
     log:
         f"logs/{DATASET}/download/long/{{sample}}.log"
+    resources:
+        disk_io=1
     shell:
         """
         prefetch {params.acc} -O {output.sra_dir} > {log} 2>&1
@@ -174,6 +181,8 @@ rule sra_to_fastq_short:
         "envs/download.yaml"
     log:
         f"logs/{DATASET}/fastq/short/{{sample}}.log"
+    resources:
+        disk_io=1
     shell:
         """
         fasterq-dump {input.sra_dir}/{params.acc}/{params.acc}.sra \
@@ -215,6 +224,8 @@ rule sra_to_fastq_long:
         "envs/download.yaml"
     log:
         f"logs/{DATASET}/fastq/long/{{sample}}.log"
+    resources:
+        disk_io=1
     shell:
         """
         fasterq-dump {input.sra_dir}/{params.acc}/{params.acc}.sra \
