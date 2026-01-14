@@ -540,7 +540,7 @@ rule index_hybrid_single:
 
 rule map_short_single:
     input:
-        idx = f"{RESULTS_DIR}/indices/single/short/contigs/{{sample}}",
+        idx = f"{RESULTS_DIR}/indices/single/short/contigs/{{sample}}.1.bt2",
         r1 = SHORT_FINAL_R1,
         r2 = SHORT_FINAL_R2
     output:
@@ -550,14 +550,14 @@ rule map_short_single:
         "envs/mapping.yaml"
     shell:
         """
-        bowtie2 -x {input.idx} -1 {input.r1} -2 {input.r2} -p {threads} |
+        bowtie2 -x {input.idx.rsplit('.',1)[0]} -1 {input.r1} -2 {input.r2} -p {threads} |
         samtools sort -@ {threads} -o {output.bam}
         samtools index {output.bam}
         """
 
 rule map_short_coassembly:
     input:
-        idxdir = f"{RESULTS_DIR}/indices/coassembly/short/contigs",
+        idxprefix = f"{RESULTS_DIR}/indices/coassembly/short/contigs/contigs.1.bt2",
         r1 = SHORT_FINAL_R1,
         r2 = SHORT_FINAL_R2
     output:
@@ -567,15 +567,17 @@ rule map_short_coassembly:
         "envs/mapping.yaml"
     shell:
         """
-        bowtie2 -x {input.idxdir}/contigs \
+        # remove '/contigs' because idxprefix is now the prefix itself
+        bowtie2 -x {input.idxprefix.rsplit('.',1)[0]} \
           -1 {input.r1} -2 {input.r2} -p {threads} |
         samtools sort -@ {threads} -o {output.bam}
         samtools index {output.bam}
         """
 
+
 rule map_short_multi:
     input:
-        idx = f"{RESULTS_DIR}/indices/single/short/contigs/{{sample}}",
+        idx = f"{RESULTS_DIR}/indices/single/short/contigs/{{sample}}.1.bt2",
         r1 = lambda wc: SHORT_FINAL_R1,
         r2 = lambda wc: SHORT_FINAL_R2
     output:
@@ -585,7 +587,7 @@ rule map_short_multi:
         "envs/mapping.yaml"
     shell:
         """
-        bowtie2 -x {input.idx} -1 {input.r1} -2 {input.r2} -p {threads} |
+        bowtie2 -x {input.idx.rsplit('.',1)[0]} -1 {input.r1} -2 {input.r2} -p {threads} |
         samtools sort -@ {threads} -o {output.bam}
         samtools index {output.bam}
         """
@@ -628,7 +630,7 @@ rule map_long_multi:
 
 rule map_hybrid_single:
     input:
-        idx = f"{RESULTS_DIR}/indices/single/hybrid/contigs/{{sample}}",
+        idx = f"{RESULTS_DIR}/indices/single/hybrid/contigs/{{sample}}.1.bt2",
         contigs = f"{RESULTS_DIR}/assemblies/single/hybrid/{{sample}}/assembly.fasta",
         r1 = SHORT_FINAL_R1,
         r2 = SHORT_FINAL_R2,
@@ -640,7 +642,7 @@ rule map_hybrid_single:
         "envs/mapping.yaml"
     shell:
         """
-        bowtie2 -x {input.idx} -1 {input.r1} -2 {input.r2} -p {threads} |
+        bowtie2 -x {input.idx.rsplit('.',1)[0]} -1 {input.r1} -2 {input.r2} -p {threads} |
         samtools sort -@ {threads} -o short_{wildcards.sample}.bam
 
         minimap2 -ax map-hifi {input.contigs} {input.long} -t {threads} |
@@ -654,7 +656,7 @@ rule map_hybrid_single:
 
 rule map_hybrid_multi:
     input:
-        idx = f"{RESULTS_DIR}/indices/single/hybrid/contigs/{{sample}}",
+        idx = f"{RESULTS_DIR}/indices/single/hybrid/contigs/{{sample}}.1.bt2",
         contigs = f"{RESULTS_DIR}/assemblies/single/hybrid/{{sample}}/assembly.fasta",
         r1 = lambda wc: SHORT_FINAL_R1,
         r2 = lambda wc: SHORT_FINAL_R2,
@@ -666,7 +668,7 @@ rule map_hybrid_multi:
         "envs/mapping.yaml"
     shell:
         """
-        bowtie2 -x {input.idx} -1 {input.r1} -2 {input.r2} -p {threads} |
+        bowtie2 -x {input.idx.rsplit('.',1)[0]} -1 {input.r1} -2 {input.r2} -p {threads} |
         samtools sort -@ {threads} -o short_{wildcards.sample}_{wildcards.other}.bam
 
         minimap2 -ax map-hifi {input.contigs} {input.long} -t {threads} |
