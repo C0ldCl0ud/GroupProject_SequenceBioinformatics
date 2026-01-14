@@ -54,6 +54,20 @@ assert len(short) == len(long), "Short/long accession count mismatch"
 SHORT_ACC = dict(zip(SAMPLES, short))
 LONG_ACC  = dict(zip(SAMPLES, long))
 
+DEBUG = config.get("debug", False)
+
+VAMB_MINFASTA = (
+    config["vamb"]["debug"]["minfasta"]
+    if DEBUG else
+    config["vamb"]["prod"]["minfasta"]
+)
+
+VAMB_MINCONTIGS = (
+    config["vamb"]["debug"]["mincontigs"]
+    if DEBUG else
+    config["vamb"]["prod"]["mincontigs"]
+)
+
 ############################################
 # Rule order / final targets
 ############################################
