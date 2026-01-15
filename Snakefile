@@ -1166,7 +1166,7 @@ rule metadecoder_coassembly:
     threads: config["threads"]
     conda:
         "envs/binning_metadecoder.yaml"
-    temp:
+    params:
         sams=expand(
             f"{RESULTS_DIR}/mapping/coassembly/short/{{sample}}.sorted.sam",
             sample=SAMPLES
@@ -1178,13 +1178,13 @@ rule metadecoder_coassembly:
 
         # Convert BAM -> SAM temporarily
         for i in $(seq 0 $((${#input.bams[@]} - 1))); do
-            samtools view -h {input.bams[i]} > {output.sams[i]}
+            samtools view -h {input.bams[i]} > {params.sams[i]}
         done
 
         # Run MetaDecoder
         metadecoder coverage \
             --threads {threads} \
-            -s {output.sams} \
+            -s {params.sams} \
             -o "$outdir/METADECODER_gsa.COVERAGE"
 
         metadecoder seed \
@@ -1210,7 +1210,7 @@ rule metadecoder_single:
     threads: config["threads"]
     conda:
         "envs/binning_metadecoder.yaml"
-    temp:
+    params:
         sam=f"{RESULTS_DIR}/mapping/single/{{assembly_type}}/{{sample}}.sorted.sam"
     shell:
         """
@@ -1218,12 +1218,12 @@ rule metadecoder_single:
         mkdir -p "$outdir"
 
         # Convert BAM -> SAM temporarily
-        samtools view -h {input.bam} > {output.sam}
+        samtools view -h {input.bam} > {params.sam}
 
         # Run MetaDecoder
         metadecoder coverage \
             --threads {threads} \
-            -s {output.sam} \
+            -s {params.sam} \
             -o "$outdir/METADECODER_gsa.COVERAGE"
 
         metadecoder seed \
@@ -1252,7 +1252,7 @@ rule metadecoder_multi:
     threads: config["threads"]
     conda:
         "envs/binning_metadecoder.yaml"
-    temp:
+    params:
         sams=lambda wc: expand(
             f"{RESULTS_DIR}/mapping/multi/{wc.assembly_type}/{wc.sample}/{{rep}}.sorted.sam",
             rep=SAMPLES
@@ -1264,13 +1264,13 @@ rule metadecoder_multi:
 
         # Convert BAM -> SAM temporarily
         for i in $(seq 0 $((${#input.bams[@]} - 1))); do
-            samtools view -h {input.bams[i]} > {output.sams[i]}
+            samtools view -h {input.bams[i]} > {params.sams[i]}
         done
 
         # Run MetaDecoder
         metadecoder coverage \
             --threads {threads} \
-            -s {output.sams} \
+            -s {params.sams} \
             -o "$outdir/METADECODER_gsa.COVERAGE"
 
         metadecoder seed \
