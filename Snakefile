@@ -744,6 +744,22 @@ rule depth_single:
         jgi_summarize_bam_contig_depths --outputDepth {output.depth} {input.bam}
         """
 
+rule maxbin_abundance:
+    input:
+        "{RESULTS_DIR}/depth/single/{{assembly_type}}/{{sample}}/depth.txt"
+    output:
+        "{RESULTS_DIR}/depth/single/{{assembly_type}}/{{sample}}/depth.maxbin.txt"
+    shell:
+        """
+        awk '
+        NR==1 {
+            if ($3 ~ /^[0-9.]+$/) print $1 "\t" $3;
+            next
+        }
+        { print $1 "\t" $3 }
+        ' {input} > {output}
+        """
+
 rule depth_multi:
     input:
         bams = lambda wc: expand(
@@ -843,7 +859,7 @@ rule maxbin2_coassembly:
 rule maxbin2_single:
     input:
         contigs = f"{RESULTS_DIR}/assemblies/single/{{assembly_type}}/{{sample}}/assembly.fasta",
-        depth   = f"{RESULTS_DIR}/depth/single/{{assembly_type}}/{{sample}}/depth.txt"
+        depth   = f"{RESULTS_DIR}/depth/single/{{assembly_type}}/{{sample}}/depth.maxbin2.txt"
     output:
         touch(f"{RESULTS_DIR}/bins/single/maxbin2/{{assembly_type}}/{{sample}}/bins.done")
     threads: config["threads"]
