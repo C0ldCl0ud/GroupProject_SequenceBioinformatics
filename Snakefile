@@ -1161,25 +1161,22 @@ rule metadecoder_coassembly:
             f"{RESULTS_DIR}/mapping/coassembly/short/{{sample}}.sorted.bam",
             sample=SAMPLES
         )
-    output:
-        touch(f"{RESULTS_DIR}/bins/coassembly/metadecoder/bins.done")
-    threads: config["threads"]
-    conda:
-        "envs/binning_metadecoder.yaml"
     params:
         sams=expand(
             f"{RESULTS_DIR}/mapping/coassembly/short/{{sample}}.sorted.sam",
             sample=SAMPLES
         )
+    output:
+        touch(f"{RESULTS_DIR}/bins/coassembly/metadecoder/bins.done")
+    threads: config["threads"]
+    conda: "envs/binning_metadecoder.yaml"
     shell:
         """
         outdir={RESULTS_DIR}/bins/coassembly/metadecoder
         mkdir -p "$outdir"
 
-        # Convert BAM -> SAM temporarily
-        for i in $(seq 0 $((${input.bams[@]} - 1))); do
-            samtools view -h {input.bams[i]} > {params.sams[i]}
-        done
+        # Convert BAM -> SAM for all samples
+        { " && ".join([f"samtools view -h {bam} > {sam}" for bam, sam in zip(input.bams, params.sams)]) }
 
         # Run MetaDecoder
         metadecoder coverage \
@@ -1201,23 +1198,23 @@ rule metadecoder_coassembly:
         touch {output}
         """
 
+
 rule metadecoder_single:
     input:
         contigs=f"{RESULTS_DIR}/assemblies/single/{{assembly_type}}/{{sample}}/assembly.fasta",
         bam=f"{RESULTS_DIR}/mapping/single/{{assembly_type}}/{{sample}}.sorted.bam"
+    params:
+        sam=f"{RESULTS_DIR}/mapping/single/{{assembly_type}}/{{sample}}.sorted.sam"
     output:
         touch(f"{RESULTS_DIR}/bins/single/metadecoder/{{assembly_type}}/{{sample}}/bins.done")
     threads: config["threads"]
-    conda:
-        "envs/binning_metadecoder.yaml"
-    params:
-        sam=f"{RESULTS_DIR}/mapping/single/{{assembly_type}}/{{sample}}.sorted.sam"
+    conda: "envs/binning_metadecoder.yaml"
     shell:
         """
         outdir={RESULTS_DIR}/bins/single/metadecoder/{wildcards.assembly_type}/{wildcards.sample}
         mkdir -p "$outdir"
 
-        # Convert BAM -> SAM temporarily
+        # Convert BAM -> SAM
         samtools view -h {input.bam} > {params.sam}
 
         # Run MetaDecoder
@@ -1240,6 +1237,7 @@ rule metadecoder_single:
         touch {output}
         """
 
+
 rule metadecoder_multi:
     input:
         contigs=f"{RESULTS_DIR}/assemblies/single/{{assembly_type}}/{{sample}}/assembly.fasta",
@@ -1247,25 +1245,22 @@ rule metadecoder_multi:
             f"{RESULTS_DIR}/mapping/multi/{wc.assembly_type}/{wc.sample}/{{rep}}.sorted.bam",
             rep=SAMPLES
         )
-    output:
-        touch(f"{RESULTS_DIR}/bins/multi/metadecoder/{{assembly_type}}/{{sample}}/bins.done")
-    threads: config["threads"]
-    conda:
-        "envs/binning_metadecoder.yaml"
     params:
         sams=lambda wc: expand(
             f"{RESULTS_DIR}/mapping/multi/{wc.assembly_type}/{wc.sample}/{{rep}}.sorted.sam",
             rep=SAMPLES
         )
+    output:
+        touch(f"{RESULTS_DIR}/bins/multi/metadecoder/{{assembly_type}}/{{sample}}/bins.done")
+    threads: config["threads"]
+    conda: "envs/binning_metadecoder.yaml"
     shell:
         """
         outdir={RESULTS_DIR}/bins/multi/metadecoder/{wildcards.assembly_type}/{wildcards.sample}
         mkdir -p "$outdir"
 
-        # Convert BAM -> SAM temporarily
-        for i in $(seq 0 $((${input.bams[@]} - 1))); do
-            samtools view -h {input.bams[i]} > {params.sams[i]}
-        done
+        # Convert BAM -> SAM for all replicates
+        { " && ".join([f"samtools view -h {bam} > {sam}" for bam, sam in zip(input.bams, params.sams)]) }
 
         # Run MetaDecoder
         metadecoder coverage \
@@ -1286,6 +1281,7 @@ rule metadecoder_multi:
 
         touch {output}
         """
+
 
 ############################################
 # 5.9. BINNY
