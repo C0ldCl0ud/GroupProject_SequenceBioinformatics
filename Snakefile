@@ -1170,33 +1170,28 @@ rule metadecoder_coassembly:
         touch(f"{RESULTS_DIR}/bins/coassembly/metadecoder/bins.done")
     threads: config["threads"]
     conda: "envs/binning_metadecoder.yaml"
-    shell:
-        """
-        outdir={RESULTS_DIR}/bins/coassembly/metadecoder
-        mkdir -p "$outdir"
+    run:
+        # Generate BAM -> SAM conversion commands in Python
+        bam_to_sam_cmds = " && ".join([f"samtools view -h {bam} > {sam}" 
+                                       for bam, sam in zip(input.bams, params.sams)])
+        
+        outdir = f"{RESULTS_DIR}/bins/coassembly/metadecoder"
+        
+        shell(f"""
+        mkdir -p "{outdir}"
 
-        # Convert BAM -> SAM for all samples
-        { " && ".join([f"samtools view -h {bam} > {sam}" for bam, sam in zip(input.bams, params.sams)]) }
+        # Convert BAM -> SAM
+        {bam_to_sam_cmds}
 
         # Run MetaDecoder
-        metadecoder coverage \
-            --threads {threads} \
-            -s {params.sams} \
-            -o "$outdir/METADECODER_gsa.COVERAGE"
+        metadecoder coverage --threads {threads} -s {params.sams} -o "{outdir}/METADECODER_gsa.COVERAGE"
 
-        metadecoder seed \
-            --threads {threads} \
-            -f {input.contigs} \
-            -o "$outdir/METADECODER_gsa.SEED"
+        metadecoder seed --threads {threads} -f {input.contigs} -o "{outdir}/METADECODER_gsa.SEED"
 
-        metadecoder cluster \
-            -f {input.contigs} \
-            -c "$outdir/METADECODER_gsa.COVERAGE" \
-            -s "$outdir/METADECODER_gsa.SEED" \
-            -o "$outdir/METADECODER_coassembly"
+        metadecoder cluster -f {input.contigs} -c "{outdir}/METADECODER_gsa.COVERAGE" -s "{outdir}/METADECODER_gsa.SEED" -o "{outdir}/METADECODER_coassembly"
 
         touch {output}
-        """
+        """)
 
 
 rule metadecoder_single:
@@ -1209,33 +1204,24 @@ rule metadecoder_single:
         touch(f"{RESULTS_DIR}/bins/single/metadecoder/{{assembly_type}}/{{sample}}/bins.done")
     threads: config["threads"]
     conda: "envs/binning_metadecoder.yaml"
-    shell:
-        """
-        outdir={RESULTS_DIR}/bins/single/metadecoder/{wildcards.assembly_type}/{wildcards.sample}
-        mkdir -p "$outdir"
+    run:
+        outdir = f"{RESULTS_DIR}/bins/single/metadecoder/{wildcards.assembly_type}/{wildcards.sample}"
+        
+        shell(f"""
+        mkdir -p "{outdir}"
 
         # Convert BAM -> SAM
         samtools view -h {input.bam} > {params.sam}
 
         # Run MetaDecoder
-        metadecoder coverage \
-            --threads {threads} \
-            -s {params.sam} \
-            -o "$outdir/METADECODER_gsa.COVERAGE"
+        metadecoder coverage --threads {threads} -s {params.sam} -o "{outdir}/METADECODER_gsa.COVERAGE"
 
-        metadecoder seed \
-            --threads {threads} \
-            -f {input.contigs} \
-            -o "$outdir/METADECODER_gsa.SEED"
+        metadecoder seed --threads {threads} -f {input.contigs} -o "{outdir}/METADECODER_gsa.SEED"
 
-        metadecoder cluster \
-            -f {input.contigs} \
-            -c "$outdir/METADECODER_gsa.COVERAGE" \
-            -s "$outdir/METADECODER_gsa.SEED" \
-            -o "$outdir/METADECODER_{wildcards.sample}"
+        metadecoder cluster -f {input.contigs} -c "{outdir}/METADECODER_gsa.COVERAGE" -s "{outdir}/METADECODER_gsa.SEED" -o "{outdir}/METADECODER_{wildcards.sample}"
 
         touch {output}
-        """
+        """)
 
 
 rule metadecoder_multi:
@@ -1254,33 +1240,27 @@ rule metadecoder_multi:
         touch(f"{RESULTS_DIR}/bins/multi/metadecoder/{{assembly_type}}/{{sample}}/bins.done")
     threads: config["threads"]
     conda: "envs/binning_metadecoder.yaml"
-    shell:
-        """
-        outdir={RESULTS_DIR}/bins/multi/metadecoder/{wildcards.assembly_type}/{wildcards.sample}
-        mkdir -p "$outdir"
+    run:
+        bam_to_sam_cmds = " && ".join([f"samtools view -h {bam} > {sam}" 
+                                       for bam, sam in zip(input.bams, params.sams)])
+        outdir = f"{RESULTS_DIR}/bins/multi/metadecoder/{wildcards.assembly_type}/{wildcards.sample}"
+        
+        shell(f"""
+        mkdir -p "{outdir}"
 
-        # Convert BAM -> SAM for all replicates
-        { " && ".join([f"samtools view -h {bam} > {sam}" for bam, sam in zip(input.bams, params.sams)]) }
+        # Convert BAM -> SAM
+        {bam_to_sam_cmds}
 
         # Run MetaDecoder
-        metadecoder coverage \
-            --threads {threads} \
-            -s {params.sams} \
-            -o "$outdir/METADECODER_gsa.COVERAGE"
+        metadecoder coverage --threads {threads} -s {params.sams} -o "{outdir}/METADECODER_gsa.COVERAGE"
 
-        metadecoder seed \
-            --threads {threads} \
-            -f {input.contigs} \
-            -o "$outdir/METADECODER_gsa.SEED"
+        metadecoder seed --threads {threads} -f {input.contigs} -o "{outdir}/METADECODER_gsa.SEED"
 
-        metadecoder cluster \
-            -f {input.contigs} \
-            -c "$outdir/METADECODER_gsa.COVERAGE" \
-            -s "$outdir/METADECODER_gsa.SEED" \
-            -o "$outdir/METADECODER_{wildcards.sample}"
+        metadecoder cluster -f {input.contigs} -c "{outdir}/METADECODER_gsa.COVERAGE" -s "{outdir}/METADECODER_gsa.SEED" -o "{outdir}/METADECODER_{wildcards.sample}"
 
         touch {output}
-        """
+        """)
+
 
 
 ############################################
