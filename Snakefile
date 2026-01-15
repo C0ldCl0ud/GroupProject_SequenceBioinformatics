@@ -748,7 +748,7 @@ rule maxbin_abundance:
     input:
         "{RESULTS_DIR}/depth/single/{{assembly_type}}/{{sample}}/depth.txt"
     output:
-        "{RESULTS_DIR}/depth/single/{{assembly_type}}/{{sample}}/depth.maxbin.txt"
+        "{RESULTS_DIR}/depth/single/{{assembly_type}}/{{sample}}/depth.maxbin2.txt"
     shell:
         """
         awk '
