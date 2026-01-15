@@ -731,6 +731,21 @@ rule depth_coassembly:
         """
         jgi_summarize_bam_contig_depths --outputDepth {output.depth} {input}
         """
+rule maxbin_abundance_coassembly:
+    input:
+        depth = f"{RESULTS_DIR}/depth/coassembly/depth.txt"
+    output:
+        maxbin = f"{RESULTS_DIR}/depth/coassembly/depth.maxbin2.txt"
+    shell:
+        """
+        awk '
+        NR==1 {{
+            if ($3 ~ /^[0-9.]+$/) print $1 "\t" $3;
+            next
+        }}
+        {{ print $1 "\t" $3 }}
+        ' {input.depth} > {output.maxbin}
+        """
 
 rule depth_single:
     input:
@@ -744,7 +759,7 @@ rule depth_single:
         jgi_summarize_bam_contig_depths --outputDepth {output.depth} {input.bam}
         """
 
-rule maxbin_abundance:
+rule maxbin_abundance_single:
     input:
         depth = f"{RESULTS_DIR}/depth/single/{{assembly_type}}/{{sample}}/depth.txt"
     output:
@@ -774,6 +789,23 @@ rule depth_multi:
         """
         jgi_summarize_bam_contig_depths --outputDepth {output.depth} {input.bams}
         """
+
+rule maxbin_abundance_multie:
+    input:
+        depth = f"{RESULTS_DIR}/depth/multi/{{assembly_type}}/{{sample}}/depth.txt"
+    output:
+        maxbin = f"{RESULTS_DIR}/depth/multi/{{assembly_type}}/{{sample}}/depth.maxbin2.txt"
+    shell:
+        """
+        awk '
+        NR==1 {{
+            if ($3 ~ /^[0-9.]+$/) print $1 "\t" $3;
+            next
+        }}
+        {{ print $1 "\t" $3 }}
+        ' {input.depth} > {output.maxbin}
+        """
+
 
 ############################################
 # 5.4 MetaBAT2
@@ -839,7 +871,7 @@ rule metabat2_multi:
 rule maxbin2_coassembly:
     input:
         contigs = f"{RESULTS_DIR}/assemblies/coassembly/short/assembly.fasta",
-        depth   = f"{RESULTS_DIR}/depth/coassembly/depth.txt"
+        depth   = f"{RESULTS_DIR}/depth/coassembly/depth.maxbin2.txt"
     output:
         touch(f"{RESULTS_DIR}/bins/coassembly/maxbin2/bins.done")
     threads: config["threads"]
@@ -885,7 +917,7 @@ rule maxbin2_single:
 rule maxbin2_multi:
     input:
         contigs = f"{RESULTS_DIR}/assemblies/single/{{assembly_type}}/{{sample}}/assembly.fasta",
-        depth   = f"{RESULTS_DIR}/depth/multi/{{assembly_type}}/{{sample}}/depth.txt"
+        depth   = f"{RESULTS_DIR}/depth/multi/{{assembly_type}}/{{sample}}/depth.maxbin2.txt"
     output:
         touch(f"{RESULTS_DIR}/bins/multi/maxbin2/{{assembly_type}}/{{sample}}/bins.done")
     threads: config["threads"]
