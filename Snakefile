@@ -1245,17 +1245,18 @@ rule metadecoder_multi:
         sams_str = " ".join(params.sams)  # converts ['a.sam','b.sam'] -> "a.sam b.sam"
 
         shell(f"""
-        mkdir -p "{outdir}"
+        outdir = {RESULTS_DIR}/bins/multi/metadecoder/{{assembly_type}}/{{sample}}
+        mkdir -p $outdir
 
         # Convert BAM -> SAM
         {bam_to_sam_cmds}
 
         # Run MetaDecoder
-        metadecoder coverage --threads {threads} -s {sams_str} -o "{outdir}/METADECODER_gsa.COVERAGE"
+        metadecoder coverage --threads {threads} -s {sams_str} -o "$outdir/METADECODER_gsa.COVERAGE"
 
-        metadecoder seed --threads {threads} -f {input.contigs} -o "{outdir}/METADECODER_gsa.SEED"
+        metadecoder seed --threads {threads} -f {input.contigs} -o "$outdir/METADECODER_gsa.SEED"
 
-        metadecoder cluster -f {input.contigs} -c "{outdir}/METADECODER_gsa.COVERAGE" -s "{outdir}/METADECODER_gsa.SEED" -o "{outdir}/METADECODER_{wildcards.sample}"
+        metadecoder cluster -f {input.contigs} -c "$outdir/METADECODER_gsa.COVERAGE" -s "$outdir/METADECODER_gsa.SEED" -o "$outdir/METADECODER_{wildcards.sample}"
 
         touch {output}
         """)
