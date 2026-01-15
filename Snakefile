@@ -153,6 +153,7 @@ rule download_short_reads:
 
         if [ -n "{params.scratch}" ]; then
             mkdir -p "{params.scratch}"
+            chmod 700 "{params.scratch}"
             TMPDIR=$(mktemp -d "{params.scratch}/prefetch_{wildcards.sample}_XXXX")
         else
             TMPDIR=$(mktemp -d)
@@ -184,6 +185,7 @@ rule download_long_reads:
 
         if [ -n "{params.scratch}" ]; then
             mkdir -p "{params.scratch}"
+            chmod 700 "{params.scratch}"
             TMPDIR=$(mktemp -d "{params.scratch}/prefetch_{wildcards.sample}_XXXX")
         else
             TMPDIR=$(mktemp -d)
