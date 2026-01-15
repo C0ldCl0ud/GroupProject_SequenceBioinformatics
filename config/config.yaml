@@ -1,5 +1,5 @@
-dataset: debug
-debug: true
+dataset: cheese
+debug: false
 debug_reads_short: 100000
 debug_reads_long: 5000
 debug_seed: 42
