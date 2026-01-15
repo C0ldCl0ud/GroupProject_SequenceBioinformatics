@@ -1171,23 +1171,22 @@ rule metadecoder_coassembly:
         """
         outdir={RESULTS_DIR}/bins/coassembly/metadecoder
         mkdir -p $outdir
-        cd $outdir
 
         metadecoder coverage \
           --threads {threads} \
           -s {input.sams} \
-          -o METADECODER_gsa.COVERAGE
+          -o "$outdir/METADECODER_gsa.COVERAGE"
 
         metadecoder seed \
           --threads {threads} \
           -f {input.contigs} \
-          -o METADECODER_gsa.SEED
+          -o "$outdir/METADECODER_gsa.SEED"
 
         metadecoder cluster \
           -f {input.contigs} \
-          -c METADECODER_gsa.COVERAGE \
-          -s METADECODER_gsa.SEED \
-          -o METADECODER_coassembly
+          -c "$outdir/METADECODER_gsa.COVERAGE" \
+          -s "$outdir/METADECODER_gsa.SEED" \
+          -o "$outdir/METADECODER_coassembly"
 
         touch {output}
         """
@@ -1205,23 +1204,22 @@ rule metadecoder_single:
         """
         outdir={RESULTS_DIR}/bins/single/metadecoder/{wildcards.assembly_type}/{wildcards.sample}
         mkdir -p $outdir
-        cd $outdir
 
         metadecoder coverage \
           --threads {threads} \
           -s {input.sam} \
-          -o METADECODER_gsa.COVERAGE
+          -o "$outdir/METADECODER_gsa.COVERAGE"
 
         metadecoder seed \
           --threads {threads} \
           -f {input.contigs} \
-          -o METADECODER_gsa.SEED
+          -o "$outdir/METADECODER_gsa.SEED"
 
         metadecoder cluster \
           -f {input.contigs} \
-          -c METADECODER_gsa.COVERAGE \
-          -s METADECODER_gsa.SEED \
-          -o METADECODER_{wildcards.sample}
+          -c "$outdir/METADECODER_gsa.COVERAGE" \
+          -s "$outdir/METADECODER_gsa.SEED" \
+          -o "$outdir/METADECODER_{wildcards.sample}"
 
         touch {output}
         """
@@ -1243,23 +1241,22 @@ rule metadecoder_multi:
         """
         outdir={RESULTS_DIR}/bins/multi/metadecoder/{wildcards.assembly_type}/{wildcards.sample}
         mkdir -p $outdir
-        cd $outdir
 
         metadecoder coverage \
           --threads {threads} \
           -s {input.sams} \
-          -o METADECODER_gsa.COVERAGE
+          -o "$outdir/METADECODER_gsa.COVERAGE"
 
         metadecoder seed \
           --threads {threads} \
           -f {input.contigs} \
-          -o METADECODER_gsa.SEED
+          -o "$outdir/METADECODER_gsa.SEED"
 
         metadecoder cluster \
           -f {input.contigs} \
-          -c METADECODER_gsa.COVERAGE \
-          -s METADECODER_gsa.SEED \
-          -o METADECODER_{wildcards.sample}
+          -c "$outdir/METADECODER_gsa.COVERAGE" \
+          -s "$outdir/METADECODER_gsa.SEED" \
+          -o "$outdir/METADECODER_{wildcards.sample}"
 
         touch {output}
         """
