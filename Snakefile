@@ -91,12 +91,12 @@ VAMB_BATCHSIZE = (
 rule all:
     input:
         [
-        expand(f"{RESULTS_DIR}/raw/short/{{sample}}", sample=SAMPLES),
-        expand(f"{RESULTS_DIR}/raw/long/{{sample}}", sample=SAMPLES)
+        #expand(f"{RESULTS_DIR}/raw/short/{{sample}}", sample=SAMPLES),
+        #expand(f"{RESULTS_DIR}/raw/long/{{sample}}", sample=SAMPLES)
 
-        #expand(f"{RESULTS_DIR}/fastq/short/{{sample}}_R1.fq.gz", sample=SAMPLES),
-        #expand(f"{RESULTS_DIR}/fastq/short/{{sample}}_R2.fq.gz", sample=SAMPLES),
-            #expand(f"{RESULTS_DIR}/fastq/long/{{sample}}.fq.gz", sample=SAMPLES),
+        expand(f"{RESULTS_DIR}/fastq/short/{{sample}}_R1.fq.gz", sample=SAMPLES),
+        expand(f"{RESULTS_DIR}/fastq/short/{{sample}}_R2.fq.gz", sample=SAMPLES),
+            expand(f"{RESULTS_DIR}/fastq/long/{{sample}}.fq.gz", sample=SAMPLES)
 
             #expand(f"{RESULTS_DIR}/preprocess/short/{{sample}}_R1.fastp.fq.gz", sample=SAMPLES),
             #expand(f"{RESULTS_DIR}/preprocess/short/{{sample}}_R2.fastp.fq.gz", sample=SAMPLES),
