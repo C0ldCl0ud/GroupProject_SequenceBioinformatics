@@ -1241,25 +1241,24 @@ rule metadecoder_multi:
     threads: config["threads"]
     conda: "envs/binning_metadecoder.yaml"
     run:
-        # in the run block
-        sams_str = " ".join(params.sams)  # converts ['a.sam','b.sam'] -> "a.sam b.sam"
+        outdir = f"{RESULTS_DIR}/bins/multi/metadecoder/{wildcards.assembly_type}/{wildcards.sample}"
+        shell(f"mkdir -p {outdir}")
 
-        shell(f"""
-        outdir = {RESULTS_DIR}/bins/multi/metadecoder/{{assembly_type}}/{{sample}}
-        mkdir -p $outdir
+        # Convert BAM -> SAM for all replicates
+        for bam, sam in zip(input.bams, params.sams):
+            shell(f"samtools view -h {bam} > {sam}")
 
-        # Convert BAM -> SAM
-        {bam_to_sam_cmds}
+        # Now join the SAM paths into a space-separated string for MetaDecoder
+        sams_str = " ".join(params.sams)
 
         # Run MetaDecoder
-        metadecoder coverage --threads {threads} -s {sams_str} -o "$outdir/METADECODER_gsa.COVERAGE"
-
-        metadecoder seed --threads {threads} -f {input.contigs} -o "$outdir/METADECODER_gsa.SEED"
-
-        metadecoder cluster -f {input.contigs} -c "$outdir/METADECODER_gsa.COVERAGE" -s "$outdir/METADECODER_gsa.SEED" -o "$outdir/METADECODER_{wildcards.sample}"
-
-        touch {output}
+        shell(f"""
+            metadecoder coverage --threads {threads} -s {sams_str} -o {outdir}/METADECODER_gsa.COVERAGE
+            metadecoder seed --threads {threads} -f {input.contigs} -o {outdir}/METADECODER_gsa.SEED
+            metadecoder cluster -f {input.contigs} -c {outdir}/METADECODER_gsa.COVERAGE -s {outdir}/METADECODER_gsa.SEED -o {outdir}/METADECODER_{wildcards.sample}
+            touch {output}
         """)
+
 
 
 
