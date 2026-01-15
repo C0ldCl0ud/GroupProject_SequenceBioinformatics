@@ -3,6 +3,9 @@ wildcard_constraints:
 
 import os
 from glob import glob
+
+configfile: "config/config.yaml"
+
 USE_SCRATCH = config.get("use_scratch", False)
 
 if USE_SCRATCH:
@@ -12,8 +15,6 @@ if USE_SCRATCH:
     SCRATCH = f"{SCRATCH_BASE}/{USER}/{PROJECT}"
 else:
     SCRATCH = ""
-
-configfile: "config/config.yaml"
 
 # dataset is passed via --config dataset=dataset1
 DATASET = config["dataset"]
