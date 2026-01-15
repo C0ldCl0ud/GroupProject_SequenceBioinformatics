@@ -213,7 +213,8 @@ rule sra_to_fastq_short:
         acc = lambda wc: SHORT_ACC[wc.sample],
         debug = config.get("debug", False),
         n = config.get("debug_reads_short", 200000),
-        seed = config.get("debug_seed", 42)
+        seed = config.get("debug_seed", 42),
+        scratch = SCRATCH
     conda:
         "envs/download.yaml"
     log:
@@ -221,27 +222,36 @@ rule sra_to_fastq_short:
     resources:
         disk_io=1
     shell:
-        """
+        r"""
         set -euo pipefail
 
         SRA="{input.sra_dir}/{params.acc}/{params.acc}.sra"
-        OUTDIR="{RESULTS_DIR}/fastq/short"
-        R1_UNZ="$OUTDIR/{params.acc}_1.fastq"
-        R2_UNZ="$OUTDIR/{params.acc}_2.fastq"
 
-        # 1. Extract FASTQ
-        fasterq-dump --split-files "$SRA" -O "$OUTDIR" 2>> {log}
+        # --- scratch handling ---
+        if [ -n "{params.scratch}" ] && [ -d "{params.scratch}" ] && [ -w "{params.scratch}" ]; then
+            mkdir -p "{params.scratch}"
+            chmod 700 "{params.scratch}"
+            TMPDIR=$(mktemp -d "{params.scratch}/fastq_short_{wildcards.sample}_XXXX")
+        else
+            TMPDIR=$(mktemp -d)
+        fi
+
+        trap "rm -rf $TMPDIR" EXIT
+
+        R1_UNZ="$TMPDIR/{params.acc}_1.fastq"
+        R2_UNZ="$TMPDIR/{params.acc}_2.fastq"
+
+        # --- extract FASTQ into scratch ---
+        fasterq-dump --split-files "$SRA" -O "$TMPDIR" >> {log} 2>&1
+
+        mkdir -p $(dirname "{output.r1}")
 
         if [ "{params.debug}" = "True" ]; then
-            # 2. Downsample for debug
             seqtk sample -s{params.seed} "$R1_UNZ" {params.n} | gzip > "{output.r1}"
             seqtk sample -s{params.seed} "$R2_UNZ" {params.n} | gzip > "{output.r2}"
-            rm "$R1_UNZ" "$R2_UNZ"
         else
-            # 2. Just gzip the original FASTQ
             gzip -c "$R1_UNZ" > "{output.r1}"
             gzip -c "$R2_UNZ" > "{output.r2}"
-            rm "$R1_UNZ" "$R2_UNZ"
         fi
         """
 
@@ -254,7 +264,8 @@ rule sra_to_fastq_long:
         acc = lambda wc: LONG_ACC[wc.sample],
         debug = config.get("debug", False),
         n = config.get("debug_reads_long", 5000),
-        seed = config.get("debug_seed", 42)
+        seed = config.get("debug_seed", 42),
+        scratch = SCRATCH
     conda:
         "envs/download.yaml"
     log:
@@ -262,21 +273,33 @@ rule sra_to_fastq_long:
     resources:
         disk_io=1
     shell:
-        """
+        r"""
         set -euo pipefail
 
         SRA="{input.sra_dir}/{params.acc}/{params.acc}.sra"
-        UNZ="{RESULTS_DIR}/fastq/long/{params.acc}.fastq"
 
-        # 1. Extract FASTQ
-        fasterq-dump "$SRA" -O "{RESULTS_DIR}/fastq/long" 2>> {log}
+        # --- scratch handling ---
+        if [ -n "{params.scratch}" ] && [ -d "{params.scratch}" ] && [ -w "{params.scratch}" ]; then
+            mkdir -p "{params.scratch}"
+            chmod 700 "{params.scratch}"
+            TMPDIR=$(mktemp -d "{params.scratch}/fastq_long_{wildcards.sample}_XXXX")
+        else
+            TMPDIR=$(mktemp -d)
+        fi
+
+        trap "rm -rf $TMPDIR" EXIT
+
+        UNZ="$TMPDIR/{params.acc}.fastq"
+
+        # --- extract FASTQ into scratch ---
+        fasterq-dump "$SRA" -O "$TMPDIR" >> {log} 2>&1
+
+        mkdir -p $(dirname "{output.fq}")
 
         if [ "{params.debug}" = "True" ]; then
             seqtk sample -s{params.seed} "$UNZ" {params.n} | gzip > "{output.fq}"
-            rm "$UNZ"
         else
             gzip -c "$UNZ" > "{output.fq}"
-            rm "$UNZ"
         fi
         """
 
