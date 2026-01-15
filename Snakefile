@@ -1156,107 +1156,133 @@ rule vamb_multi:
 
 rule metadecoder_coassembly:
     input:
-        contigs = f"{RESULTS_DIR}/assemblies/coassembly/short/assembly.fasta",
-        sams = expand(
+        contigs=f"{RESULTS_DIR}/assemblies/coassembly/short/assembly.fasta",
+        bams=expand(
             f"{RESULTS_DIR}/mapping/coassembly/short/{{sample}}.sorted.bam",
             sample=SAMPLES
         )
-
     output:
         touch(f"{RESULTS_DIR}/bins/coassembly/metadecoder/bins.done")
     threads: config["threads"]
     conda:
         "envs/binning_metadecoder.yaml"
+    temp:
+        sams=expand(
+            f"{RESULTS_DIR}/mapping/coassembly/short/{{sample}}.sorted.sam",
+            sample=SAMPLES
+        )
     shell:
         """
         outdir={RESULTS_DIR}/bins/coassembly/metadecoder
-        mkdir -p $outdir
+        mkdir -p "$outdir"
 
+        # Convert BAM -> SAM temporarily
+        for i in $(seq 0 $((${#input.bams[@]} - 1))); do
+            samtools view -h {input.bams[i]} > {output.sams[i]}
+        done
+
+        # Run MetaDecoder
         metadecoder coverage \
-          --threads {threads} \
-          -s {input.sams} \
-          -o "$outdir/METADECODER_gsa.COVERAGE"
+            --threads {threads} \
+            -s {output.sams} \
+            -o "$outdir/METADECODER_gsa.COVERAGE"
 
         metadecoder seed \
-          --threads {threads} \
-          -f {input.contigs} \
-          -o "$outdir/METADECODER_gsa.SEED"
+            --threads {threads} \
+            -f {input.contigs} \
+            -o "$outdir/METADECODER_gsa.SEED"
 
         metadecoder cluster \
-          -f {input.contigs} \
-          -c "$outdir/METADECODER_gsa.COVERAGE" \
-          -s "$outdir/METADECODER_gsa.SEED" \
-          -o "$outdir/METADECODER_coassembly"
+            -f {input.contigs} \
+            -c "$outdir/METADECODER_gsa.COVERAGE" \
+            -s "$outdir/METADECODER_gsa.SEED" \
+            -o "$outdir/METADECODER_coassembly"
 
         touch {output}
         """
 
 rule metadecoder_single:
     input:
-        contigs = f"{RESULTS_DIR}/assemblies/single/{{assembly_type}}/{{sample}}/assembly.fasta",
-        sam = f"{RESULTS_DIR}/mapping/single/{{assembly_type}}/{{sample}}.sorted.bam"
+        contigs=f"{RESULTS_DIR}/assemblies/single/{{assembly_type}}/{{sample}}/assembly.fasta",
+        bam=f"{RESULTS_DIR}/mapping/single/{{assembly_type}}/{{sample}}.sorted.bam"
     output:
         touch(f"{RESULTS_DIR}/bins/single/metadecoder/{{assembly_type}}/{{sample}}/bins.done")
     threads: config["threads"]
     conda:
         "envs/binning_metadecoder.yaml"
+    temp:
+        sam=f"{RESULTS_DIR}/mapping/single/{{assembly_type}}/{{sample}}.sorted.sam"
     shell:
         """
         outdir={RESULTS_DIR}/bins/single/metadecoder/{wildcards.assembly_type}/{wildcards.sample}
-        mkdir -p $outdir
+        mkdir -p "$outdir"
 
+        # Convert BAM -> SAM temporarily
+        samtools view -h {input.bam} > {output.sam}
+
+        # Run MetaDecoder
         metadecoder coverage \
-          --threads {threads} \
-          -s {input.sam} \
-          -o "$outdir/METADECODER_gsa.COVERAGE"
+            --threads {threads} \
+            -s {output.sam} \
+            -o "$outdir/METADECODER_gsa.COVERAGE"
 
         metadecoder seed \
-          --threads {threads} \
-          -f {input.contigs} \
-          -o "$outdir/METADECODER_gsa.SEED"
+            --threads {threads} \
+            -f {input.contigs} \
+            -o "$outdir/METADECODER_gsa.SEED"
 
         metadecoder cluster \
-          -f {input.contigs} \
-          -c "$outdir/METADECODER_gsa.COVERAGE" \
-          -s "$outdir/METADECODER_gsa.SEED" \
-          -o "$outdir/METADECODER_{wildcards.sample}"
+            -f {input.contigs} \
+            -c "$outdir/METADECODER_gsa.COVERAGE" \
+            -s "$outdir/METADECODER_gsa.SEED" \
+            -o "$outdir/METADECODER_{wildcards.sample}"
 
         touch {output}
         """
 
 rule metadecoder_multi:
     input:
-        contigs = f"{RESULTS_DIR}/assemblies/single/{{assembly_type}}/{{sample}}/assembly.fasta",
-        sams = lambda wc: expand(
+        contigs=f"{RESULTS_DIR}/assemblies/single/{{assembly_type}}/{{sample}}/assembly.fasta",
+        bams=lambda wc: expand(
             f"{RESULTS_DIR}/mapping/multi/{wc.assembly_type}/{wc.sample}/{{rep}}.sorted.bam",
             rep=SAMPLES
         )
-
     output:
         touch(f"{RESULTS_DIR}/bins/multi/metadecoder/{{assembly_type}}/{{sample}}/bins.done")
     threads: config["threads"]
     conda:
         "envs/binning_metadecoder.yaml"
+    temp:
+        sams=lambda wc: expand(
+            f"{RESULTS_DIR}/mapping/multi/{wc.assembly_type}/{wc.sample}/{{rep}}.sorted.sam",
+            rep=SAMPLES
+        )
     shell:
         """
         outdir={RESULTS_DIR}/bins/multi/metadecoder/{wildcards.assembly_type}/{wildcards.sample}
-        mkdir -p $outdir
+        mkdir -p "$outdir"
 
+        # Convert BAM -> SAM temporarily
+        for i in $(seq 0 $((${#input.bams[@]} - 1))); do
+            samtools view -h {input.bams[i]} > {output.sams[i]}
+        done
+
+        # Run MetaDecoder
         metadecoder coverage \
-          --threads {threads} \
-          -s {input.sams} \
-          -o "$outdir/METADECODER_gsa.COVERAGE"
+            --threads {threads} \
+            -s {output.sams} \
+            -o "$outdir/METADECODER_gsa.COVERAGE"
 
         metadecoder seed \
-          --threads {threads} \
-          -f {input.contigs} \
-          -o "$outdir/METADECODER_gsa.SEED"
+            --threads {threads} \
+            -f {input.contigs} \
+            -o "$outdir/METADECODER_gsa.SEED"
 
         metadecoder cluster \
-          -f {input.contigs} \
-          -c "$outdir/METADECODER_gsa.COVERAGE" \
-          -s "$outdir/METADECODER_gsa.SEED" \
-          -o "$outdir/METADECODER_{wildcards.sample}"
+            -f {input.contigs} \
+            -c "$outdir/METADECODER_gsa.COVERAGE" \
+            -s "$outdir/METADECODER_gsa.SEED" \
+            -o "$outdir/METADECODER_{wildcards.sample}"
 
         touch {output}
         """
