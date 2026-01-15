@@ -1177,7 +1177,7 @@ rule metadecoder_coassembly:
         mkdir -p "$outdir"
 
         # Convert BAM -> SAM temporarily
-        for i in $(seq 0 $((${#input.bams[@]} - 1))); do
+        for i in $(seq 0 $((${input.bams[@]} - 1))); do
             samtools view -h {input.bams[i]} > {params.sams[i]}
         done
 
@@ -1263,7 +1263,7 @@ rule metadecoder_multi:
         mkdir -p "$outdir"
 
         # Convert BAM -> SAM temporarily
-        for i in $(seq 0 $((${#input.bams[@]} - 1))); do
+        for i in $(seq 0 $((${input.bams[@]} - 1))); do
             samtools view -h {input.bams[i]} > {params.sams[i]}
         done
 
