@@ -1195,7 +1195,7 @@ rule metadecoder_coassembly:
 rule metadecoder_single:
     input:
         contigs = f"{RESULTS_DIR}/assemblies/single/{{assembly_type}}/{{sample}}/assembly.fasta",
-        sam = f"{RESULTS_DIR}/mapping/single/{{assembly_type}}/{{sample}}/{{sample}}.sorted.bam"
+        sam = f"{RESULTS_DIR}/mapping/single/{{assembly_type}}/{{sample}}.sorted.bam"
     output:
         touch(f"{RESULTS_DIR}/bins/single/metadecoder/{{assembly_type}}/{{sample}}/bins.done")
     threads: config["threads"]
