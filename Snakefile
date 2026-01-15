@@ -4,10 +4,35 @@ wildcard_constraints:
 import os
 from glob import glob
 
-SCRATCH = "/beegfs/HPCscratch"
-USER = os.environ["USER"]
-SCRATCH_BASE = f"{SCRATCH}/{USER}"
-SCRATCH_PROJECT = f"{SCRATCH_BASE}/GroupProject_SequenceBioinformatics"
+# Preferred scratch locations (in order)
+SCRATCH_CANDIDATES = [
+    "/beegfs/HPCscratch",
+    "/scratch",
+    "/tmp"
+]
+
+def find_scratch():
+    for base in SCRATCH_CANDIDATES:
+        if os.path.isdir(base) and os.access(base, os.W_OK):
+            return base
+    return None
+
+SCRATCH_BASE = find_scratch()
+
+# Per-user, per-project namespace
+USER = os.environ.get("USER", "local")
+PROJECT = "GroupProject_SequenceBioinformatics"
+
+if SCRATCH_BASE:
+    SCRATCH = f"{SCRATCH_BASE}/{USER}/{PROJECT}"
+else:
+    SCRATCH = None
+
+def mk_scratch_dir(prefix):
+    if SCRATCH:
+        return f"{SCRATCH}/{prefix}"
+    else:
+        return None
 
 configfile: "config/config.yaml"
 
@@ -87,7 +112,7 @@ rule all:
     input:
         [
         expand(f"{RESULTS_DIR}/raw/short/{{sample}}", sample=SAMPLES),
-        expand(f"{RESULTS_DIR}/raw/long/{{sample}}", sample=SAMPLES),
+        expand(f"{RESULTS_DIR}/raw/long/{{sample}}", sample=SAMPLES)
 
         #expand(f"{RESULTS_DIR}/fastq/short/{{sample}}_R1.fq.gz", sample=SAMPLES),
         #expand(f"{RESULTS_DIR}/fastq/short/{{sample}}_R2.fq.gz", sample=SAMPLES),
@@ -138,18 +163,22 @@ rule download_short_reads:
         sra = directory(f"{RESULTS_DIR}/raw/short/{{sample}}")
     params:
         acc = lambda wc: SHORT_ACC[wc.sample],
-        scratch = SCRATCH_PROJECT
+        scratch = SCRATCH
     conda:
         "envs/download.yaml"
     log:
         f"logs/{DATASET}/download/short/{{sample}}.log"
-    resources:
-        disk_io=1
     shell:
         r"""
         set -euo pipefail
 
-        TMPDIR=$(mktemp -d {params.scratch}/prefetch_{wildcards.sample}_XXXX)
+        if [ -n "{params.scratch}" ]; then
+            mkdir -p "{params.scratch}"
+            TMPDIR=$(mktemp -d "{params.scratch}/prefetch_{wildcards.sample}_XXXX")
+        else
+            TMPDIR=$(mktemp -d)
+        fi
+
         trap "rm -rf $TMPDIR" EXIT
 
         prefetch {params.acc} -O "$TMPDIR" > {log} 2>&1
@@ -163,7 +192,7 @@ rule download_long_reads:
         sra_dir = directory(f"{RESULTS_DIR}/raw/long/{{sample}}")
     params:
         acc = lambda wc: LONG_ACC[wc.sample],
-        scratch = SCRATCH_PROJECT
+        scratch = SCRATCH
     conda:
         "envs/download.yaml"
     log:
@@ -174,13 +203,19 @@ rule download_long_reads:
         r"""
         set -euo pipefail
 
-        TMPDIR=$(mktemp -d {params.scratch}/prefetch_{wildcards.sample}_XXXX)
+        if [ -n "{params.scratch}" ]; then
+            mkdir -p "{params.scratch}"
+            TMPDIR=$(mktemp -d "{params.scratch}/prefetch_{wildcards.sample}_XXXX")
+        else
+            TMPDIR=$(mktemp -d)
+        fi
+
         trap "rm -rf $TMPDIR" EXIT
 
         prefetch {params.acc} -O "$TMPDIR" > {log} 2>&1
 
-        mkdir -p $(dirname {output.sra_dir})
-        mv "$TMPDIR" "{output.sra_dir}"
+        mkdir -p $(dirname {output.sra})
+        mv "$TMPDIR" "{output.sra}"
         """
 
 ############################################
