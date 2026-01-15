@@ -1241,10 +1241,9 @@ rule metadecoder_multi:
     threads: config["threads"]
     conda: "envs/binning_metadecoder.yaml"
     run:
-        bam_to_sam_cmds = " && ".join([f"samtools view -h {bam} > {sam}" 
-                                       for bam, sam in zip(input.bams, params.sams)])
-        outdir = f"{RESULTS_DIR}/bins/multi/metadecoder/{wildcards.assembly_type}/{wildcards.sample}"
-        
+        # in the run block
+        sams_str = " ".join(params.sams)  # converts ['a.sam','b.sam'] -> "a.sam b.sam"
+
         shell(f"""
         mkdir -p "{outdir}"
 
@@ -1252,7 +1251,7 @@ rule metadecoder_multi:
         {bam_to_sam_cmds}
 
         # Run MetaDecoder
-        metadecoder coverage --threads {threads} -s {params.sams} -o "{outdir}/METADECODER_gsa.COVERAGE"
+        metadecoder coverage --threads {threads} -s {sams_str} -o "{outdir}/METADECODER_gsa.COVERAGE"
 
         metadecoder seed --threads {threads} -f {input.contigs} -o "{outdir}/METADECODER_gsa.SEED"
 
