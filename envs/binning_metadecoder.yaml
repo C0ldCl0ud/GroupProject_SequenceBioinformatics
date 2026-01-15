@@ -1,4 +1,4 @@
-name: binning
+name: binning_metadecoder
 channels:
   - bioconda
   - conda-forge
@@ -14,4 +14,5 @@ dependencies:
   - das_tool=1.1.6
   - bowtie2=2.5.1
   - minimap2=2.24
+
 
