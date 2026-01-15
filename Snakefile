@@ -866,7 +866,7 @@ rule maxbin2_single:
     conda:
         "envs/binning.yaml"
     log:
-        f"logs/{DATASET}/binning/maxbin2/single/{{assembly_type}}/{{sample}}.log"
+        f"logs/{DATASET}/bins/maxbin2/single/{{assembly_type}}/{{sample}}.log"
     shell:
         """
         mkdir -p $(dirname {log})
