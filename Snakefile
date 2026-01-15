@@ -189,7 +189,7 @@ rule download_short_reads:
 
 rule download_long_reads:
     output:
-        sra_dir = directory(f"{RESULTS_DIR}/raw/long/{{sample}}")
+        sra = directory(f"{RESULTS_DIR}/raw/long/{{sample}}")
     params:
         acc = lambda wc: LONG_ACC[wc.sample],
         scratch = SCRATCH
