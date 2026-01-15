@@ -4,6 +4,11 @@ wildcard_constraints:
 import os
 from glob import glob
 
+SCRATCH = "/beegfs/HPCscratch"
+USER = os.environ["USER"]
+SCRATCH_BASE = f"{SCRATCH}/{USER}"
+SCRATCH_PROJECT = f"{SCRATCH_BASE}/GroupProject_SequenceBioinformatics"
+
 configfile: "config/config.yaml"
 
 # dataset is passed via --config dataset=dataset1
@@ -81,8 +86,8 @@ VAMB_BATCHSIZE = (
 rule all:
     input:
         [
-        #expand(f"{RESULTS_DIR}/raw/short/{{sample}}", sample=SAMPLES),
-        #expand(f"{RESULTS_DIR}/raw/long/{{sample}}", sample=SAMPLES),
+        expand(f"{RESULTS_DIR}/raw/short/{{sample}}", sample=SAMPLES),
+        expand(f"{RESULTS_DIR}/raw/long/{{sample}}", sample=SAMPLES),
 
         #expand(f"{RESULTS_DIR}/fastq/short/{{sample}}_R1.fq.gz", sample=SAMPLES),
         #expand(f"{RESULTS_DIR}/fastq/short/{{sample}}_R2.fq.gz", sample=SAMPLES),
@@ -113,9 +118,9 @@ rule all:
 
 
         # binning
-        expand(f"{RESULTS_DIR}/bins/coassembly/{{tool}}/bins.done",tool=config["binning_tools"]),
-        expand(f"{RESULTS_DIR}/bins/single/{{tool}}/{{assembly_type}}/{{sample}}/bins.done", tool=config["binning_tools"], assembly_type=["short", "long", "hybrid"], sample=SAMPLES),
-        expand(f"{RESULTS_DIR}/bins/multi/{{tool}}/{{assembly_type}}/{{sample}}/bins.done", tool=config["binning_tools"], sample=SAMPLES, assembly_type=["short", "long", "hybrid"])
+        #expand(f"{RESULTS_DIR}/bins/coassembly/{{tool}}/bins.done",tool=config["binning_tools"]),
+        #expand(f"{RESULTS_DIR}/bins/single/{{tool}}/{{assembly_type}}/{{sample}}/bins.done", tool=config["binning_tools"], assembly_type=["short", "long", "hybrid"], sample=SAMPLES),
+        #expand(f"{RESULTS_DIR}/bins/multi/{{tool}}/{{assembly_type}}/{{sample}}/bins.done", tool=config["binning_tools"], sample=SAMPLES, assembly_type=["short", "long", "hybrid"])
         # QC
         # Single-sample QC
         #expand(f"{RESULTS_DIR}/qc/single/{{assembly_type}}/{{sample}}/qc.done",
@@ -130,9 +135,10 @@ rule all:
 
 rule download_short_reads:
     output:
-        sra=directory(f"{RESULTS_DIR}/raw/short/{{sample}}")
+        sra = directory(f"{RESULTS_DIR}/raw/short/{{sample}}")
     params:
-        acc=lambda wc: SHORT_ACC[wc.sample]
+        acc = lambda wc: SHORT_ACC[wc.sample],
+        scratch = SCRATCH_PROJECT
     conda:
         "envs/download.yaml"
     log:
@@ -140,15 +146,24 @@ rule download_short_reads:
     resources:
         disk_io=1
     shell:
-        """
-        prefetch {params.acc} -O {output.sra} > {log} 2>&1
+        r"""
+        set -euo pipefail
+
+        TMPDIR=$(mktemp -d {params.scratch}/prefetch_{wildcards.sample}_XXXX)
+        trap "rm -rf $TMPDIR" EXIT
+
+        prefetch {params.acc} -O "$TMPDIR" > {log} 2>&1
+
+        mkdir -p $(dirname {output.sra})
+        mv "$TMPDIR" "{output.sra}"
         """
 
 rule download_long_reads:
     output:
         sra_dir = directory(f"{RESULTS_DIR}/raw/long/{{sample}}")
     params:
-        acc = lambda wc: LONG_ACC[wc.sample]
+        acc = lambda wc: LONG_ACC[wc.sample],
+        scratch = SCRATCH_PROJECT
     conda:
         "envs/download.yaml"
     log:
@@ -156,8 +171,16 @@ rule download_long_reads:
     resources:
         disk_io=1
     shell:
-        """
-        prefetch {params.acc} -O {output.sra_dir} > {log} 2>&1
+        r"""
+        set -euo pipefail
+
+        TMPDIR=$(mktemp -d {params.scratch}/prefetch_{wildcards.sample}_XXXX)
+        trap "rm -rf $TMPDIR" EXIT
+
+        prefetch {params.acc} -O "$TMPDIR" > {log} 2>&1
+
+        mkdir -p $(dirname {output.sra_dir})
+        mv "$TMPDIR" "{output.sra_dir}"
         """
 
 ############################################
