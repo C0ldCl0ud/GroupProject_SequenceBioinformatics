@@ -1,6 +1,6 @@
 dataset: cheese
 debug: false
-use_scratch: true        # set to false for local runs
+use_scratch: false        # set to false for local runs
 scratch_base: /beegfs/HPCscratch
 debug_reads_short: 100000
 debug_reads_long: 5000
