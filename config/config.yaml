@@ -18,5 +18,7 @@ binning_tools:
   - metabat2
   - maxbin2
   - concoct
+  #- vamb     #appears to not work in debug
+  - metadecoder
 hg38_index: data/human_assembly/bow2_idx/GRCh38_index
 remove_human_reads: false
