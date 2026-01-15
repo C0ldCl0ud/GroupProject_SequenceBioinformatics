@@ -752,11 +752,11 @@ rule maxbin_abundance:
     shell:
         """
         awk '
-        NR==1 {
+        NR==1 {{
             if ($3 ~ /^[0-9.]+$/) print $1 "\t" $3;
             next
-        }
-        { print $1 "\t" $3 }
+        }}
+        {{ print $1 "\t" $3 }}
         ' {input.depth} > {output.maxbin}
         """
 
