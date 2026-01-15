@@ -746,9 +746,9 @@ rule depth_single:
 
 rule maxbin_abundance:
     input:
-        "{RESULTS_DIR}/depth/single/{{assembly_type}}/{{sample}}/depth.txt"
+        depth = f"{RESULTS_DIR}/depth/single/{{assembly_type}}/{{sample}}/depth.txt"
     output:
-        "{RESULTS_DIR}/depth/single/{{assembly_type}}/{{sample}}/depth.maxbin2.txt"
+        maxbin = f"{RESULTS_DIR}/depth/single/{{assembly_type}}/{{sample}}/depth.maxbin2.txt"
     shell:
         """
         awk '
@@ -757,7 +757,7 @@ rule maxbin_abundance:
             next
         }
         { print $1 "\t" $3 }
-        ' {input} > {output}
+        ' {input.depth} > {output.maxbin}
         """
 
 rule depth_multi:
