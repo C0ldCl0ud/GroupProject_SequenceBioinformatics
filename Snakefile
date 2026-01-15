@@ -3,36 +3,15 @@ wildcard_constraints:
 
 import os
 from glob import glob
+USE_SCRATCH = config.get("use_scratch", False)
 
-# Preferred scratch locations (in order)
-SCRATCH_CANDIDATES = [
-    "/beegfs/HPCscratch",
-    "/scratch",
-    "/tmp"
-]
-
-def find_scratch():
-    for base in SCRATCH_CANDIDATES:
-        if os.path.isdir(base) and os.access(base, os.W_OK):
-            return base
-    return None
-
-SCRATCH_BASE = find_scratch()
-
-# Per-user, per-project namespace
-USER = os.environ.get("USER", "local")
-PROJECT = "GroupProject_SequenceBioinformatics"
-
-if SCRATCH_BASE:
+if USE_SCRATCH:
+    SCRATCH_BASE = config.get("scratch_base", "/beegfs/HPCscratch")
+    USER = os.environ.get("USER", "unknown")
+    PROJECT = "GroupProject_SequenceBioinformatics"
     SCRATCH = f"{SCRATCH_BASE}/{USER}/{PROJECT}"
 else:
-    SCRATCH = None
-
-def mk_scratch_dir(prefix):
-    if SCRATCH:
-        return f"{SCRATCH}/{prefix}"
-    else:
-        return None
+    SCRATCH = ""
 
 configfile: "config/config.yaml"
 
