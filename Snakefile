@@ -454,8 +454,11 @@ rule remove_human_long:
           -x {config[hg38_index]} \
           -U {input.fq} \
           -p {threads} \
-          --un-gz {output.fq} \
+          --un-gz {RESULTS_DIR}/preprocess/long/{wildcards.sample} \
+          -S /dev/null \
           > {log} 2>&1
+
+        mv {RESULTS_DIR}/preprocess/long/{wildcards.sample} {output}
         """
 
 ############################################
