@@ -15,8 +15,8 @@ vamb:
     mincontigs: 100
     batchsize: 8
 metabinner:
-  min_contig_len: 1000
-  kmer_size: 4
+    min_contig_len: 1000
+    kmer_size: 4
 threads: 16
 long_read_technology: pacbio   # pacbio | nanopore (human_gut_II, activated_sludge)
 binning_tools:
