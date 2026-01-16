@@ -800,13 +800,13 @@ rule maxbin_abundance_coassembly:
     output:
         maxbin = f"{RESULTS_DIR}/depth/coassembly/depth.maxbin2.txt"
     shell:
-        r"""
+        """
         awk '
-            NR==1 {
+            NR==1 {{
             if ($3 ~ /^[0-9.]+$/) print $1 "\t" $3;
             next
-            }
-        { print $1 "\t" $3 }
+            }}
+        {{ print $1 "\t" $3 }}
         ' {input.depth} > {output.maxbin}
         """
 
