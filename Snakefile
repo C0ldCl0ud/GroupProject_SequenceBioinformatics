@@ -430,11 +430,12 @@ rule remove_human_short:
           -x {config[hg38_index]} \
           -1 {input.r1} -2 {input.r2} \
           -p {threads} \
-          --un-conc-gz {RESULTS_DIR}/preprocess/short/{wildcards.sample}.nohuman.fq.gz \
+          --un-conc-gz {RESULTS_DIR}/preprocess/short/{wildcards.sample} \
+          -S /dev/null \
           > {log} 2>&1
 
-        mv {RESULTS_DIR}/preprocess/short/{wildcards.sample}.nohuman.1.fq.gz {output.r1}
-        mv {RESULTS_DIR}/preprocess/short/{wildcards.sample}.nohuman.2.fq.gz {output.r2}
+        mv {RESULTS_DIR}/preprocess/short/{wildcards.sample}.1 {output.r1}
+        mv {RESULTS_DIR}/preprocess/short/{wildcards.sample}.2 {output.r2}
         """
 
 rule remove_human_long:
