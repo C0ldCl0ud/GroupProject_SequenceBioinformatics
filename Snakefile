@@ -1409,32 +1409,33 @@ rule metabinner_coassembly:
         contigs = f"{RESULTS_DIR}/assemblies/coassembly/short/assembly.fasta",
         coverage = f"{RESULTS_DIR}/depth/coassembly/depth.txt"
     output:
-        touch(f"{RESULTS_DIR}/bins/coassembly/metabinner/bins.done")
+        done = f"{RESULTS_DIR}/bins/coassembly/metabinner/bins.done"
     threads: config["threads"]
     conda:
         "envs/binning_metabinner.yaml"
     shell:
-        """
-        outdir={RESULTS_DIR}/bins/coassembly/metabinner
-        mkdir -p $outdir
+        r"""
+        set -euo pipefail
 
-        metabinner_path=xx/MetaBinner
-        python xx/MetaBinner/scripts/gen_kmer.py {input.contigs} 1000 4 $outdir/marine_kmer.tsv
+        outdir="{RESULTS_DIR}/bins/coassembly/metabinner"
+        mkdir -p "$outdir"
 
-        contig_file={input.contigs}
-        output_dir=$outdir/output
-        coverage_profiles={input.coverage}
-        kmer_profile=$outdir/marine_kmer.tsv
+        # Generate k-mer profile
+        gen_kmer.py \
+          {input.contigs} \
+          {config[metabinner][min_contig_len]} \
+          {config[metabinner][kmer_size]} \
+          "$outdir/kmer.tsv"
 
-        bash xx/MetaBinner/scripts/run_metabinner.sh \
+        # Run MetaBinner
+        run_metabinner.sh \
           -t {threads} \
-          -a $contig_file \
-          -o $output_dir \
-          -d $coverage_profiles \
-          -k $kmer_profile \
-          -p $metabinner_path
+          -a {input.contigs} \
+          -o "$outdir/output" \
+          -d {input.coverage} \
+          -k "$outdir/kmer.tsv"
 
-        touch {output}
+        touch {output.done}
         """
 
 rule metabinner_single:
@@ -1442,32 +1443,33 @@ rule metabinner_single:
         contigs = f"{RESULTS_DIR}/assemblies/single/{{assembly_type}}/{{sample}}/assembly.fasta",
         coverage = f"{RESULTS_DIR}/depth/single/{{assembly_type}}/{{sample}}/depth.txt"
     output:
-        touch(f"{RESULTS_DIR}/bins/single/metabinner/{{assembly_type}}/{{sample}}/bins.done")
+        done = f"{RESULTS_DIR}/bins/single/metabinner/{{assembly_type}}/{{sample}}/bins.done"
     threads: config["threads"]
     conda:
         "envs/binning_metabinner.yaml"
     shell:
-        """
-        outdir={RESULTS_DIR}/bins/single/metabinner/{{assembly_type}}/{{wildcards.sample}}
-        mkdir -p $outdir
+        r"""
+        set -euo pipefail
 
-        metabinner_path=xx/MetaBinner
-        python xx/MetaBinner/scripts/gen_kmer.py {input.contigs} 1000 4 $outdir/{{wildcards.sample}}_kmer.tsv
+        outdir="{RESULTS_DIR}/bins/single/metabinner/{wildcards.assembly_type}/{wildcards.sample}"
+        mkdir -p "$outdir"
 
-        contig_file={input.contigs}
-        output_dir=$outdir/output
-        coverage_profiles={input.coverage}
-        kmer_profile=$outdir/{{wildcards.sample}}_kmer.tsv
+        # Generate k-mer profile
+        gen_kmer.py \
+          {input.contigs} \
+          {config[metabinner][min_contig_len]} \
+          {config[metabinner][kmer_size]} \
+          "$outdir/kmer.tsv"
 
-        bash xx/MetaBinner/scripts/run_metabinner.sh \
+        # Run MetaBinner
+        run_metabinner.sh \
           -t {threads} \
-          -a $contig_file \
-          -o $output_dir \
-          -d $coverage_profiles \
-          -k $kmer_profile \
-          -p $metabinner_path
+          -a {input.contigs} \
+          -o "$outdir/output" \
+          -d {input.coverage} \
+          -k "$outdir/kmer.tsv"
 
-        touch {output}
+        touch {output.done}
         """
 
 rule metabinner_multi:
@@ -1475,32 +1477,33 @@ rule metabinner_multi:
         contigs = f"{RESULTS_DIR}/assemblies/single/{{assembly_type}}/{{sample}}/assembly.fasta",
         coverage = f"{RESULTS_DIR}/depth/multi/{{assembly_type}}/{{sample}}/depth.txt"
     output:
-        touch(f"{RESULTS_DIR}/bins/multi/metabinner/{{assembly_type}}/{{sample}}/bins.done")
+        done = f"{RESULTS_DIR}/bins/multi/metabinner/{{assembly_type}}/{{sample}}/bins.done"
     threads: config["threads"]
     conda:
         "envs/binning_metabinner.yaml"
     shell:
-        """
-        outdir={RESULTS_DIR}/bins/multi/metabinner/{{assembly_type}}/{{wildcards.sample}}
-        mkdir -p $outdir
+        r"""
+        set -euo pipefail
 
-        metabinner_path=xx/MetaBinner
-        python xx/MetaBinner/scripts/gen_kmer.py {input.contigs} 1000 4 $outdir/{{wildcards.sample}}_kmer.tsv
+        outdir="{RESULTS_DIR}/bins/multi/metabinner/{wildcards.assembly_type}/{wildcards.sample}"
+        mkdir -p "$outdir"
 
-        contig_file={input.contigs}
-        output_dir=$outdir/output
-        coverage_profiles={input.coverage}
-        kmer_profile=$outdir/{{wildcards.sample}}_kmer.tsv
+        # Generate k-mer profile
+        gen_kmer.py \
+          {input.contigs} \
+          {config[metabinner][min_contig_len]} \
+          {config[metabinner][kmer_size]} \
+          "$outdir/kmer.tsv"
 
-        bash xx/MetaBinner/scripts/run_metabinner.sh \
+        # Run MetaBinner
+        run_metabinner.sh \
           -t {threads} \
-          -a $contig_file \
-          -o $output_dir \
-          -d $coverage_profiles \
-          -k $kmer_profile \
-          -p $metabinner_path
+          -a {input.contigs} \
+          -o "$outdir/output" \
+          -d {input.coverage} \
+          -k "$outdir/kmer.tsv"
 
-        touch {output}
+        touch {output.done}
         """
 
 ############################################
