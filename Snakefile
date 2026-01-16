@@ -1488,11 +1488,21 @@ rule metabinner_multi:
         outdir="{RESULTS_DIR}/bins/multi/metabinner/{wildcards.assembly_type}/{wildcards.sample}"
         mkdir -p "$outdir"
 
-        # Generate k-mer profile
-        gen_kmer.py \
-          {input.contigs} \
-          {config[metabinner][min_contig_len]} \
-          {config[metabinner][kmer_size]} \
+        contig_dir=$(dirname {input.contigs})
+        contig_base=$(basename {input.contigs} .fasta)
+
+        # Run gen_kmer in contig directory (MetaBinner hardcodes output path)
+        (
+          cd "$contig_dir"
+          gen_kmer.py \
+            "$contig_base.fasta" \
+            {config[metabinner][min_contig_len]} \
+            {config[metabinner][kmer_size]}
+        )
+
+        # Move generated kmer file to outdir
+        mv \
+          "$contig_dir/${{contig_base}}_kmer_{config[metabinner][kmer_size]}_f{config[metabinner][min_contig_len]}.csv" \
           "$outdir/kmer.tsv"
 
         # Run MetaBinner
