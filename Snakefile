@@ -162,7 +162,7 @@ rule download_short_reads:
 
         trap "rm -rf $TMPDIR" EXIT
 
-        prefetch {params.acc} -X 30G -O "$TMPDIR" > {log} 2>&1
+        prefetch {params.acc} -X 40G -O "$TMPDIR" > {log} 2>&1
 
         mkdir -p $(dirname {output.sra})
         mv "$TMPDIR" "{output.sra}"
@@ -194,7 +194,7 @@ rule download_long_reads:
 
         trap "rm -rf $TMPDIR" EXIT
 
-        prefetch {params.acc} -X 30G -O "$TMPDIR" > {log} 2>&1
+        prefetch {params.acc} -X 40G -O "$TMPDIR" > {log} 2>&1
 
         mkdir -p $(dirname {output.sra})
         mv "$TMPDIR" "{output.sra}"
