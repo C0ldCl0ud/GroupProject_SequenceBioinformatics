@@ -1549,7 +1549,7 @@ rule semibin2_coassembly:
 rule semibin2_single:
     input:
         contigs = f"{RESULTS_DIR}/assemblies/single/{{assembly_type}}/{{sample}}/assembly.fasta",
-        bam = f"{RESULTS_DIR}/mapping/single/{{assembly_type}}/{{sample}}/{{sample}}.sorted.bam"
+        bam = f"{RESULTS_DIR}/mapping/single/{{assembly_type}}/{{sample}}.sorted.bam"
     output:
         touch(f"{RESULTS_DIR}/bins/single/semibin2/{{assembly_type}}/{{sample}}/bins.done")
     threads: config["threads"]
