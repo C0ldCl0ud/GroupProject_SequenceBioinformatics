@@ -1539,8 +1539,8 @@ rule semibin2_coassembly:
         SemiBin2 single_easy_bin \
           -t {threads} \
           -i {input.contigs} \
-          -b bam_list \
-          -o $outdir/output \
+          -b {params.bam_list} \
+          -o $outdir \
           --compression none
 
         touch {output}
@@ -1557,14 +1557,14 @@ rule semibin2_single:
         "envs/binning.yaml"
     shell:
         """
-        outdir={RESULTS_DIR}/bins/single/semibin2/{{assembly_type}}/{{wildcards.sample}}
+        outdir={RESULTS_DIR}/bins/single/semibin2/{wildcards.assembly_type}/{wildcards.sample}
         mkdir -p $outdir
 
         SemiBin2 single_easy_bin \
           -t {threads} \
           -i {input.contigs} \
           -b {input.bam} \
-          -o $outdir/output \
+          -o $outdir \
           --compression none
 
         touch {output}
@@ -1587,14 +1587,14 @@ rule semibin2_multi:
         bam_list=lambda wc, input: ' '.join(input.bams)
     shell:
         """
-        outdir={RESULTS_DIR}/bins/multi/semibin2/{{assembly_type}}/{{wildcards.sample}}
+        outdir={RESULTS_DIR}/bins/multi/semibin2/{wildcards.assembly_type}/{wildcards.sample}
         mkdir -p $outdir
 
         SemiBin2 single_easy_bin \
           -t {threads} \
           -i {input.contigs} \
           -b {params.bam_list} \
-          -o $outdir/output \
+          -o $outdir \
           --compression none
 
         touch {output}
@@ -1638,7 +1638,7 @@ rule comebin_single:
         "envs/binning_comebin.yaml"
     shell:
         """
-        outdir={RESULTS_DIR}/bins/single/comebin/{{assembly_type}}/{{wildcards.sample}}
+        outdir={RESULTS_DIR}/bins/single/comebin/{wildcards.assembly_type}/{wildcards.sample}
         mkdir -p $outdir
 
         run_comebin.sh \
