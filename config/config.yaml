@@ -1,4 +1,4 @@
-dataset: human_gut_2
+dataset: activated_sludge
 debug: false
 use_scratch: false        # set to false for local runs
 scratch_base: /beegfs/HPCscratch
@@ -18,7 +18,7 @@ metabinner:
     min_contig_len: 1000
     kmer_size: 4
 threads: 16
-long_read_technology: pacbio   # pacbio | nanopore (human_gut_II, activated_sludge)
+long_read_technology: nanopore   # pacbio | nanopore (human_gut_II, activated_sludge)
 binning_tools:
   - metabat2
   #- maxbin2
