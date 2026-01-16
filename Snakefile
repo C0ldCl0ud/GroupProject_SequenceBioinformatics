@@ -11,7 +11,7 @@ USE_SCRATCH = config.get("use_scratch", False)
 if USE_SCRATCH:
     SCRATCH_BASE = config.get("scratch_base", "/beegfs/HPCscratch")
     USER = os.environ.get("USER", "unknown")
-    PROJECT = "GroupProject_SequenceBioinformatics"
+    PROJECT = config.get("dataset", "GroupProject")
     SCRATCH = f"{SCRATCH_BASE}/{USER}/{PROJECT}"
 else:
     SCRATCH = ""
@@ -96,10 +96,10 @@ rule all:
 
         #expand(f"{RESULTS_DIR}/fastq/short/{{sample}}_R1.fq.gz", sample=SAMPLES),
         #expand(f"{RESULTS_DIR}/fastq/short/{{sample}}_R2.fq.gz", sample=SAMPLES),
-        #expand(f"{RESULTS_DIR}/fastq/long/{{sample}}.fq.gz", sample=SAMPLES),
+        expand(f"{RESULTS_DIR}/fastq/long/{{sample}}.fq.gz", sample=SAMPLES),
 
-        #expand(f"{RESULTS_DIR}/preprocess/short/{{sample}}_R1.fastp.fq.gz", sample=SAMPLES),
-        #expand(f"{RESULTS_DIR}/preprocess/short/{{sample}}_R2.fastp.fq.gz", sample=SAMPLES)
+        expand(f"{RESULTS_DIR}/preprocess/short/{{sample}}_R1.fastp.fq.gz", sample=SAMPLES),
+        expand(f"{RESULTS_DIR}/preprocess/short/{{sample}}_R2.fastp.fq.gz", sample=SAMPLES)
         #expand(f"{RESULTS_DIR}/preprocess/long/{{sample}}.qcat.fq.gz", sample=SAMPLES),
 
         #expand(f"{RESULTS_DIR}/preprocess/long/{{sample}}.filtlong1.fq.gz", sample=SAMPLES),
@@ -111,15 +111,15 @@ rule all:
         #expand(f"{RESULTS_DIR}/preprocess/long/{{sample}}.nohuman.fq.gz", sample=SAMPLES),
 
         # single-sample assemblies
-        expand(
-            f"{RESULTS_DIR}/assemblies/single/{{asm_type}}/{{sample}}/assembly.fasta",
+        #expand(
+        #    f"{RESULTS_DIR}/assemblies/single/{{asm_type}}/{{sample}}/assembly.fasta",
         #    #asm_type=["short","long"],
-            asm_type=["short","long","hybrid"],
-            sample=SAMPLES
-        ),
+        #    asm_type=["short","long","hybrid"],
+        #    sample=SAMPLES
+        #),
 
         # multi-sample assembly
-        f"{RESULTS_DIR}/assemblies/coassembly/short/assembly.fasta"
+        #f"{RESULTS_DIR}/assemblies/coassembly/short/assembly.fasta"
 
 
         # binning
