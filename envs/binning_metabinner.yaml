@@ -1,8 +1,9 @@
-name: binning
+name: binning_metabinner
 channels:
   - bioconda
   - conda-forge
 dependencies:
   - metabinner=1.4.4
+
 
 
