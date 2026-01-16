@@ -339,13 +339,22 @@ rule nanopore_qcat:
     conda:
         "envs/preprocessing.yaml"
     shell:
-        """
-        qcat \
-          --trim \
-          --detect-middle \
-          -i {input.fq} \
-          -o {output.fq} \
-          > {log} 2>&1
+        r"""
+        set -euo pipefail
+
+        TMPDIR="{RESULTS_DIR}/tmp/{wildcards.sample}"
+        mkdir -p "$TMPDIR"
+
+        gunzip -c {input.fq} > "$TMPDIR/{wildcards.sample}.fq"
+
+        qcat --trim --detect-middle \
+             -f "$TMPDIR/{wildcards.sample}.fq" \
+             -o "$TMPDIR/{wildcards.sample}_qcat.fq" \
+            > {log} 2>&1
+
+        gzip -c "$TMPDIR/{wildcards.sample}_qcat.fq" > {output.fq}
+
+        rm -rf "$TMPDIR"
         """
 
 rule nanopore_filtlong_1:
