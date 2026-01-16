@@ -1593,7 +1593,7 @@ rule semibin2_multi:
         SemiBin2 single_easy_bin \
           -t {threads} \
           -i {input.contigs} \
-          -b bam_list \
+          -b {params.bam_list} \
           -o $outdir/output \
           --compression none
 
