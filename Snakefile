@@ -1607,7 +1607,7 @@ rule semibin2_multi:
 rule comebin_coassembly:
     input:
         contigs = f"{RESULTS_DIR}/assemblies/coassembly/short/assembly.fasta",
-        bams_dir = f"{RESULTS_DIR}/mapping/coassembly/short
+        bams_dir = f"{RESULTS_DIR}/mapping/coassembly/short"
     output:
         touch(f"{RESULTS_DIR}/bins/coassembly/comebin/bins.done")
     threads: config["threads"]
