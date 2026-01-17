@@ -673,8 +673,8 @@ rule map_short_coassembly:
         "envs/mapping.yaml"
     shell:
         """
-        PREFIX=$(basename {input.idxprefix} .1.bt2)
-        bowtie2 -x results/debug/indices/coassembly/short/contigs/$PREFIX \
+        #PREFIX=$(basename {input.idxprefix} .1.bt2)
+        bowtie2 -x results/debug/indices/coassembly/short/contigs \
           -1 {input.r1} -2 {input.r2} -p {threads} |
         samtools sort -@ {threads} -o {output.bam}
         samtools index {output.bam}
