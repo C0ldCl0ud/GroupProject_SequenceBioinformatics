@@ -673,7 +673,7 @@ rule map_short_coassembly:
         "envs/mapping.yaml"
     shell:
         """
-        bowtie2 -x {RESULTS_DIR}/indices/coassembly/short/contigs \
+        bowtie2 -x {RESULTS_DIR}/indices/coassembly/short/contigs/contigs \
           -1 {input.r1} -2 {input.r2} -p {threads} |
         samtools sort -@ {threads} -o {output.bam}
         samtools index {output.bam}
