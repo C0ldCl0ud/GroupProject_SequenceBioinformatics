@@ -1027,38 +1027,46 @@ rule concoct_coassembly:
     conda:
         "envs/binning.yaml"
     shell:
-        """
-        outdir={RESULTS_DIR}/bins/coassembly/concoct
-        mkdir -p $outdir
+        r"""
+        set -euo pipefail
+
+        OUTDIR={RESULTS_DIR}/bins/coassembly/concoct
+        SCRATCHDIR={SCRATCH}/concoct/coassembly
+
+        mkdir -p $SCRATCHDIR $OUTDIR
 
         cut_up_fasta.py {input.contigs} \
           -c 10000 -o 0 --merge_last \
-          -b $outdir/contigs_10K.bed \
-          > $outdir/contigs_10K.fa
+          -b $SCRATCHDIR/contigs_10K.bed \
+          > $SCRATCHDIR/contigs_10K.fa
 
         concoct_coverage_table.py \
-          $outdir/contigs_10K.bed \
+          $SCRATCHDIR/contigs_10K.bed \
           {input.bams} \
-          > $outdir/coverage_table.tsv
+          > $SCRATCHDIR/coverage_table.tsv
 
         concoct \
           -t {threads} \
-          --composition_file $outdir/contigs_10K.fa \
-          --coverage_file $outdir/coverage_table.tsv \
-          -b $outdir/concoct_output/
+          --composition_file $SCRATCHDIR/contigs_10K.fa \
+          --coverage_file $SCRATCHDIR/coverage_table.tsv \
+          -b $SCRATCHDIR/concoct_output/
 
         merge_cutup_clustering.py \
-          $outdir/concoct_output/clustering_gt1000.csv \
-          > $outdir/concoct_output/clustering_merged.csv
+          $SCRATCHDIR/concoct_output/clustering_gt1000.csv \
+          > $SCRATCHDIR/concoct_output/clustering_merged.csv
 
-        mkdir -p $outdir/concoct_output/fasta_bins
+        mkdir -p $SCRATCHDIR/concoct_output/fasta_bins
         extract_fasta_bins.py \
           {input.contigs} \
-          $outdir/concoct_output/clustering_merged.csv \
-          --output_path $outdir/concoct_output/fasta_bins
+          $SCRATCHDIR/concoct_output/clustering_merged.csv \
+          --output_path $SCRATCHDIR/concoct_output/fasta_bins
+
+        rsync -a $SCRATCHDIR/concoct_output/fasta_bins/ $OUTDIR
 
         touch {output}
+        rm -rf $SCRATCHDIR
         """
+
 
 rule concoct_single:
     input:
@@ -1070,38 +1078,46 @@ rule concoct_single:
     conda:
         "envs/binning.yaml"
     shell:
-        """
-        outdir={RESULTS_DIR}/bins/single/concoct/{wildcards.assembly_type}/{wildcards.sample}
-        mkdir -p $outdir
+        r"""
+        set -euo pipefail
+
+        OUTDIR={RESULTS_DIR}/bins/single/concoct/{wildcards.assembly_type}/{wildcards.sample}
+        SCRATCHDIR={SCRATCH}/concoct/single/{wildcards.assembly_type}/{wildcards.sample}
+
+        mkdir -p $SCRATCHDIR $OUTDIR
 
         cut_up_fasta.py {input.contigs} \
           -c 10000 -o 0 --merge_last \
-          -b $outdir/contigs_10K.bed \
-          > $outdir/contigs_10K.fa
+          -b $SCRATCHDIR/contigs_10K.bed \
+          > $SCRATCHDIR/contigs_10K.fa
 
         concoct_coverage_table.py \
-          $outdir/contigs_10K.bed \
+          $SCRATCHDIR/contigs_10K.bed \
           {input.bam} \
-          > $outdir/coverage_table.tsv
+          > $SCRATCHDIR/coverage_table.tsv
 
         concoct \
           -t {threads} \
-          --composition_file $outdir/contigs_10K.fa \
-          --coverage_file $outdir/coverage_table.tsv \
-          -b $outdir/concoct_output/
+          --composition_file $SCRATCHDIR/contigs_10K.fa \
+          --coverage_file $SCRATCHDIR/coverage_table.tsv \
+          -b $SCRATCHDIR/concoct_output/
 
         merge_cutup_clustering.py \
-          $outdir/concoct_output/clustering_gt1000.csv \
-          > $outdir/concoct_output/clustering_merged.csv
+          $SCRATCHDIR/concoct_output/clustering_gt1000.csv \
+          > $SCRATCHDIR/concoct_output/clustering_merged.csv
 
-        mkdir -p $outdir/concoct_output/fasta_bins
+        mkdir -p $SCRATCHDIR/concoct_output/fasta_bins
         extract_fasta_bins.py \
           {input.contigs} \
-          $outdir/concoct_output/clustering_merged.csv \
-          --output_path $outdir/concoct_output/fasta_bins
+          $SCRATCHDIR/concoct_output/clustering_merged.csv \
+          --output_path $SCRATCHDIR/concoct_output/fasta_bins
+
+        rsync -a $SCRATCHDIR/concoct_output/fasta_bins/ $OUTDIR
 
         touch {output}
+        rm -rf $SCRATCHDIR
         """
+
 
 rule concoct_multi:
     input:
@@ -1116,38 +1132,46 @@ rule concoct_multi:
     conda:
         "envs/binning.yaml"
     shell:
-        """
-        outdir={RESULTS_DIR}/bins/multi/concoct/{wildcards.assembly_type}/{wildcards.sample}
-        mkdir -p $outdir
+        r"""
+        set -euo pipefail
+
+        OUTDIR={RESULTS_DIR}/bins/multi/concoct/{wildcards.assembly_type}/{wildcards.sample}
+        SCRATCHDIR={SCRATCH}/concoct/multi/{wildcards.assembly_type}/{wildcards.sample}
+
+        mkdir -p $SCRATCHDIR $OUTDIR
 
         cut_up_fasta.py {input.contigs} \
           -c 10000 -o 0 --merge_last \
-          -b $outdir/contigs_10K.bed \
-          > $outdir/contigs_10K.fa
+          -b $SCRATCHDIR/contigs_10K.bed \
+          > $SCRATCHDIR/contigs_10K.fa
 
         concoct_coverage_table.py \
-          $outdir/contigs_10K.bed \
+          $SCRATCHDIR/contigs_10K.bed \
           {input.bams} \
-          > $outdir/coverage_table.tsv
+          > $SCRATCHDIR/coverage_table.tsv
 
         concoct \
           -t {threads} \
-          --composition_file $outdir/contigs_10K.fa \
-          --coverage_file $outdir/coverage_table.tsv \
-          -b $outdir/concoct_output/
+          --composition_file $SCRATCHDIR/contigs_10K.fa \
+          --coverage_file $SCRATCHDIR/coverage_table.tsv \
+          -b $SCRATCHDIR/concoct_output/
 
         merge_cutup_clustering.py \
-          $outdir/concoct_output/clustering_gt1000.csv \
-          > $outdir/concoct_output/clustering_merged.csv
+          $SCRATCHDIR/concoct_output/clustering_gt1000.csv \
+          > $SCRATCHDIR/concoct_output/clustering_merged.csv
 
-        mkdir -p $outdir/concoct_output/fasta_bins
+        mkdir -p $SCRATCHDIR/concoct_output/fasta_bins
         extract_fasta_bins.py \
           {input.contigs} \
-          $outdir/concoct_output/clustering_merged.csv \
-          --output_path $outdir/concoct_output/fasta_bins
+          $SCRATCHDIR/concoct_output/clustering_merged.csv \
+          --output_path $SCRATCHDIR/concoct_output/fasta_bins
+
+        rsync -a $SCRATCHDIR/concoct_output/fasta_bins/ $OUTDIR
 
         touch {output}
+        rm -rf $SCRATCHDIR
         """
+
 
 ############################################
 # 5.7. VAMB
