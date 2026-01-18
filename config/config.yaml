@@ -1,4 +1,4 @@
-dataset: cheese
+dataset: marine
 debug: false
 use_scratch: false        # set to false for local runs
 scratch_base: /beegfs/HPCscratch
