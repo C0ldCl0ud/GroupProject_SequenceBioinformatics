@@ -22,7 +22,7 @@ long_read_technology: pacbio   # pacbio | nanopore (human_gut_II, activated_slud
 binning_tools:
   - metabat2
   - maxbin2
-  #- concoct
+  - concoct
   #- vamb     #appears to not work in debug
   #- metadecoder  #probably also a debug mode issue
   #- binny #looks incredible complicated to set up
