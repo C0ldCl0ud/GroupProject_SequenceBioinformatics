@@ -1,4 +1,4 @@
-dataset: marine
+dataset: cheese
 debug: false
 use_scratch: false        # set to false for local runs
 scratch_base: /beegfs/HPCscratch
@@ -21,7 +21,7 @@ threads: 16
 long_read_technology: pacbio   # pacbio | nanopore (human_gut_II, activated_sludge)
 binning_tools:
   - metabat2
-  #- maxbin2
+  - maxbin2
   #- concoct
   #- vamb     #appears to not work in debug
   #- metadecoder  #probably also a debug mode issue
