@@ -1,4 +1,4 @@
-dataset: human_gut_2
+dataset: cheese
 debug: false
 use_scratch: true        # set to false for local runs
 scratch_base: /beegfs/HPCscratch
