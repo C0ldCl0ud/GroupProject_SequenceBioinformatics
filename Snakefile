@@ -2025,8 +2025,8 @@ rule eval_rRNA_single:
             barrnap --threads {threads} --quiet "$filename" > $outfile
             
             if grep -E "rRNA.*5S" $outfile >/dev/null && grep -E "rRNA.*16S" $outfile >/dev/null && grep -E "rRNA.*23S" $outfile >/dev/null; then
-                all_present = 1
-            else all_present = 0;
+                all_present=1
+            else all_present=0;
             fi
             $all_present > ${{filename}}.all_rRNA_present.txt
             
@@ -2055,8 +2055,8 @@ rule eval_rRNA_multi:
             barrnap --threads {threads} --quiet "$filename" > $outfile
             
             if grep -E "rRNA.*5S" $outfile >/dev/null && grep -E "rRNA.*16S" $outfile >/dev/null && grep -E "rRNA.*23S" $outfile >/dev/null; then
-                all_present = 1
-            else all_present = 0;
+                all_present=1
+            else all_present=0;
             fi
             $all_present > ${{filename}}.all_rRNA_present.txt
             
@@ -2085,8 +2085,8 @@ rule eval_rRNA_coassembly:
             barrnap --threads {threads} --quiet "$filename" > $outfile
             
             if grep -E "rRNA.*5S" $outfile >/dev/null && grep -E "rRNA.*16S" $outfile >/dev/null && grep -E "rRNA.*23S" $outfile >/dev/null; then
-                all_present = 1
-            else all_present = 0;
+                all_present=1
+            else all_present=0;
             fi
             $all_present > ${{filename}}.all_rRNA_present.txt
             
