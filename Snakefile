@@ -1719,7 +1719,7 @@ rule comebin_multi:
         r"""
         set -euo pipefail
 
-        SCRATCH_OUT="$SCRATCH/comebin_multi_{wildcards.assembly_type}_{wildcards.sample}"
+        SCRATCH_OUT="{SCRATCH}/comebin_multi_{wildcards.assembly_type}_{wildcards.sample}"
         OUT_FINAL="{RESULTS_DIR}/bins/multi/comebin/{wildcards.assembly_type}/{wildcards.sample}"
 
         rm -rf "$SCRATCH_OUT"
