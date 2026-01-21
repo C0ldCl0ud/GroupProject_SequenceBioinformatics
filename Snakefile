@@ -1653,7 +1653,7 @@ rule comebin_coassembly:
         r"""
         set -euo pipefail
 
-        SCRATCH_JOB="$SCRATCH/comebin_coassembly"
+        SCRATCH_JOB="{SCRATCH}/comebin_coassembly"
         OUT_FINAL="{RESULTS_DIR}/bins/coassembly/comebin"
 
         rm -rf "$SCRATCH_JOB"
@@ -1688,7 +1688,7 @@ rule comebin_single:
         r"""
         set -euo pipefail
 
-        SCRATCH_JOB="$SCRATCH/comebin_single_{wildcards.assembly_type}_{wildcards.sample}"
+        SCRATCH_JOB="{SCRATCH}/comebin_single_{wildcards.assembly_type}_{wildcards.sample}"
         OUT_FINAL="{RESULTS_DIR}/bins/single/comebin/{wildcards.assembly_type}/{wildcards.sample}"
 
         rm -rf "$SCRATCH_JOB"
@@ -1723,7 +1723,7 @@ rule comebin_multi:
         r"""
         set -euo pipefail
 
-        SCRATCH_JOB="$SCRATCH/comebin_multi_{wildcards.assembly_type}_{wildcards.sample}"
+        SCRATCH_JOB="{SCRATCH}/comebin_multi_{wildcards.assembly_type}_{wildcards.sample}"
         OUT_FINAL="{RESULTS_DIR}/bins/multi/comebin/{wildcards.assembly_type}/{wildcards.sample}"
 
         rm -rf "$SCRATCH_JOB"
