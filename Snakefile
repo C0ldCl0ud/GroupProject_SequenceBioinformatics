@@ -1879,7 +1879,7 @@ rule eval_comp_cont_single:
         outdir={RESULTS_DIR}/eval/single/{wildcards.tool}/{wildcards.assembly_type}/{wildcards.sample}_check
 
         # Convert input bins to a bash array
-        bins=({input.bins})
+        bins=({input.bins!r})  # use !r to get proper quoting for bash
 
         # Check if array is empty
         if [ ${#bins[@]} -eq 0 ]; then
@@ -1910,7 +1910,7 @@ rule eval_comp_cont_multi:
         outdir={RESULTS_DIR}/eval/multi/{wildcards.tool}/{wildcards.assembly_type}/{wildcards.sample}_check
 
         # Convert input bins to a bash array
-        bins=({input.bins})
+        bins=({input.bins!r})  # use !r to get proper quoting for bash
 
         # Check if array is empty
         if [ ${#bins[@]} -eq 0 ]; then
