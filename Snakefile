@@ -1568,16 +1568,23 @@ rule semibin2_coassembly:
     params:
         bam_list=lambda wc, input: ' '.join(input.bams)
     shell:
-        """
-        outdir={RESULTS_DIR}/bins/coassembly/semibin2
-        mkdir -p $outdir
+        r"""
+        SCRATCH_OUT="{SCRATCH}/semibin2_coassembly_out"
+        OUT_FINAL="{RESULTS_DIR}/bins/coassembly/semibin2"
+
+        rm -rf "$SCRATCH_OUT"
+        mkdir -p "$SCRATCH_OUT"
 
         SemiBin2 single_easy_bin \
           -t {threads} \
           -i {input.contigs} \
           -b {params.bam_list} \
-          -o $outdir \
+          -o "$SCRATCH_OUT" \
           --compression none
+
+        rm -rf "$OUT_FINAL"
+        mkdir -p "$OUT_FINAL"
+        rsync -a "$SCRATCH_OUT/" "$OUT_FINAL/"
 
         touch {output}
         """
@@ -1592,16 +1599,23 @@ rule semibin2_single:
     conda:
         "envs/binning.yaml"
     shell:
-        """
-        outdir={RESULTS_DIR}/bins/single/semibin2/{wildcards.assembly_type}/{wildcards.sample}
-        mkdir -p $outdir
+        r"""
+        SCRATCH_OUT="{SCRATCH}/semibin2_single_{wildcards.assembly_type}_{wildcards.sample}"
+        OUT_FINAL="{RESULTS_DIR}/bins/single/semibin2/{wildcards.assembly_type}/{wildcards.sample}"
+
+        rm -rf "$SCRATCH_OUT"
+        mkdir -p "$SCRATCH_OUT"
 
         SemiBin2 single_easy_bin \
           -t {threads} \
           -i {input.contigs} \
           -b {input.bam} \
-          -o $outdir \
+          -o "$SCRATCH_OUT" \
           --compression none
+
+        rm -rf "$OUT_FINAL"
+        mkdir -p "$OUT_FINAL"
+        rsync -a "$SCRATCH_OUT/" "$OUT_FINAL/"
 
         touch {output}
         """
@@ -1615,23 +1629,29 @@ rule semibin2_multi:
         )    
     output:
         touch(f"{RESULTS_DIR}/bins/multi/semibin2/{{assembly_type}}/{{sample}}/bins.done")
-    threads: 
-        config["threads"]
+    threads: config["threads"]
     conda:
         "envs/binning.yaml"
     params:
         bam_list=lambda wc, input: ' '.join(input.bams)
     shell:
-        """
-        outdir={RESULTS_DIR}/bins/multi/semibin2/{wildcards.assembly_type}/{wildcards.sample}
-        mkdir -p $outdir
+        r"""
+        SCRATCH_OUT="{SCRATCH}/semibin2_multi_{wildcards.assembly_type}_{wildcards.sample}"
+        OUT_FINAL="{RESULTS_DIR}/bins/multi/semibin2/{wildcards.assembly_type}/{wildcards.sample}"
+
+        rm -rf "$SCRATCH_OUT"
+        mkdir -p "$SCRATCH_OUT"
 
         SemiBin2 single_easy_bin \
           -t {threads} \
           -i {input.contigs} \
           -b {params.bam_list} \
-          -o $outdir \
+          -o "$SCRATCH_OUT" \
           --compression none
+
+        rm -rf "$OUT_FINAL"
+        mkdir -p "$OUT_FINAL"
+        rsync -a "$SCRATCH_OUT/" "$OUT_FINAL/"
 
         touch {output}
         """
