@@ -1650,16 +1650,27 @@ rule comebin_coassembly:
     conda:
         "envs/binning_comebin.yaml"
     shell:
-        """
-        outdir={RESULTS_DIR}/bins/coassembly/comebin
-        rm -rf $outdir
-        mkdir -p $outdir
+        r"""
+        set -euo pipefail
+
+        SCRATCH_JOB="$SCRATCH/comebin_coassembly"
+        OUT_FINAL="{RESULTS_DIR}/bins/coassembly/comebin"
+
+        rm -rf "$SCRATCH_JOB"
+        mkdir -p "$SCRATCH_JOB"/{input,bams,out}
+
+        cp {input.contigs} "$SCRATCH_JOB/input/assembly.fasta"
+        rsync -a {input.bams_dir}/ "$SCRATCH_JOB/bams/"
 
         run_comebin.sh \
           -t {threads} \
-          -a {input.contigs} \
-          -o $outdir \
-          -p {input.bams_dir}
+          -a "$SCRATCH_JOB/input/assembly.fasta" \
+          -o "$SCRATCH_JOB/out" \
+          -p "$SCRATCH_JOB/bams"
+
+        rm -rf "$OUT_FINAL"
+        mkdir -p "$OUT_FINAL"
+        rsync -a "$SCRATCH_JOB/out/" "$OUT_FINAL/"
 
         touch {output}
         """
@@ -1674,19 +1685,27 @@ rule comebin_single:
     conda:
         "envs/binning_comebin.yaml"
     shell:
-        """
-        outdir={RESULTS_DIR}/bins/single/comebin/{wildcards.assembly_type}/{wildcards.sample}
-        rm -rf $outdir
-        mkdir -p $outdir
-        bamdir={RESULTS_DIR}/mapping/single/{wildcards.assembly_type}/{wildcards.sample}
-        mkdir -p $bamdir
-        cp {input.bam} $bamdir
+        r"""
+        set -euo pipefail
+
+        SCRATCH_JOB="$SCRATCH/comebin_single_{wildcards.assembly_type}_{wildcards.sample}"
+        OUT_FINAL="{RESULTS_DIR}/bins/single/comebin/{wildcards.assembly_type}/{wildcards.sample}"
+
+        rm -rf "$SCRATCH_JOB"
+        mkdir -p "$SCRATCH_JOB"/{input,bams,out}
+
+        cp {input.contigs} "$SCRATCH_JOB/input/assembly.fasta"
+        cp {input.bam} "$SCRATCH_JOB/bams/{wildcards.sample}.sorted.bam"
 
         run_comebin.sh \
           -t {threads} \
-          -a {input.contigs} \
-          -o $outdir \
-          -p $bamdir
+          -a "$SCRATCH_JOB/input/assembly.fasta" \
+          -o "$SCRATCH_JOB/out" \
+          -p "$SCRATCH_JOB/bams"
+
+        rm -rf "$OUT_FINAL"
+        mkdir -p "$OUT_FINAL"
+        rsync -a "$SCRATCH_JOB/out/" "$OUT_FINAL/"
 
         touch {output}
         """
@@ -1701,16 +1720,27 @@ rule comebin_multi:
     conda:
         "envs/binning_comebin.yaml"
     shell:
-        """
-        outdir={RESULTS_DIR}/bins/multi/comebin/{wildcards.assembly_type}/{wildcards.sample}
-        rm -rf $outdir
-        mkdir -p $outdir
+        r"""
+        set -euo pipefail
+
+        SCRATCH_JOB="$SCRATCH/comebin_multi_{wildcards.assembly_type}_{wildcards.sample}"
+        OUT_FINAL="{RESULTS_DIR}/bins/multi/comebin/{wildcards.assembly_type}/{wildcards.sample}"
+
+        rm -rf "$SCRATCH_JOB"
+        mkdir -p "$SCRATCH_JOB"/{input,bams,out}
+
+        cp {input.contigs} "$SCRATCH_JOB/input/assembly.fasta"
+        rsync -a {input.bams}/ "$SCRATCH_JOB/bams/"
 
         run_comebin.sh \
           -t {threads} \
-          -a {input.contigs} \
-          -o $outdir \
-          -p {input.bams}
+          -a "$SCRATCH_JOB/input/assembly.fasta" \
+          -o "$SCRATCH_JOB/out" \
+          -p "$SCRATCH_JOB/bams"
+
+        rm -rf "$OUT_FINAL"
+        mkdir -p "$OUT_FINAL"
+        rsync -a "$SCRATCH_JOB/out/" "$OUT_FINAL/"
 
         touch {output}
         """
