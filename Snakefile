@@ -1875,11 +1875,24 @@ rule eval_comp_cont_single:
     conda:
         "envs/evaluation.yaml"
     shell:
-        """
+        r"""
         outdir={RESULTS_DIR}/eval/single/{wildcards.tool}/{wildcards.assembly_type}/{wildcards.sample}_check
-        checkm2 predict --threads {threads} --input {input.bins} --output-directory $outdir --database_path {input.db} --force
+
+        # Convert input bins to a bash array
+        bins=({input.bins})
+
+        # Check if array is empty
+        if [ ${#bins[@]} -eq 0 ]; then
+            echo "[{wildcards.sample}] No bins found for {wildcards.tool} {wildcards.assembly_type}, skipping." >&2
+            touch {output}
+            exit 0
+        fi
+
+        # Run checkm2 if bins exist
+        checkm2 predict --threads {threads} --input "${bins[@]}" --output-directory "$outdir" --database_path {input.db} --force
         touch {output}
         """
+
 # Multi-sample Evaluation (short, long, hybrid)
 rule eval_comp_cont_multi:
     input:
