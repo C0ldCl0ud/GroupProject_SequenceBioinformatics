@@ -2031,7 +2031,7 @@ rule eval_rRNA_single:
                 all_present=0
             fi
 
-            echo "$all_present" > "{RESULTS_DIR}/eval/single/{wildcards.tool}/{wildcards.assembly_type}/{wildcards.sample}.all_rRNA_present.txt"
+            echo "$all_present" > "{RESULTS_DIR}/eval/single/{wildcards.tool}/{wildcards.assembly_type}/{wildcards.sample}.${{base}}.all_rRNA_present.txt"
         done
         
         touch {output}
@@ -2063,7 +2063,7 @@ rule eval_rRNA_multi:
                 all_present=0
             fi
 
-            echo "$all_present" > "{RESULTS_DIR}/eval/multi/{wildcards.tool}/{wildcards.assembly_type}/{wildcards.sample}.all_rRNA_present.txt"
+            echo "$all_present" > "{RESULTS_DIR}/eval/multi/{wildcards.tool}/{wildcards.assembly_type}/{wildcards.sample}.${{base}}.all_rRNA_present.txt"
         done
         
         touch {output}
@@ -2095,7 +2095,7 @@ rule eval_rRNA_coassembly:
                 all_present=0
             fi
 
-            echo "$all_present" > "{RESULTS_DIR}/eval/coassembly/{wildcards.tool}.all_rRNA_present.txt"
+            echo "$all_present" > "{RESULTS_DIR}/eval/coassembly/{wildcards.tool}.${{base}}.all_rRNA_present.txt"
         done
         
         touch {output}
