@@ -1937,7 +1937,8 @@ rule eval_tRNA_single:
     input:
         bins = BIN_FILES_SINGLE
     output:
-        touch(f"{RESULTS_DIR}/eval/single/{{tool}}/{{assembly_type}}/{{sample}}/eval_tRNA.done")
+        final= f"{RESULTS_DIR}/eval/single/{{tool}}/{{assembly_type}}/{{sample}}/eval_tRNA.done",
+        eval = directory(f"{RESULTS_DIR}/eval/single/{{tool}}/{{assembly_type}}/{{sample}}")
     log:
         f"logs/{DATASET}/eval/single/{{tool}}/{{assembly_type}}/{{sample}}.tRNA_count.log"
     conda:
@@ -1945,13 +1946,13 @@ rule eval_tRNA_single:
     shell:
         """
         for filename in {input.bins}; do
-                outfile=${{filename}}.tRNA_count.txt
+                outfile={output.eval}/tRNA_count.txt
         
                 count=$(aragorn -t -w "$filename" | grep -c '^')
                 echo -e "$count" >> $outfile
         done
         
-        touch {output}
+        touch {output.final}
         """
 
 # Multi-sample Evaluation (short, long, hybrid)
@@ -1959,7 +1960,8 @@ rule eval_tRNA_multi:
     input:
         bins = BIN_FILES_MULTI
     output:
-        touch(f"{RESULTS_DIR}/eval/multi/{{tool}}/{{assembly_type}}/{{sample}}/eval_tRNA.done")
+        final= f"{RESULTS_DIR}/eval/multi/{{tool}}/{{assembly_type}}/{{sample}}/eval_tRNA.done",
+        eval = directory(f"{RESULTS_DIR}/eval/multi/{{tool}}/{{assembly_type}}/{{sample}}")
     log:
         f"logs/{DATASET}/eval/multi/{{tool}}/{{assembly_type}}/{{sample}}.tRNA_count.log"
     conda:
@@ -1967,13 +1969,13 @@ rule eval_tRNA_multi:
     shell:
         """
         for filename in {input.bins}; do
-                outfile=${{filename}}.tRNA_count.txt
+                outfile={output.eval}/tRNA_count.txt
         
                 count=$(aragorn -t -w "$filename" | grep -c '^')
                 echo -e "$count" >> $outfile
         done
         
-        touch {output}
+        touch {output.final}
         """
 
 # Co-Assembly Evaluation (short, long, hybrid)
@@ -1981,7 +1983,8 @@ rule eval_tRNA_coassembly:
     input:
         bins = BIN_FILES_COASSEMBLY
     output:
-        touch(f"{RESULTS_DIR}/eval/coassembly/{{tool}}/eval_tRNA.done")
+        final= f"{RESULTS_DIR}/eval/coassembly/{{tool}}/eval_tRNA.done",
+        eval = directory(f"{RESULTS_DIR}/eval/coassembly/{{tool}}")
     log:
         f"logs/{DATASET}/eval/coassembly/{{tool}}.tRNA_count.log"
     conda:
@@ -1989,13 +1992,13 @@ rule eval_tRNA_coassembly:
     shell:
         """
         for filename in {input.bins}; do
-                outfile=${{filename}}.tRNA_count.txt
+                outfile={output.eval}/tRNA_count.txt
         
                 count=$(aragorn -t -w "$filename" | grep -c '^')
                 echo -e "$count" >> $outfile
         done
         
-        touch {output}
+        touch {output.final}
         """
 
 
