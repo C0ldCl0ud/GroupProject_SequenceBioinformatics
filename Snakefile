@@ -1865,6 +1865,7 @@ CHECKM2_DB = f"{RESULTS_DIR}/../../database/uniref100.KO.1.dmnd"
 
 rule eval_comp_cont_single:
     input:
+        binflag = f"{RESULTS_DIR}/bins/single/{{tool}}/{{assembly_type}}/{{sample}}/bins.done",
         bins = BIN_FILES_SINGLE,
         db = CHECKM2_DB
     output:
@@ -1890,6 +1891,7 @@ rule eval_comp_cont_single:
 # Multi-sample Evaluation (short, long, hybrid)
 rule eval_comp_cont_multi:
     input:
+        binflag = f"{RESULTS_DIR}/bins/multi/{{tool}}/{{assembly_type}}/{{sample}}/bins.done",
         bins = BIN_FILES_MULTI,
         db = CHECKM2_DB
     output:
@@ -1912,9 +1914,10 @@ rule eval_comp_cont_multi:
                 touch {output[0]}
             """)
 
-# Co-Assembly Evaluation (short, long, hybrid)
+# Co-Assembly Evaluation (short)
 rule eval_comp_cont_coassembly:
     input:
+        binflag = f"{RESULTS_DIR}/bins/coassembly/{{tool}}/bins.done",
         bins = BIN_FILES_COASSEMBLY,
         db = CHECKM2_DB
     output:
@@ -1938,6 +1941,7 @@ rule eval_comp_cont_coassembly:
 # Single-sample Evaluation (short, long, hybrid)
 rule eval_tRNA_single:
     input:
+        binflag = f"{RESULTS_DIR}/bins/single/{{tool}}/{{assembly_type}}/{{sample}}/bins.done",
         bins = BIN_FILES_SINGLE
     output:
         final= f"{RESULTS_DIR}/eval/single/{{tool}}/{{assembly_type}}/{{sample}}/eval_tRNA.done"
@@ -1961,6 +1965,7 @@ rule eval_tRNA_single:
 # Multi-sample Evaluation (short, long, hybrid)
 rule eval_tRNA_multi:
     input:
+        binflag = f"{RESULTS_DIR}/bins/multi/{{tool}}/{{assembly_type}}/{{sample}}/bins.done",
         bins = BIN_FILES_MULTI
     output:
         final= f"{RESULTS_DIR}/eval/multi/{{tool}}/{{assembly_type}}/{{sample}}/eval_tRNA.done"
@@ -1984,6 +1989,7 @@ rule eval_tRNA_multi:
 # Co-Assembly Evaluation (short, long, hybrid)
 rule eval_tRNA_coassembly:
     input:
+        binflag = f"{RESULTS_DIR}/bins/coassembly/{{tool}}/bins.done",
         bins = BIN_FILES_COASSEMBLY
     output:
         final= f"{RESULTS_DIR}/eval/coassembly/{{tool}}/eval_tRNA.done"
@@ -2011,6 +2017,7 @@ rule eval_tRNA_coassembly:
 # Single-sample Evaluation (short, long, hybrid)
 rule eval_rRNA_single:
     input:
+        binflag = f"{RESULTS_DIR}/bins/single/{{tool}}/{{assembly_type}}/{{sample}}/bins.done",
         bins = BIN_FILES_SINGLE
     output:
         touch(f"{RESULTS_DIR}/eval/single/{{tool}}/{{assembly_type}}/{{sample}}/eval_rRNA.done")
@@ -2043,6 +2050,7 @@ rule eval_rRNA_single:
 # Multi-sample Evaluation (short, long, hybrid)
 rule eval_rRNA_multi:
     input:
+        binflag = f"{RESULTS_DIR}/bins/multi/{{tool}}/{{assembly_type}}/{{sample}}/bins.done",
         bins = BIN_FILES_MULTI
     output:
         touch(f"{RESULTS_DIR}/eval/multi/{{tool}}/{{assembly_type}}/{{sample}}/eval_rRNA.done")
@@ -2075,6 +2083,7 @@ rule eval_rRNA_multi:
 # Co-Assembly Evaluation (short, long, hybrid)
 rule eval_rRNA_coassembly:
     input:
+        binflag = f"{RESULTS_DIR}/bins/coassembly/{{tool}}/bins.done",
         bins = BIN_FILES_COASSEMBLY
     output:
         touch(f"{RESULTS_DIR}/eval/coassembly/{{tool}}/eval_rRNA.done")
