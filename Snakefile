@@ -1691,14 +1691,9 @@ rule comebin_single:
 rule comebin_multi:
     input:
         contigs = f"{RESULTS_DIR}/assemblies/single/{{assembly_type}}/{{sample}}/assembly.fasta",
-        bams = lambda wc: expand(
-            f"{RESULTS_DIR}/mapping/multi/{wc.assembly_type}/{wc.sample}/{{other}}.sorted.bam",
-            other=SAMPLES
-        ) 
+        bams = f"{RESULTS_DIR}/mapping/multi/{wc.assembly_type}/{wc.sample}"
     output:
         touch(f"{RESULTS_DIR}/bins/multi/comebin/{{assembly_type}}/{{sample}}/bins.done")
-    params:
-        bam_list=lambda wc, input: ' '.join(input.bams)
     threads: config["threads"]
     conda:
         "envs/binning_comebin.yaml"
@@ -1712,7 +1707,7 @@ rule comebin_multi:
           -t {threads} \
           -a {input.contigs} \
           -o $outdir \
-          -p {params.bam_list}
+          -p {input.bams}
 
         touch {output}
         """
