@@ -677,7 +677,7 @@ rule map_short_single:
         mkdir -p $(dirname {output.bam})
 
         # Remove old partial BAM/index if present
-        rm -f {output.bam} {output.bam}.tmp*
+        rm -rf {output.bam} {output.bam}.tmp*
 
         # Use samtools temp dir inside /scratch to avoid conflicts
         if [ -z "{SCRATCH}" ]; then
@@ -727,7 +727,7 @@ rule map_short_multi:
         mkdir -p $(dirname {output.bam})
 
         # Remove old partial BAM/index if present
-        rm -f {output.bam} {output.bam}.tmp*
+        rm -rf {output.bam} {output.bam}.tmp*
 
         # Use samtools temp dir inside /scratch to avoid conflicts
         if [ -z "{SCRATCH}" ]; then
@@ -759,7 +759,7 @@ rule map_long_single:
         mkdir -p $(dirname {output.bam})
 
         # Remove old partial BAM/index if present
-        rm -f {output.bam} {output.bam}.tmp*
+        rm -rf {output.bam} {output.bam}.tmp*
 
         # Use samtools temp dir inside /scratch to avoid conflicts
         if [ -z "{SCRATCH}" ]; then
@@ -795,7 +795,7 @@ rule map_long_multi:
         mkdir -p $(dirname {output.bam})
 
         # Remove old partial BAM/index if present
-        rm -f {output.bam} {output.bai} {output.bam}.tmp*
+        rm -rf {output.bam} {output.bai} {output.bam}.tmp*
 
         # Use samtools temp dir inside /scratch to avoid conflicts
         if [ -z "{SCRATCH}" ]; then
