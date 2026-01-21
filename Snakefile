@@ -1937,16 +1937,16 @@ rule eval_tRNA_single:
     input:
         bins = BIN_FILES_SINGLE
     output:
-        final= f"{RESULTS_DIR}/eval/single/{{tool}}/{{assembly_type}}/{{sample}}/eval_tRNA.done",
-        eval = directory(f"{RESULTS_DIR}/eval/single/{{tool}}/{{assembly_type}}/{{sample}}")
+        final= f"{RESULTS_DIR}/eval/single/{{tool}}/{{assembly_type}}/{{sample}}/eval_tRNA.done"
     log:
         f"logs/{DATASET}/eval/single/{{tool}}/{{assembly_type}}/{{sample}}.tRNA_count.log"
     conda:
         "envs/evaluation.yaml"
     shell:
         """
+        eval={RESULTS_DIR}/eval/single/{wildcards.tool}/{wildcards.assembly_type}/{wildcards.sample}
         for filename in {input.bins}; do
-                outfile={output.eval}/tRNA_count.txt
+                outfile=$eval/tRNA_count.txt
         
                 count=$(aragorn -t -w "$filename" | grep -c '^')
                 echo -e "$count" >> $outfile
@@ -1960,16 +1960,16 @@ rule eval_tRNA_multi:
     input:
         bins = BIN_FILES_MULTI
     output:
-        final= f"{RESULTS_DIR}/eval/multi/{{tool}}/{{assembly_type}}/{{sample}}/eval_tRNA.done",
-        eval = directory(f"{RESULTS_DIR}/eval/multi/{{tool}}/{{assembly_type}}/{{sample}}")
+        final= f"{RESULTS_DIR}/eval/multi/{{tool}}/{{assembly_type}}/{{sample}}/eval_tRNA.done"
     log:
         f"logs/{DATASET}/eval/multi/{{tool}}/{{assembly_type}}/{{sample}}.tRNA_count.log"
     conda:
         "envs/evaluation.yaml"
     shell:
         """
+        eval={RESULTS_DIR}/eval/multi/{wildcards.tool}/{wildcards.assembly_type}/{wildcards.sample}
         for filename in {input.bins}; do
-                outfile={output.eval}/tRNA_count.txt
+                outfile=$eval/tRNA_count.txt
         
                 count=$(aragorn -t -w "$filename" | grep -c '^')
                 echo -e "$count" >> $outfile
@@ -1983,16 +1983,16 @@ rule eval_tRNA_coassembly:
     input:
         bins = BIN_FILES_COASSEMBLY
     output:
-        final= f"{RESULTS_DIR}/eval/coassembly/{{tool}}/eval_tRNA.done",
-        eval = directory(f"{RESULTS_DIR}/eval/coassembly/{{tool}}")
+        final= f"{RESULTS_DIR}/eval/coassembly/{{tool}}/eval_tRNA.done"
     log:
         f"logs/{DATASET}/eval/coassembly/{{tool}}.tRNA_count.log"
     conda:
         "envs/evaluation.yaml"
     shell:
         """
+        eval={RESULTS_DIR}/eval/coassembly/{wildcards.tool}
         for filename in {input.bins}; do
-                outfile={output.eval}/tRNA_count.txt
+                outfile=$eval/tRNA_count.txt
         
                 count=$(aragorn -t -w "$filename" | grep -c '^')
                 echo -e "$count" >> $outfile
