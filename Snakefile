@@ -1876,8 +1876,8 @@ rule eval_comp_cont_single:
         "envs/evaluation.yaml"
     shell:
         """
-        outdir={RESULTS_DIR}/eval/single/{wildcards.tool}/{wildcards.assembly_type}/{wildcards.sample}
-        checkm2 predict --threads {threads} --input {input.bins} --output-directory $outdir --database_path {input.db}
+        outdir={RESULTS_DIR}/eval/single/{wildcards.tool}/{wildcards.assembly_type}/{wildcards.sample}_check
+        checkm2 predict --threads {threads} --input {input.bins} --output-directory $outdir --database_path {input.db} --force
         touch {output}
         """
 # Multi-sample Evaluation (short, long, hybrid)
@@ -1894,8 +1894,8 @@ rule eval_comp_cont_multi:
         "envs/evaluation.yaml"
     shell:
         """
-        outdir={RESULTS_DIR}/eval/multi/{wildcards.tool}/{wildcards.assembly_type}/{wildcards.sample}
-        checkm2 predict --threads {threads} --input {input.bins} --output-directory $outdir --database_path {input.db}
+        outdir={RESULTS_DIR}/eval/multi/{wildcards.tool}/{wildcards.assembly_type}/{wildcards.sample}_check
+        checkm2 predict --threads {threads} --input {input.bins} --output-directory $outdir --database_path {input.db} --force
         touch {output}
         """
 
@@ -1913,8 +1913,8 @@ rule eval_comp_cont_coassembly:
         "envs/evaluation.yaml"
     shell:
         """
-        outdir={RESULTS_DIR}/eval/coassembly/{wildcards.tool}
-        checkm2 predict --threads {threads} --input {input.bins} --output-directory $outdir --database_path {input.db}
+        outdir={RESULTS_DIR}/eval/coassembly/{wildcards.tool}_check
+        checkm2 predict --threads {threads} --input {input.bins} --output-directory $outdir --database_path {input.db} --force
         touch {output}
         """
 
