@@ -1725,7 +1725,8 @@ rule comebin_single:
 
         SCRATCH_OUT="{SCRATCH}/comebin_single_{wildcards.assembly_type}_{wildcards.sample}"
         OUT_FINAL="{RESULTS_DIR}/bins/single/comebin/{wildcards.assembly_type}/{wildcards.sample}"
-        bamdir={RESULTS_DIR}/mapping/single/{wildcards.assembly_type}/{wildcards.sample}
+        bamdir={RESULTS_DIR}/mapping/single/{wildcards.assembly_type}/{wildcards.sample}/
+        mkdir -p $bamdir
         cp {input.bam} $bamdir
 
         rm -rf "$SCRATCH_OUT"
