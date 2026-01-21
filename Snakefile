@@ -721,14 +721,24 @@ rule map_long_multi:
         contigs = f"{RESULTS_DIR}/assemblies/single/long/{{sample}}/assembly.fasta",
         reads = lambda wc: LONG_FINAL.format(sample=wc.other)
     output:
-        bam = f"{RESULTS_DIR}/mapping/multi/long/{{sample}}/{{other}}.sorted.bam"
+        bam = f"{RESULTS_DIR}/mapping/multi/long/{{sample}}/{{other}}.sorted.bam",
+        bai = f"{RESULTS_DIR}/mapping/multi/long/{{sample}}/{{other}}.sorted.bam.bai"
     threads: config["threads"]
     conda:
         "envs/mapping.yaml"
     shell:
-        """
+        r"""
+        # Ensure output directory exists
+        mkdir -p $(dirname {output.bam})
+
+        # Remove old partial BAM/index if present
+        rm -f {output.bam} {output.bai} {output.bam}.tmp*
+
+        # Use samtools temp dir inside /scratch to avoid conflicts
+        TMPDIR="${SCRATCH:-/tmp}"
         minimap2 -ax map-hifi {input.contigs} {input.reads} -t {threads} |
-        samtools sort -@ {threads} -o {output.bam}
+        samtools sort -@ {threads} -T $TMPDIR/{wildcards.sample}_{wildcards.other}.tmp -o {output.bam}
+
         samtools index {output.bam}
         """
 
