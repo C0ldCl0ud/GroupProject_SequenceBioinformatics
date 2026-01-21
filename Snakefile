@@ -133,18 +133,21 @@ rule all:
                 tool=config["binning_tools"],
                 assembly_type=["short","long","hybrid"],
                 sample=SAMPLES,
-                eval_type=["comp_cont", "tRNA", "rRNA"]),
+                #eval_type=["comp_cont", "tRNA", "rRNA"]),
+                eval_type=["comp_cont"]),
         # Multi-sample eval
         expand(f"{RESULTS_DIR}/eval/multi/{{tool}}/{{assembly_type}}/{{sample}}/eval_{{eval_type}}.done",
                 tool=config["binning_tools"],
                 assembly_type=["short","long","hybrid"],
                 sample=SAMPLES,
-                eval_type=["comp_cont", "tRNA", "rRNA"]),
+                #eval_type=["comp_cont", "tRNA", "rRNA"]),
+                eval_type=["comp_cont"]),
         # Coassembly eval
         expand(f"{RESULTS_DIR}/eval/coassembly/{{tool}}/{{sample}}/eval_{{eval_type}}.done",
                 tool=config["binning_tools"],
                 sample=SAMPLES,
-                eval_type=["comp_cont", "tRNA", "rRNA"])
+                #eval_type=["comp_cont", "tRNA", "rRNA"]),
+                eval_type=["comp_cont"]),
         ]
 
 ############################################
@@ -1869,6 +1872,41 @@ rule eval_comp_cont_single:
     shell:
         """
         outdir={RESULTS_DIR}/eval/single/{{tool}}/{{assembly_type}}/{{sample}}
+        checkm2 predict --threads {threads} --input {input.bins} --output-directory $outdir
+        touch {output}
+        """
+# Multi-sample Evaluation (short, long, hybrid)
+rule eval_comp_cont_multi:
+    input:
+        bins = BIN_FILES_MULTI
+    output:
+        touch(f"{RESULTS_DIR}/eval/multi/{{tool}}/{{assembly_type}}/{{sample}}/eval_comp_cont.done")
+    log:
+        f"logs/{DATASET}/eval/multi/{{tool}}/{{assembly_type}}/{{sample}}.comp_cont.log"
+    threads: config["threads"]
+    conda:
+        "envs/evaluation.yaml"
+    shell:
+        """
+        outdir={RESULTS_DIR}/eval/multi/{{tool}}/{{assembly_type}}/{{sample}}
+        checkm2 predict --threads {threads} --input {input.bins} --output-directory $outdir
+        touch {output}
+        """
+
+# Co-Assembly Evaluation (short, long, hybrid)
+rule eval_comp_cont_coassembly:
+    input:
+        bins = BIN_FILES_COASSEMBLY
+    output:
+        touch(f"{RESULTS_DIR}/eval/coassembly/{{tool}}/{{sample}}/eval_comp_cont.done")
+    log:
+        f"logs/{DATASET}/eval/coassembly/{{tool}}/{{sample}}.comp_cont.log"
+    threads: config["threads"]
+    conda:
+        "envs/evaluation.yaml"
+    shell:
+        """
+        outdir={RESULTS_DIR}/eval/coassembly/{{tool}}/{{sample}}
         checkm2 predict --threads {threads} --input {input.bins} --output-directory $outdir
         touch {output}
         """
