@@ -1928,6 +1928,76 @@ rule eval_comp_cont_coassembly:
         touch {output}
         """
 
+############################################
+# 6.2 tRNA count - Aragorn
+############################################
+
+# Single-sample Evaluation (short, long, hybrid)
+rule eval_tRNA_single:
+    input:
+        bins = BIN_FILES_SINGLE
+    output:
+        touch(f"{RESULTS_DIR}/eval/single/{{tool}}/{{assembly_type}}/{{sample}}/eval_tRNA.done")
+    log:
+        f"logs/{DATASET}/eval/single/{{tool}}/{{assembly_type}}/{{sample}}.tRNA_count.log"
+    conda:
+        "envs/evaluation.yaml"
+    shell:
+        """
+        for filename in {input.bins}; do
+                outfile=${{filename}}.tRNA_count.txt
+        
+                count=$(aragorn -t -w "$filename" | grep -c '^')
+                echo -e "$count" >> $outfile
+        done
+        
+        touch {output}
+        """
+
+# Multi-sample Evaluation (short, long, hybrid)
+rule eval_tRNA_multi:
+    input:
+        bins = BIN_FILES_MULTI
+    output:
+        touch(f"{RESULTS_DIR}/eval/multi/{{tool}}/{{assembly_type}}/{{sample}}/eval_tRNA.done")
+    log:
+        f"logs/{DATASET}/eval/multi/{{tool}}/{{assembly_type}}/{{sample}}.tRNA_count.log"
+    conda:
+        "envs/evaluation.yaml"
+    shell:
+        """
+        for filename in {input.bins}; do
+                outfile=${{filename}}.tRNA_count.txt
+        
+                count=$(aragorn -t -w "$filename" | grep -c '^')
+                echo -e "$count" >> $outfile
+        done
+        
+        touch {output}
+        """
+
+# Co-Assembly Evaluation (short, long, hybrid)
+rule eval_tRNA_coassembly:
+    input:
+        bins = BIN_FILES_COASSEMBLY
+    output:
+        touch(f"{RESULTS_DIR}/eval/coassembly/{{tool}}/eval_tRNA.done")
+    log:
+        f"logs/{DATASET}/eval/coassembly/{{tool}}.tRNA_count.log"
+    conda:
+        "envs/evaluation.yaml"
+    shell:
+        """
+        for filename in {input.bins}; do
+                outfile=${{filename}}.tRNA_count.txt
+        
+                count=$(aragorn -t -w "$filename" | grep -c '^')
+                echo -e "$count" >> $outfile
+        done
+        
+        touch {output}
+        """
+
 
 
 
