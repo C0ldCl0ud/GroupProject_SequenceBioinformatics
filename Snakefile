@@ -800,29 +800,28 @@ rule map_long_multi:
         "envs/mapping.yaml"
     shell:
         r"""
-        # Ensure output directory exists
+        set -euo pipefail
+
         mkdir -p $(dirname {output.bam})
+        rm -f {output.bam} {output.bai}
 
-        # Remove old partial BAM/index if present
-        rm -rf {output.bam} {output.bai} {output.bam}.tmp*
-
-        # Use samtools temp dir inside /scratch to avoid conflicts
-        if [ -z "{SCRATCH}" ]; then
-            # Create unique temp dir
-            TMPDIR=$(mktemp -d ./tmp_samtools.XXXXXX)
-
-            # Always clean up, even on error
-            trap 'rm -rf "$TMPDIR"' EXIT
+        # Create a UNIQUE temp dir per job
+        if [ -n "{SCRATCH}" ]; then
+            TMPDIR=$(mktemp -d {SCRATCH}/samtools.{wildcards.sample}.{wildcards.other}.XXXXXX)
         else
-            TMPDIR="{SCRATCH}"
+            TMPDIR=$(mktemp -d ./tmp_samtools.XXXXXX)
         fi
-        minimap2 -ax map-hifi {input.contigs} {input.reads} -t {threads} |
-        samtools sort -@ {threads} -T $TMPDIR/{wildcards.sample}_{wildcards.other}.tmp -o {output.bam}
+
+        # Always clean up
+        trap 'rm -rf "$TMPDIR"' EXIT
+
+        minimap2 -ax map-hifi \
+            {input.contigs} {input.reads} -t {threads} |
+        samtools sort -@ {threads} \
+            -T "$TMPDIR/sort" \
+            -o {output.bam}
 
         samtools index {output.bam}
-        if [ "$TMPDIR" = "./tmp_samtools" ]; then
-            rm -rf "$TMPDIR"
-        fi
         """
 
 # ---- HYBRID ----
