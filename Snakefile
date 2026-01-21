@@ -735,11 +735,19 @@ rule map_long_multi:
         rm -f {output.bam} {output.bai} {output.bam}.tmp*
 
         # Use samtools temp dir inside /scratch to avoid conflicts
-        TMPDIR={SCRATCH}
+        if [ -z "{SCRATCH}" ]; then
+            TMPDIR="./tmp_samtools"
+            mkdir -p "$TMPDIR"
+        else
+            TMPDIR="{SCRATCH}"
+        fi
         minimap2 -ax map-hifi {input.contigs} {input.reads} -t {threads} |
         samtools sort -@ {threads} -T $TMPDIR/{wildcards.sample}_{wildcards.other}.tmp -o {output.bam}
 
         samtools index {output.bam}
+        if [ "$TMPDIR" = "./tmp_samtools" ]; then
+            rm -rf "$TMPDIR"
+        fi
         """
 
 # ---- HYBRID ----
