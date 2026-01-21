@@ -1874,24 +1874,18 @@ rule eval_comp_cont_single:
     threads: config["threads"]
     conda:
         "envs/evaluation.yaml"
-    shell:
-        r"""
-        outdir={RESULTS_DIR}/eval/single/{wildcards.tool}/{wildcards.assembly_type}/{wildcards.sample}_check
-
-        # Convert input bins to a bash array
-        bins=({input.bins!r})  # use !r to get proper quoting for bash
-
-        # Check if array is empty
-        if [ ${#bins[@]} -eq 0 ]; then
-            echo "[{wildcards.sample}] No bins found for {wildcards.tool} {wildcards.assembly_type}, skipping." >&2
-            touch {output}
-            exit 0
-        fi
-
-        # Run checkm2 if bins exist
-        checkm2 predict --threads {threads} --input "${bins[@]}" --output-directory "$outdir" --database_path {input.db} --force
-        touch {output}
-        """
+    run:
+        # Escape early if input bins are empty
+        if not input.bins:
+            print(f"[{wildcards.sample}] No bins found for {wildcards.tool} {wildcards.assembly_type}, skipping.")
+            shell(f"touch {output[0]}")
+        else:
+            outdir = f"{RESULTS_DIR}/eval/single/{wildcards.tool}/{wildcards.assembly_type}/{wildcards.sample}_check"
+            shell(f"""
+                checkm2 predict --threads {threads} --input {' '.join(input.bins)} \
+                --output-directory {outdir} --database_path {input.db} --force
+                touch {output[0]}
+            """)
 
 # Multi-sample Evaluation (short, long, hybrid)
 rule eval_comp_cont_multi:
@@ -1905,24 +1899,18 @@ rule eval_comp_cont_multi:
     threads: config["threads"]
     conda:
         "envs/evaluation.yaml"
-    shell:
-        r"""
-        outdir={RESULTS_DIR}/eval/multi/{wildcards.tool}/{wildcards.assembly_type}/{wildcards.sample}_check
-
-        # Convert input bins to a bash array
-        bins=({input.bins!r})  # use !r to get proper quoting for bash
-
-        # Check if array is empty
-        if [ ${#bins[@]} -eq 0 ]; then
-            echo "[{wildcards.sample}] No bins found for {wildcards.tool} {wildcards.assembly_type}, skipping." >&2
-            touch {output}
-            exit 0
-        fi
-
-        # Run checkm2 if bins exist
-        checkm2 predict --threads {threads} --input "${bins[@]}" --output-directory "$outdir" --database_path {input.db} --force
-        touch {output}
-        """
+    run:
+        # Escape early if input bins are empty
+        if not input.bins:
+            print(f"[{wildcards.sample}] No bins found for {wildcards.tool} {wildcards.assembly_type}, skipping.")
+            shell(f"touch {output[0]}")
+        else:
+            outdir = f"{RESULTS_DIR}/eval/multi/{wildcards.tool}/{wildcards.assembly_type}/{wildcards.sample}_check"
+            shell(f"""
+                checkm2 predict --threads {threads} --input {' '.join(input.bins)} \
+                --output-directory {outdir} --database_path {input.db} --force
+                touch {output[0]}
+            """)
 
 # Co-Assembly Evaluation (short, long, hybrid)
 rule eval_comp_cont_coassembly:
