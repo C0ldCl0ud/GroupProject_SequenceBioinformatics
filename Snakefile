@@ -2019,17 +2019,19 @@ rule eval_rRNA_single:
     shell:
         """
         for filename in {input.bins}; do
-            
-            outfile={RESULTS_DIR}/eval/single/{wildcards.tool}/{wildcards.assembly_type}/{wildcards.sample}/{wildcards.sample}.barrnap.gff3
-            
-            barrnap --threads {threads} --quiet "$filename" > $outfile
-            
-            if grep -E "rRNA.*5S" $outfile >/dev/null && grep -E "rRNA.*16S" $outfile >/dev/null && grep -E "rRNA.*23S" $outfile >/dev/null; then
+            base=$(basename "$filename" *.fa*)
+            outfile="{RESULTS_DIR}/eval/single/{wildcards.tool}/{wildcards.assembly_type}/{wildcards.sample}.${{base}}.barrnap.gff3"   # unique per bin
+            barrnap --threads {threads} --quiet "$filename" > "$outfile"
+
+            if grep -E "rRNA.*5S" "$outfile" >/dev/null && \
+               grep -E "rRNA.*16S" "$outfile" >/dev/null && \
+               grep -E "rRNA.*23S" "$outfile" >/dev/null; then
                 all_present=1
-            else all_present=0;
+            else
+                all_present=0
             fi
-            echo "$all_present" > ${{filename}}.all_rRNA_present.txt
-            
+
+            echo "$all_present" > "{RESULTS_DIR}/eval/single/{wildcards.tool}/{wildcards.assembly_type}/{wildcards.sample}.all_rRNA_present.txt"
         done
         
         touch {output}
@@ -2049,17 +2051,19 @@ rule eval_rRNA_multi:
     shell:
         """
         for filename in {input.bins}; do
-            
-            outfile={RESULTS_DIR}/eval/multi/{wildcards.tool}/{wildcards.assembly_type}/{wildcards.sample}/{wildcards.sample}.barrnap.gff3
-            
-            barrnap --threads {threads} --quiet "$filename" > $outfile
-            
-            if grep -E "rRNA.*5S" $outfile >/dev/null && grep -E "rRNA.*16S" $outfile >/dev/null && grep -E "rRNA.*23S" $outfile >/dev/null; then
+            base=$(basename "$filename" *.fa*)
+            outfile="{RESULTS_DIR}/eval/multi/{wildcards.tool}/{wildcards.assembly_type}/{wildcards.sample}.${{base}}.barrnap.gff3"   # unique per bin
+            barrnap --threads {threads} --quiet "$filename" > "$outfile"
+
+            if grep -E "rRNA.*5S" "$outfile" >/dev/null && \
+               grep -E "rRNA.*16S" "$outfile" >/dev/null && \
+               grep -E "rRNA.*23S" "$outfile" >/dev/null; then
                 all_present=1
-            else all_present=0;
+            else
+                all_present=0
             fi
-            echo "$all_present" > ${{filename}}.all_rRNA_present.txt
-            
+
+            echo "$all_present" > "{RESULTS_DIR}/eval/multi/{wildcards.tool}/{wildcards.assembly_type}/{wildcards.sample}.all_rRNA_present.txt"
         done
         
         touch {output}
@@ -2070,26 +2074,28 @@ rule eval_rRNA_coassembly:
     input:
         bins = BIN_FILES_COASSEMBLY
     output:
-        touch(f"{RESULTS_DIR}/eval/coassembly/{{tool}}/{{sample}}/eval_rRNA.done")
+        touch(f"{RESULTS_DIR}/eval/coassembly/{{tool}}/eval_rRNA.done")
     log:
-        f"logs/{DATASET}/eval/coassembly/{{tool}}/{{sample}}.rRNA.log"
-    threads: config["threads"]
+        f"logs/{DATASET}/eval/coassembly/{{tool}}.rRNA.log"
+    threads: 1
     conda:
         "envs/evaluation.yaml"
     shell:
         """
         for filename in {input.bins}; do
-            
-            outfile={RESULTS_DIR}/eval/coassembly/{wildcards.tool}.barrnap.gff3
-            
-            barrnap --threads {threads} --quiet "$filename" > $outfile
-            
-            if grep -E "rRNA.*5S" $outfile >/dev/null && grep -E "rRNA.*16S" $outfile >/dev/null && grep -E "rRNA.*23S" $outfile >/dev/null; then
+            base=$(basename "$filename" *.fa*)
+            outfile="{RESULTS_DIR}/eval/coassembly/{wildcards.tool}.${{base}}.barrnap.gff3"   # unique per bin
+            barrnap --threads {threads} --quiet "$filename" > "$outfile"
+
+            if grep -E "rRNA.*5S" "$outfile" >/dev/null && \
+               grep -E "rRNA.*16S" "$outfile" >/dev/null && \
+               grep -E "rRNA.*23S" "$outfile" >/dev/null; then
                 all_present=1
-            else all_present=0;
+            else
+                all_present=0
             fi
-            echo "$all_present" > ${{filename}}.all_rRNA_present.txt
-            
+
+            echo "$all_present" > "{RESULTS_DIR}/eval/coassembly/{wildcards.tool}.all_rRNA_present.txt"
         done
         
         touch {output}
