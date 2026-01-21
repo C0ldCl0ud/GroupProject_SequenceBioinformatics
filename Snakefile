@@ -1886,7 +1886,7 @@ rule eval_comp_cont_single:
         "envs/evaluation.yaml"
     shell:
         """
-        outdir={RESULTS_DIR}/eval/single/{{tool}}/{{assembly_type}}/{{sample}}
+        outdir={RESULTS_DIR}/eval/single/{wildcards.tool}/{wildcards.assembly_type}/{wildcards.sample}
         checkm2 predict --threads {threads} --input {input.bins} --output-directory $outdir --database_path {input.db} \
         touch {output}
         """
