@@ -1652,6 +1652,7 @@ rule comebin_coassembly:
     shell:
         """
         outdir={RESULTS_DIR}/bins/coassembly/comebin
+        rm -rf $outdir
         mkdir -p $outdir
 
         run_comebin.sh \
@@ -1675,6 +1676,7 @@ rule comebin_single:
     shell:
         """
         outdir={RESULTS_DIR}/bins/single/comebin/{wildcards.assembly_type}/{wildcards.sample}
+        rm -rf $outdir
         mkdir -p $outdir
 
         run_comebin.sh \
@@ -1703,6 +1705,7 @@ rule comebin_multi:
     shell:
         """
         outdir={RESULTS_DIR}/bins/multi/comebin/{wildcards.assembly_type}/{wildcards.sample}
+        rm -rf $outdir
         mkdir -p $outdir
 
         run_comebin.sh \
