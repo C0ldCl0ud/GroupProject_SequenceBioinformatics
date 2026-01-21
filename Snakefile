@@ -147,7 +147,7 @@ rule all:
                 tool=config["binning_tools"],
                 sample=SAMPLES,
                 #eval_type=["comp_cont", "tRNA", "rRNA"]),
-                eval_type=["comp_cont"]),
+                eval_type=["comp_cont"])
         ]
 
 ############################################
