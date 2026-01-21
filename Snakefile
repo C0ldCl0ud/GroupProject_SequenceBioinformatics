@@ -134,22 +134,22 @@ rule all:
                 assembly_type=["short","long","hybrid"],
                 sample=SAMPLES,
                 #eval_type=["comp_cont", "tRNA", "rRNA"]),
-                #eval_type=["comp_cont"]),
-                eval_type=["rRNA"]),
+                eval_type=["comp_cont"]),
+                #eval_type=["rRNA"]),
         # Multi-sample eval
         expand(f"{RESULTS_DIR}/eval/multi/{{tool}}/{{assembly_type}}/{{sample}}/eval_{{eval_type}}.done",
                 tool=config["binning_tools"],
                 assembly_type=["short","long","hybrid"],
                 sample=SAMPLES,
                 #eval_type=["comp_cont", "tRNA", "rRNA"]),
-                #eval_type=["comp_cont"]),
-                eval_type=["rRNA"]),
+                eval_type=["comp_cont"]),
+                #eval_type=["rRNA"]),
         # Coassembly eval
         expand(f"{RESULTS_DIR}/eval/coassembly/{{tool}}/eval_{{eval_type}}.done",
                 tool=config["binning_tools"],
                 #eval_type=["comp_cont", "tRNA", "rRNA"]),
-                #eval_type=["comp_cont"]),
-                eval_type=["rRNA"])
+                eval_type=["comp_cont"]),
+                #eval_type=["rRNA"])
         ]
 
 ############################################
@@ -1861,17 +1861,7 @@ BIN_FILES_COASSEMBLY = lambda wildcards: sorted(glob.glob(f"{RESULTS_DIR}/bins/c
 # 6.1 Completeness and Contamination - CheckM 2
 ############################################
 
-CHECKM2_DB = f"{RESULTS_DIR}/databases/checkm2"
-
-rule checkm2_database:
-    output:
-        directory(CHECKM2_DB)
-    conda:
-        "envs/evaluation.yaml"
-    shell:
-        """
-        checkm2 database --download --path {output}
-        """
+CHECKM2_DB = f"{RESULTS_DIR}/../database/uniref100.KO.1.dmnd"
 
 rule eval_comp_cont_single:
     input:
