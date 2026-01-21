@@ -1657,7 +1657,7 @@ rule comebin_coassembly:
         OUT_FINAL="{RESULTS_DIR}/bins/coassembly/comebin"
 
         rm -rf "$SCRATCH_JOB"
-        mkdir -p "$SCRATCH_JOB"/{input,bams,out}
+        mkdir -p "$SCRATCH_JOB/input" "$SCRATCH_JOB/bams" "$SCRATCH_JOB/out"
 
         cp {input.contigs} "$SCRATCH_JOB/input/assembly.fasta"
         rsync -a {input.bams_dir}/ "$SCRATCH_JOB/bams/"
@@ -1692,7 +1692,7 @@ rule comebin_single:
         OUT_FINAL="{RESULTS_DIR}/bins/single/comebin/{wildcards.assembly_type}/{wildcards.sample}"
 
         rm -rf "$SCRATCH_JOB"
-        mkdir -p "$SCRATCH_JOB"/{input,bams,out}
+        mkdir -p "$SCRATCH_JOB/input" "$SCRATCH_JOB/bams" "$SCRATCH_JOB/out"
 
         cp {input.contigs} "$SCRATCH_JOB/input/assembly.fasta"
         cp {input.bam} "$SCRATCH_JOB/bams/{wildcards.sample}.sorted.bam"
@@ -1727,7 +1727,7 @@ rule comebin_multi:
         OUT_FINAL="{RESULTS_DIR}/bins/multi/comebin/{wildcards.assembly_type}/{wildcards.sample}"
 
         rm -rf "$SCRATCH_JOB"
-        mkdir -p "$SCRATCH_JOB"/{input,bams,out}
+        mkdir -p "$SCRATCH_JOB/input" "$SCRATCH_JOB/bams" "$SCRATCH_JOB/out"
 
         cp {input.contigs} "$SCRATCH_JOB/input/assembly.fasta"
         rsync -a {input.bams}/ "$SCRATCH_JOB/bams/"
