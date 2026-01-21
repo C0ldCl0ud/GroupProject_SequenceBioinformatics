@@ -135,7 +135,7 @@ rule all:
                 sample=SAMPLES,
                 #eval_type=["comp_cont", "tRNA", "rRNA"]),
                 #eval_type=["comp_cont"]),
-                eval_type=["tRNA"]),
+                eval_type=["rRNA"]),
         # Multi-sample eval
         expand(f"{RESULTS_DIR}/eval/multi/{{tool}}/{{assembly_type}}/{{sample}}/eval_{{eval_type}}.done",
                 tool=config["binning_tools"],
@@ -143,13 +143,13 @@ rule all:
                 sample=SAMPLES,
                 #eval_type=["comp_cont", "tRNA", "rRNA"]),
                 #eval_type=["comp_cont"]),
-                eval_type=["tRNA"]),
+                eval_type=["rRNA"]),
         # Coassembly eval
         expand(f"{RESULTS_DIR}/eval/coassembly/{{tool}}/eval_{{eval_type}}.done",
                 tool=config["binning_tools"],
                 #eval_type=["comp_cont", "tRNA", "rRNA"]),
                 #eval_type=["comp_cont"]),
-                eval_type=["tRNA"])
+                eval_type=["rRNA"])
         ]
 
 ############################################
@@ -1999,6 +1999,100 @@ rule eval_tRNA_coassembly:
         done
         
         touch {output.final}
+        """
+
+############################################
+# 6.3 Presence of rRNAs - Barrnap
+############################################
+
+# Single-sample Evaluation (short, long, hybrid)
+rule eval_rRNA_single:
+    input:
+        bins = BIN_FILES_SINGLE
+    output:
+        touch(f"{RESULTS_DIR}/eval/single/{{tool}}/{{assembly_type}}/{{sample}}/eval_rRNA.done")
+    log:
+        f"logs/{DATASET}/eval/single/{{tool}}/{{assembly_type}}/{{sample}}.rRNA.log"
+    threads: config["threads"]
+    conda:
+        "envs/evaluation.yaml"
+    shell:
+        """
+        for filename in {input.bins}; do
+            
+            outfile={RESULTS_DIR}/eval/single/{wildcards.tool}/{wildcards.assembly_type}/{wildcards.sample}/{wildcards.sample}.barrnap.gff3
+            
+            barrnap --threads {threads} --quiet "$filename" > $outfile
+            
+            if grep -E "rRNA.*5S" $outfile >/dev/null && grep -E "rRNA.*16S" $outfile >/dev/null && grep -E "rRNA.*23S" $outfile >/dev/null; then
+                all_present = 1
+            else all_present = 0;
+            fi
+            $all_present > ${{filename}}.all_rRNA_present.txt
+            
+        done
+        
+        touch {output}
+        """
+
+# Multi-sample Evaluation (short, long, hybrid)
+rule eval_rRNA_multi:
+    input:
+        bins = BIN_FILES_MULTI
+    output:
+        touch(f"{RESULTS_DIR}/eval/multi/{{tool}}/{{assembly_type}}/{{sample}}/eval_rRNA.done")
+    log:
+        f"logs/{DATASET}/eval/multi/{{tool}}/{{assembly_type}}/{{sample}}.rRNA.log"
+    threads: config["threads"]
+    conda:
+        "envs/evaluation.yaml"
+    shell:
+        """
+        for filename in {input.bins}; do
+            
+            outfile={RESULTS_DIR}/eval/multi/{wildcards.tool}/{wildcards.assembly_type}/{wildcards.sample}/{wildcards.sample}.barrnap.gff3
+            
+            barrnap --threads {threads} --quiet "$filename" > $outfile
+            
+            if grep -E "rRNA.*5S" $outfile >/dev/null && grep -E "rRNA.*16S" $outfile >/dev/null && grep -E "rRNA.*23S" $outfile >/dev/null; then
+                all_present = 1
+            else all_present = 0;
+            fi
+            $all_present > ${{filename}}.all_rRNA_present.txt
+            
+        done
+        
+        touch {output}
+        """
+
+# Co-Assembly Evaluation (short, long, hybrid)
+rule eval_rRNA_coassembly:
+    input:
+        bins = BIN_FILES_COASSEMBLY
+    output:
+        touch(f"{RESULTS_DIR}/eval/coassembly/{{tool}}/{{sample}}/eval_rRNA.done")
+    log:
+        f"logs/{DATASET}/eval/coassembly/{{tool}}/{{sample}}.rRNA.log"
+    threads: config["threads"]
+    conda:
+        "envs/evaluation.yaml"
+    shell:
+        """
+        for filename in {input.bins}; do
+            
+            outfile={RESULTS_DIR}/eval/coassembly/{wildcards.tool}.barrnap.gff3
+            
+            barrnap --threads {threads} --quiet "$filename" > $outfile
+            
+            if grep -E "rRNA.*5S" $outfile >/dev/null && grep -E "rRNA.*16S" $outfile >/dev/null && grep -E "rRNA.*23S" $outfile >/dev/null; then
+                all_present = 1
+            else all_present = 0;
+            fi
+            $all_present > ${{filename}}.all_rRNA_present.txt
+            
+        done
+        
+        touch {output}
         """
 
 
