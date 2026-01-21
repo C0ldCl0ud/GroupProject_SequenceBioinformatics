@@ -1877,7 +1877,7 @@ rule eval_comp_cont_single:
     shell:
         """
         outdir={RESULTS_DIR}/eval/single/{wildcards.tool}/{wildcards.assembly_type}/{wildcards.sample}
-        checkm2 predict --threads {threads} --input {input.bins} --output-directory $outdir --database_path {input.db} \
+        checkm2 predict --threads {threads} --input {input.bins} --output-directory $outdir --database_path {input.db}
         touch {output}
         """
 # Multi-sample Evaluation (short, long, hybrid)
@@ -1895,7 +1895,7 @@ rule eval_comp_cont_multi:
     shell:
         """
         outdir={RESULTS_DIR}/eval/multi/{wildcards.tool}/{wildcards.assembly_type}/{wildcards.sample}
-        checkm2 predict --threads {threads} --input {input.bins} --output-directory $outdir --database_path {input.db} \
+        checkm2 predict --threads {threads} --input {input.bins} --output-directory $outdir --database_path {input.db}
         touch {output}
         """
 
@@ -1914,7 +1914,7 @@ rule eval_comp_cont_coassembly:
     shell:
         """
         outdir={RESULTS_DIR}/eval/coassembly/{wildcards.tool}
-        checkm2 predict --threads {threads} --input {input.bins} --output-directory $outdir --database_path {input.db} \
+        checkm2 predict --threads {threads} --input {input.bins} --output-directory $outdir --database_path {input.db}
         touch {output}
         """
 
