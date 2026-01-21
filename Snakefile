@@ -1856,6 +1856,23 @@ BIN_FILES_COASSEMBLY = lambda wildcards: sorted(glob.glob(f"{RESULTS_DIR}/bins/c
 # 6.1 Completeness and Contamination - CheckM 2
 ############################################
 
+rule eval_comp_cont_single:
+    input:
+        bins = BIN_FILES_SINGLE
+    output:
+        touch(f"{RESULTS_DIR}/eval/single/{{tool}}/{{assembly_type}}/{{sample}}/eval_comp_cont.done")
+    log:
+        f"logs/{DATASET}/eval/single/{{tool}}/{{assembly_type}}/{{sample}}.comp_cont.log"
+    threads: config["threads"]
+    conda:
+        "envs/evaluation.yaml"
+    shell:
+        """
+        outdir={RESULTS_DIR}/eval/single/{{tool}}/{{assembly_type}}/{{sample}}
+        checkm2 predict --threads {threads} --input {input.bins} --output-directory $outdir
+        touch {output}
+        """
+
 
 
 
