@@ -1702,7 +1702,7 @@ rule comebin_multi:
         "envs/binning_comebin.yaml"
     shell:
         """
-        outdir={RESULTS_DIR}/bins/multi/comebin/{{assembly_type}}/{{wildcards.sample}}
+        outdir={RESULTS_DIR}/bins/multi/comebin/{wc.assembly_type}/{wc.sample}
         mkdir -p $outdir
 
         run_comebin.sh \
