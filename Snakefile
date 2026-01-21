@@ -1861,7 +1861,7 @@ BIN_FILES_COASSEMBLY = lambda wildcards: sorted(glob.glob(f"{RESULTS_DIR}/bins/c
 # 6.1 Completeness and Contamination - CheckM 2
 ############################################
 
-CHECKM2_DB = f"{RESULTS_DIR}/../database/uniref100.KO.1.dmnd"
+CHECKM2_DB = f"{RESULTS_DIR}/../../database/uniref100.KO.1.dmnd"
 
 rule eval_comp_cont_single:
     input:
