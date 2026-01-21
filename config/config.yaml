@@ -1,6 +1,6 @@
-dataset: human_gut_2
+dataset: marine
 debug: false
-use_scratch: true        # set to false for local runs
+use_scratch: false        # set to false for local runs
 scratch_base: /beegfs/HPCscratch
 debug_reads_short: 100000
 debug_reads_long: 5000
@@ -18,9 +18,9 @@ metabinner:
     min_contig_len: 1000
     kmer_size: 4
 threads: 16
-long_read_technology: nanopore   # pacbio | nanopore (human_gut_II, activated_sludge)
+long_read_technology: pacbio   # pacbio | nanopore (human_gut_II, activated_sludge)
 binning_tools:
-  #- metabat2 #works
+  - metabat2 #works
   #- maxbin2 #works
   #- concoct #works
   #- vamb     #appears to not work in debug, still some errors in cheese
@@ -28,7 +28,7 @@ binning_tools:
   #- binny #looks incredible complicated to set up
   # - metabinner #slightly harder to install
   #- semibin2 #currently with cheese #should work
-  - comebin #currently with hg2 # should work
+  #- comebin #currently with hg2 # should work
   
 hg38_index: data/human_assembly/bow2_idx/GRCh38_index
 remove_human_reads: false
