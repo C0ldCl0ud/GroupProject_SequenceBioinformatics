@@ -1851,7 +1851,7 @@ BIN_FILES_SINGLE = lambda wildcards: sorted(
         recursive=True
     )
 )
-BIN_FILES_MULTI = lambda wildcards: sorted(glob.glob(f"{RESULTS_DIR}/bins/multi/{{tool}}/{{assembly_type}}/{{sample}}/**/*.fa*", recursive=Trur))
+BIN_FILES_MULTI = lambda wildcards: sorted(glob.glob(f"{RESULTS_DIR}/bins/multi/{{tool}}/{{assembly_type}}/{{sample}}/**/*.fa*", recursive=True))
 BIN_FILES_COASSEMBLY = lambda wildcards: sorted(glob.glob(f"{RESULTS_DIR}/bins/coassembly/{{tool}}/{{sample}}/**/*.fa*", recursive=True))
 
 
