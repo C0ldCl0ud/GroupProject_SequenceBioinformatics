@@ -1851,7 +1851,7 @@ BIN_FILES_SINGLE = lambda wildcards: sorted(
     )
 )
 BIN_FILES_MULTI = lambda wildcards: sorted(glob.glob(f"{RESULTS_DIR}/bins/multi/{wildcards.tool}/{wildcards.assembly_type}/{wildcards.sample}/**/*.fa*", recursive=True))
-BIN_FILES_COASSEMBLY = lambda wildcards: sorted(glob.glob(f"{RESULTS_DIR}/bins/coassembly/{wildcards.tool}/**/*.fa*", recursive=True)),
+BIN_FILES_COASSEMBLY = lambda wildcards: sorted(glob.glob(f"{RESULTS_DIR}/bins/coassembly/{wildcards.tool}/**/*.fa*", recursive=True))
 
 
 ############################################
@@ -1872,7 +1872,7 @@ rule checkm2_database:
 
 rule eval_comp_cont_single:
     input:
-        bins = BIN_FILES_SINGLE
+        bins = BIN_FILES_SINGLE,
         db = CHECKM2_DB
     output:
         touch(f"{RESULTS_DIR}/eval/single/{{tool}}/{{assembly_type}}/{{sample}}/eval_comp_cont.done")
@@ -1890,7 +1890,7 @@ rule eval_comp_cont_single:
 # Multi-sample Evaluation (short, long, hybrid)
 rule eval_comp_cont_multi:
     input:
-        bins = BIN_FILES_MULTI
+        bins = BIN_FILES_MULTI,
         db = CHECKM2_DB
     output:
         touch(f"{RESULTS_DIR}/eval/multi/{{tool}}/{{assembly_type}}/{{sample}}/eval_comp_cont.done")
@@ -1909,7 +1909,7 @@ rule eval_comp_cont_multi:
 # Co-Assembly Evaluation (short, long, hybrid)
 rule eval_comp_cont_coassembly:
     input:
-        bins = BIN_FILES_COASSEMBLY
+        bins = BIN_FILES_COASSEMBLY,
         db = CHECKM2_DB
     output:
         touch(f"{RESULTS_DIR}/eval/coassembly/{{tool}}/eval_comp_cont.done")
