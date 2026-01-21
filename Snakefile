@@ -123,15 +123,28 @@ rule all:
 
 
         # binning
-        expand(f"{RESULTS_DIR}/bins/coassembly/{{tool}}/bins.done",tool=config["binning_tools"]),
-        expand(f"{RESULTS_DIR}/bins/single/{{tool}}/{{assembly_type}}/{{sample}}/bins.done", tool=config["binning_tools"], assembly_type=["short", "long", "hybrid"], sample=SAMPLES),
-        expand(f"{RESULTS_DIR}/bins/multi/{{tool}}/{{assembly_type}}/{{sample}}/bins.done", tool=config["binning_tools"], sample=SAMPLES, assembly_type=["short", "long", "hybrid"])
-        # QC
-        # Single-sample QC
-        #expand(f"{RESULTS_DIR}/qc/single/{{assembly_type}}/{{sample}}/qc.done",
-               #assembly_type=["short","long","hybrid"], sample=SAMPLES),
-        # Multi-sample QC
-        #f"{RESULTS_DIR}/qc/multi/short/qc.done",
+        #expand(f"{RESULTS_DIR}/bins/coassembly/{{tool}}/bins.done",tool=config["binning_tools"]),
+        #expand(f"{RESULTS_DIR}/bins/single/{{tool}}/{{assembly_type}}/{{sample}}/bins.done", tool=config["binning_tools"], assembly_type=["short", "long", "hybrid"], sample=SAMPLES),
+        #expand(f"{RESULTS_DIR}/bins/multi/{{tool}}/{{assembly_type}}/{{sample}}/bins.done", tool=config["binning_tools"], sample=SAMPLES, assembly_type=["short", "long", "hybrid"])
+
+        # evaluation
+        # Single-sample eval
+        expand(f"{RESULTS_DIR}/eval/single/{{tool}}/{{assembly_type}}/{{sample}}/eval_{{eval_type}}.done",
+                tool=config["binning_tools"],
+                assembly_type=["short","long","hybrid"],
+                sample=SAMPLES,
+                eval_type=["comp_cont", "tRNA", "rRNA"]),
+        # Multi-sample eval
+        expand(f"{RESULTS_DIR}/eval/multi/{{tool}}/{{assembly_type}}/{{sample}}/eval_{{eval_type}}.done",
+                tool=config["binning_tools"],
+                assembly_type=["short","long","hybrid"],
+                sample=SAMPLES,
+                eval_type=["comp_cont", "tRNA", "rRNA"]),
+        # Coassembly eval
+        expand(f"{RESULTS_DIR}/eval/coassembly/{{tool}}/{{sample}}/eval_{{eval_type}}.done",
+                tool=config["binning_tools"],
+                sample=SAMPLES,
+                eval_type=["comp_cont", "tRNA", "rRNA"])
         ]
 
 ############################################
@@ -1824,34 +1837,27 @@ rule comebin_multi:
         """
 
 ############################################
-# 6. Quality control
+# 6. Evaluation for rank scoring
 ############################################
 
-# Single-sample QC (short, long, hybrid)
-rule qc_single:
-    input:
-        assembly=lambda wc: f"{RESULTS_DIR}/assemblies/single/{wc.assembly_type}/{wc.sample}/contigs.fasta"
-    output:
-        touch(f"{RESULTS_DIR}/qc/single/{{assembly_type}}/{{sample}}/qc.done")
-    log:
-        f"logs/{DATASET}/qc/single/{{assembly_type}}/{{sample}}.log"
-    shell:
-        """
-        quast {input.assembly} -o qc_tmp_{wildcards.sample} > {log} 2>&1
-        # you could move or copy results if needed
-        touch {output}
-        """
+# this BIN_FILES scheme is probably only for Metabat2, other tools have different output. Maybe we have to write a rule for every tool.
+import glob
+BIN_FILES_SINGLE = lambda wildcards: sorted(
+    glob.glob(
+        f"{RESULTS_DIR}/bins/single/{{tool}}/{{assembly_type}}/{{sample}}/**/*.fa*",
+        recursive=True
+    )
+)
+BIN_FILES_MULTI = lambda wildcards: sorted(glob.glob(f"{RESULTS_DIR}/bins/multi/{{tool}}/{{assembly_type}}/{{sample}}/**/*.fa*", recursive=Trur))
+BIN_FILES_COASSEMBLY = lambda wildcards: sorted(glob.glob(f"{RESULTS_DIR}/bins/coassembly/{{tool}}/{{sample}}/**/*.fa*", recursive=True))
 
-# Multi-sample QC (multi_short)
-rule qc_multi:
-    input:
-        assembly=f"{RESULTS_DIR}/assemblies/multi/short/contigs.fasta"
-    output:
-        touch(f"{RESULTS_DIR}/qc/multi/short/qc.done")
-    log:
-        f"logs/{DATASET}/qc/multi_short.log"
-    shell:
-        """
-        quast {input.assembly} -o qc_tmp_multi_short > {log} 2>&1
-        touch {output}
-        """
+
+############################################
+# 6.1 Completeness and Contamination - CheckM 2
+############################################
+
+
+
+
+
+
