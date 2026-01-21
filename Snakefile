@@ -1678,12 +1678,15 @@ rule comebin_single:
         outdir={RESULTS_DIR}/bins/single/comebin/{wildcards.assembly_type}/{wildcards.sample}
         rm -rf $outdir
         mkdir -p $outdir
+        bamdir={RESULTS_DIR}/mapping/single/{wildcards.assembly_type}/{wildcards.sample}
+        mkdir -p $bamdir
+        cp {input.bam} $bamdir
 
         run_comebin.sh \
           -t {threads} \
           -a {input.contigs} \
           -o $outdir \
-          -p {input.bam}
+          -p $bamdir
 
         touch {output}
         """
