@@ -681,8 +681,11 @@ rule map_short_single:
 
         # Use samtools temp dir inside /scratch to avoid conflicts
         if [ -z "{SCRATCH}" ]; then
-            TMPDIR="./tmp_samtools"
-            mkdir -p "$TMPDIR"
+            # Create unique temp dir
+            TMPDIR=$(mktemp -d ./tmp_samtools.XXXXXX)
+
+            # Always clean up, even on error
+            trap 'rm -rf "$TMPDIR"' EXIT
         else
             TMPDIR="{SCRATCH}"
         fi
@@ -731,8 +734,11 @@ rule map_short_multi:
 
         # Use samtools temp dir inside /scratch to avoid conflicts
         if [ -z "{SCRATCH}" ]; then
-            TMPDIR="./tmp_samtools"
-            mkdir -p "$TMPDIR"
+            # Create unique temp dir
+            TMPDIR=$(mktemp -d ./tmp_samtools.XXXXXX)
+
+            # Always clean up, even on error
+            trap 'rm -rf "$TMPDIR"' EXIT
         else
             TMPDIR="{SCRATCH}"
         fi
@@ -763,8 +769,11 @@ rule map_long_single:
 
         # Use samtools temp dir inside /scratch to avoid conflicts
         if [ -z "{SCRATCH}" ]; then
-            TMPDIR="./tmp_samtools"
-            mkdir -p "$TMPDIR"
+            # Create unique temp dir
+            TMPDIR=$(mktemp -d ./tmp_samtools.XXXXXX)
+
+            # Always clean up, even on error
+            trap 'rm -rf "$TMPDIR"' EXIT
         else
             TMPDIR="{SCRATCH}"
         fi
@@ -799,9 +808,11 @@ rule map_long_multi:
 
         # Use samtools temp dir inside /scratch to avoid conflicts
         if [ -z "{SCRATCH}" ]; then
-            TMPDIR="./tmp_samtools"
-            rm -rf "$TMPDIR"
-            mkdir -p "$TMPDIR"
+            # Create unique temp dir
+            TMPDIR=$(mktemp -d ./tmp_samtools.XXXXXX)
+
+            # Always clean up, even on error
+            trap 'rm -rf "$TMPDIR"' EXIT
         else
             TMPDIR="{SCRATCH}"
         fi
