@@ -782,6 +782,7 @@ rule map_long_multi:
         # Use samtools temp dir inside /scratch to avoid conflicts
         if [ -z "{SCRATCH}" ]; then
             TMPDIR="./tmp_samtools"
+            rm -rf "$TMPDIR"
             mkdir -p "$TMPDIR"
         else
             TMPDIR="{SCRATCH}"
