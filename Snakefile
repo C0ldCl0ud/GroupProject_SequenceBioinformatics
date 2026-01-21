@@ -1847,12 +1847,12 @@ rule comebin_multi:
 import glob
 BIN_FILES_SINGLE = lambda wildcards: sorted(
     glob.glob(
-        f"{RESULTS_DIR}/bins/single/{{tool}}/{{assembly_type}}/{{sample}}/**/*.fa*",
+        f"{RESULTS_DIR}/bins/single/{wildcards.tool}/{wildcards.assembly_type}/{wildcards.sample}/**/*.fa*",
         recursive=True
     )
 )
-BIN_FILES_MULTI = lambda wildcards: sorted(glob.glob(f"{RESULTS_DIR}/bins/multi/{{tool}}/{{assembly_type}}/{{sample}}/**/*.fa*", recursive=True))
-BIN_FILES_COASSEMBLY = lambda wildcards: sorted(glob.glob(f"{RESULTS_DIR}/bins/coassembly/{{tool}}/{{sample}}/**/*.fa*", recursive=True))
+BIN_FILES_MULTI = lambda wildcards: sorted(glob.glob(f"{RESULTS_DIR}/bins/multi/{wildcards.tool}/{wildcards.assembly_type}/{wildcards.sample}/**/*.fa*", recursive=True))
+BIN_FILES_COASSEMBLY = lambda wildcards: sorted(glob.glob(f"{RESULTS_DIR}/bins/coassembly/{wildcards.tool}/{wildcards.sample}/**/*.fa*", recursive=True))
 
 
 ############################################
