@@ -711,9 +711,28 @@ rule map_long_single:
         "envs/mapping.yaml"
     shell:
         """
+        # Ensure output directory exists
+        mkdir -p $(dirname {output.bam})
+
+        # Remove old partial BAM/index if present
+        rm -f {output.bam} {output.bam}.tmp*
+
+        # Use samtools temp dir inside /scratch to avoid conflicts
+        if [ -z "{SCRATCH}" ]; then
+            TMPDIR="./tmp_samtools"
+            mkdir -p "$TMPDIR"
+        else
+            TMPDIR="{SCRATCH}"
+        fi
+
         minimap2 -ax map-hifi {input.contigs} {input.reads} -t {threads} |
         samtools sort -@ {threads} -o {output.bam}
         samtools index {output.bam}
+
+        samtools index {output.bam}
+        if [ "$TMPDIR" = "./tmp_samtools" ]; then
+            rm -rf "$TMPDIR"
+        fi
         """
 
 rule map_long_multi:
