@@ -2028,7 +2028,7 @@ rule eval_rRNA_single:
                 all_present=1
             else all_present=0;
             fi
-            $all_present > ${{filename}}.all_rRNA_present.txt
+            echo "$all_present" > ${{filename}}.all_rRNA_present.txt
             
         done
         
@@ -2058,7 +2058,7 @@ rule eval_rRNA_multi:
                 all_present=1
             else all_present=0;
             fi
-            $all_present > ${{filename}}.all_rRNA_present.txt
+            echo "$all_present" > ${{filename}}.all_rRNA_present.txt
             
         done
         
@@ -2088,7 +2088,7 @@ rule eval_rRNA_coassembly:
                 all_present=1
             else all_present=0;
             fi
-            $all_present > ${{filename}}.all_rRNA_present.txt
+            echo "$all_present" > ${{filename}}.all_rRNA_present.txt
             
         done
         
