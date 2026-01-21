@@ -655,9 +655,22 @@ rule map_short_single:
         "envs/mapping.yaml"
     shell:
         """
+        # Ensure output directory exists
+        mkdir -p $(dirname {output.bam})
+
+        # Remove old partial BAM/index if present
+        rm -f {output.bam} {output.bam}.tmp*
+
+        # Use samtools temp dir inside /scratch to avoid conflicts
+        if [ -z "{SCRATCH}" ]; then
+            TMPDIR="./tmp_samtools"
+            mkdir -p "$TMPDIR"
+        else
+            TMPDIR="{SCRATCH}"
+        fi
         PREFIX=$(basename {input.idx} .1.bt2)
         bowtie2 -x {RESULTS_DIR}/indices/single/short/contigs/$PREFIX -1 {input.r1} -2 {input.r2} -p {threads} |
-        samtools sort -@ {threads} -o {output.bam}
+        samtools sort -@ {threads} -T $TMPDIR/{wildcards.sample}_{wildcards.other}.tmp -o {output.bam}
         samtools index {output.bam}
         """
 
@@ -726,7 +739,7 @@ rule map_long_single:
         fi
 
         minimap2 -ax map-hifi {input.contigs} {input.reads} -t {threads} |
-        samtools sort -@ {threads} -o {output.bam}
+        samtools sort -@ {threads} -T $TMPDIR/{wildcards.sample}_{wildcards.other}.tmp -o {output.bam}
         samtools index {output.bam}
 
         samtools index {output.bam}
