@@ -1858,9 +1858,22 @@ BIN_FILES_COASSEMBLY = lambda wildcards: sorted(glob.glob(f"{RESULTS_DIR}/bins/c
 # 6.1 Completeness and Contamination - CheckM 2
 ############################################
 
+CHECKM2_DB = f"{RESULTS_DIR}/databases/checkm2"
+
+rule checkm2_database:
+    output:
+        directory(CHECKM2_DB)
+    conda:
+        "envs/evaluation.yaml"
+    shell:
+        """
+        checkm2 database --download --path {output}
+        """
+
 rule eval_comp_cont_single:
     input:
         bins = BIN_FILES_SINGLE
+        db = CHECKM2_DB
     output:
         touch(f"{RESULTS_DIR}/eval/single/{{tool}}/{{assembly_type}}/{{sample}}/eval_comp_cont.done")
     log:
@@ -1871,13 +1884,14 @@ rule eval_comp_cont_single:
     shell:
         """
         outdir={RESULTS_DIR}/eval/single/{{tool}}/{{assembly_type}}/{{sample}}
-        checkm2 predict --threads {threads} --input {input.bins} --output-directory $outdir
+        checkm2 predict --threads {threads} --input {input.bins} --output-directory $outdir --database_path {input.db} \
         touch {output}
         """
 # Multi-sample Evaluation (short, long, hybrid)
 rule eval_comp_cont_multi:
     input:
         bins = BIN_FILES_MULTI
+        db = CHECKM2_DB
     output:
         touch(f"{RESULTS_DIR}/eval/multi/{{tool}}/{{assembly_type}}/{{sample}}/eval_comp_cont.done")
     log:
@@ -1888,7 +1902,7 @@ rule eval_comp_cont_multi:
     shell:
         """
         outdir={RESULTS_DIR}/eval/multi/{wildcards.tool}/{wildcards.assembly_type}/{wildcards.sample}
-        checkm2 predict --threads {threads} --input {input.bins} --output-directory $outdir
+        checkm2 predict --threads {threads} --input {input.bins} --output-directory $outdir --database_path {input.db} \
         touch {output}
         """
 
@@ -1896,6 +1910,7 @@ rule eval_comp_cont_multi:
 rule eval_comp_cont_coassembly:
     input:
         bins = BIN_FILES_COASSEMBLY
+        db = CHECKM2_DB
     output:
         touch(f"{RESULTS_DIR}/eval/coassembly/{{tool}}/eval_comp_cont.done")
     log:
@@ -1906,7 +1921,7 @@ rule eval_comp_cont_coassembly:
     shell:
         """
         outdir={RESULTS_DIR}/eval/coassembly/{wildcards.tool}
-        checkm2 predict --threads {threads} --input {input.bins} --output-directory $outdir
+        checkm2 predict --threads {threads} --input {input.bins} --output-directory $outdir --database_path {input.db} \
         touch {output}
         """
 
