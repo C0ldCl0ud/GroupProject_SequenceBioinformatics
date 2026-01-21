@@ -143,9 +143,8 @@ rule all:
                 #eval_type=["comp_cont", "tRNA", "rRNA"]),
                 eval_type=["comp_cont"]),
         # Coassembly eval
-        expand(f"{RESULTS_DIR}/eval/coassembly/{{tool}}/{{sample}}/eval_{{eval_type}}.done",
+        expand(f"{RESULTS_DIR}/eval/coassembly/{{tool}}/eval_{{eval_type}}.done",
                 tool=config["binning_tools"],
-                sample=SAMPLES,
                 #eval_type=["comp_cont", "tRNA", "rRNA"]),
                 eval_type=["comp_cont"])
         ]
@@ -1888,7 +1887,7 @@ rule eval_comp_cont_multi:
         "envs/evaluation.yaml"
     shell:
         """
-        outdir={RESULTS_DIR}/eval/multi/{{tool}}/{{assembly_type}}/{{sample}}
+        outdir={RESULTS_DIR}/eval/multi/{wildcards.tool}/{wildcards.assembly_type}/{wildcards.sample}
         checkm2 predict --threads {threads} --input {input.bins} --output-directory $outdir
         touch {output}
         """
@@ -1898,15 +1897,15 @@ rule eval_comp_cont_coassembly:
     input:
         bins = BIN_FILES_COASSEMBLY
     output:
-        touch(f"{RESULTS_DIR}/eval/coassembly/{{tool}}/{{sample}}/eval_comp_cont.done")
+        touch(f"{RESULTS_DIR}/eval/coassembly/{{tool}}/eval_comp_cont.done")
     log:
-        f"logs/{DATASET}/eval/coassembly/{{tool}}/{{sample}}.comp_cont.log"
+        f"logs/{DATASET}/eval/coassembly/{{tool}}.comp_cont.log"
     threads: config["threads"]
     conda:
         "envs/evaluation.yaml"
     shell:
         """
-        outdir={RESULTS_DIR}/eval/coassembly/{{tool}}/{{sample}}
+        outdir={RESULTS_DIR}/eval/coassembly/{wildcards.tool}
         checkm2 predict --threads {threads} --input {input.bins} --output-directory $outdir
         touch {output}
         """
