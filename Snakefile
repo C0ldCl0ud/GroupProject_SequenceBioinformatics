@@ -2041,11 +2041,17 @@ rule eval_comp_cont_coassembly:
     conda:
         "envs/evaluation.yaml"
     shell:
-        """
-        outdir={RESULTS_DIR}/eval/coassembly/{wildcards.tool}_check
-        checkm2 predict --threads {threads} --input {input.bins} --output-directory $outdir --database_path {input.db} --force
-        touch {output}
-        """
+        # Escape early if input bins are empty
+        if not input.bins:
+            print(f"No bins found for Coassembly, skipping.")
+            shell(f"touch {output[0]}")
+        else:
+            outdir = f"{RESULTS_DIR}/eval/multi/{wildcards.tool}/{wildcards.assembly_type}/{wildcards.sample}_check"
+            shell(f"""
+                outdir={RESULTS_DIR}/eval/coassembly/{wildcards.tool}_check
+                checkm2 predict --threads {threads} --input {input.bins} --output-directory $outdir --database_path {input.db} --force
+                touch {output}
+            """)
 
 ############################################
 # 6.2 tRNA count - Aragorn
