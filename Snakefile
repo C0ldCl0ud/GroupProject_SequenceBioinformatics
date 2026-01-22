@@ -632,20 +632,24 @@ rule index_short_coassembly:
     input:
         contigs = f"{RESULTS_DIR}/assemblies/coassembly/short/assembly.fasta"
     output:
-        multiext(
-            f"{RESULTS_DIR}/indices/coassembly/short/contigs/contigs",
-            ".1.bt2", ".2.bt2", ".3.bt2", ".4.bt2",
-            ".rev.1.bt2", ".rev.2.bt2",
-            ".1.bt2l", ".2.bt2l", ".3.bt2l", ".4.bt2l",
-            ".rev.1.bt2l", ".rev.2.bt2l",
-        )
+        idxdir = directory(f"{RESULTS_DIR}/indices/coassembly/short/contigs")
     conda:
         "envs/mapping.yaml"
     shell:
         """
-        mkdir -p {RESULTS_DIR}/indices/coassembly/short/contigs
-        bowtie2-build {input.contigs} \
-          {RESULTS_DIR}/indices/coassembly/short/contigs/contigs
+        mkdir -p {output.idxdir}
+        bowtie2-build {input.contigs} {output.idxdir}/contigs
+        """rule index_short_coassembly:
+    input:
+        contigs = f"{RESULTS_DIR}/assemblies/coassembly/short/assembly.fasta"
+    output:
+        idxdir = directory(f"{RESULTS_DIR}/indices/coassembly/short/contigs")
+    conda:
+        "envs/mapping.yaml"
+    shell:
+        """
+        mkdir -p {output.idxdir}
+        bowtie2-build {input.contigs} {output.idxdir}/contigs
         """
 
 rule index_hybrid_single:
@@ -703,7 +707,7 @@ rule map_short_single:
 
 rule map_short_coassembly:
     input:
-        idx = f"{RESULTS_DIR}/indices/coassembly/short/contigs/contigs",
+        idxdir = f"{RESULTS_DIR}/indices/coassembly/short/contigs",
         r1 = SHORT_FINAL_R1,
         r2 = SHORT_FINAL_R2
     output:
@@ -713,11 +717,12 @@ rule map_short_coassembly:
         "envs/mapping.yaml"
     shell:
         """
-        bowtie2 -x {input.idx} \
+        bowtie2 -x {input.idxdir}/contigs \
           -1 {input.r1} -2 {input.r2} -p {threads} |
         samtools sort -@ {threads} -o {output.bam}
         samtools index {output.bam}
         """
+
 
 
 rule map_short_multi:
