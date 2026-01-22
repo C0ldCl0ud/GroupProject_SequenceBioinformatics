@@ -23,7 +23,7 @@ binning_tools:
   - metabat2 #works
   #- maxbin2 #works
   #- concoct #works
-  #- vamb     #appears to not work in debug, still some errors in cheese
+  #- vamb     #no documentation for 3.0.9; cant make it work with default parameters by paper authors
   #- metadecoder  #probably also a debug mode issue
   #- binny #looks incredible complicated to set up
   # - metabinner #slightly harder to install
