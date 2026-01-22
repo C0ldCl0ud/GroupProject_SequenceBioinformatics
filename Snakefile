@@ -849,19 +849,35 @@ rule map_hybrid_single:
     conda:
         "envs/mapping.yaml"
     shell:
-        """
+        r"""
+        set -euo pipefail
+        mkdir -p $(dirname {output.bam})
+        rm -f {output.bam}
+
+        # Unique temp dir
+        if [ -n "{SCRATCH}" ]; then
+            TMPDIR=$(mktemp -d {SCRATCH}/samtools.{wildcards.sample}.XXXXXX)
+        else
+            TMPDIR=$(mktemp -d ./tmp_samtools.{wildcards.sample}.XXXXXX)
+        fi
+        trap 'rm -rf "$TMPDIR"' EXIT
+
         PREFIX=$(basename {input.idx} .1.bt2)
-        bowtie2 -x {RESULTS_DIR}/indices/single/hybrid/contigs/$PREFIX -1 {input.r1} -2 {input.r2} -p {threads} |
-        samtools sort -@ {threads} -o short_{wildcards.sample}.bam
 
+        # Short reads
+        bowtie2 -x {RESULTS_DIR}/indices/single/hybrid/contigs/$PREFIX \
+          -1 {input.r1} -2 {input.r2} -p {threads} |
+        samtools sort -@ {threads} -T "$TMPDIR/short" -o "$TMPDIR/short.bam"
+
+        # Long reads
         minimap2 -ax map-hifi {input.contigs} {input.long} -t {threads} |
-        samtools sort -@ {threads} -o long_{wildcards.sample}.bam
+        samtools sort -@ {threads} -T "$TMPDIR/long" -o "$TMPDIR/long.bam"
 
-        samtools merge -@ {threads} {output.bam} short_{wildcards.sample}.bam long_{wildcards.sample}.bam
+        # Merge
+        samtools merge -@ {threads} {output.bam} "$TMPDIR/short.bam" "$TMPDIR/long.bam"
         samtools index {output.bam}
-
-        rm short_{wildcards.sample}.bam long_{wildcards.sample}.bam
         """
+
 
 rule map_hybrid_multi:
     input:
@@ -876,21 +892,33 @@ rule map_hybrid_multi:
     conda:
         "envs/mapping.yaml"
     shell:
-        """
+        r"""
+        set -euo pipefail
+        mkdir -p $(dirname {output.bam})
+        rm -f {output.bam}
+
+        # Unique temp dir
+        if [ -n "{SCRATCH}" ]; then
+            TMPDIR=$(mktemp -d {SCRATCH}/samtools.{wildcards.sample}.{wildcards.other}.XXXXXX)
+        else
+            TMPDIR=$(mktemp -d ./tmp_samtools.{wildcards.sample}.{wildcards.other}.XXXXXX)
+        fi
+        trap 'rm -rf "$TMPDIR"' EXIT
+
         PREFIX=$(basename {input.idx} .1.bt2)
-        bowtie2 -x {RESULTS_DIR}/indices/single/hybrid/contigs/$PREFIX -1 {input.r1} -2 {input.r2} -p {threads} |
-        samtools sort -@ {threads} -o short_{wildcards.sample}_{wildcards.other}.bam
 
+        # Short reads
+        bowtie2 -x {RESULTS_DIR}/indices/single/hybrid/contigs/$PREFIX \
+          -1 {input.r1} -2 {input.r2} -p {threads} |
+        samtools sort -@ {threads} -T "$TMPDIR/short" -o "$TMPDIR/short.bam"
+
+        # Long reads
         minimap2 -ax map-hifi {input.contigs} {input.long} -t {threads} |
-        samtools sort -@ {threads} -o long_{wildcards.sample}_{wildcards.other}.bam
+        samtools sort -@ {threads} -T "$TMPDIR/long" -o "$TMPDIR/long.bam"
 
-        samtools merge -@ {threads} {output.bam} \
-          short_{wildcards.sample}_{wildcards.other}.bam \
-          long_{wildcards.sample}_{wildcards.other}.bam
+        # Merge
+        samtools merge -@ {threads} {output.bam} "$TMPDIR/short.bam" "$TMPDIR/long.bam"
         samtools index {output.bam}
-
-        rm short_{wildcards.sample}_{wildcards.other}.bam \
-           long_{wildcards.sample}_{wildcards.other}.bam
         """
 
 ############################################
