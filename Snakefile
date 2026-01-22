@@ -1290,6 +1290,14 @@ rule vamb_coassembly:
         "envs/binning_vamb.yaml"
     shell:
         """
+        ncontigs=$(grep -c "^>" {input.contigs})
+        if [ "$ncontigs" -lt 50 ]; then
+            echo "Too few contigs for VAMB, skipping"
+            mkdir -p $(dirname {output})
+            touch {output}
+            exit 0
+        fi
+
         outdir={RESULTS_DIR}/bins/coassembly/vamb
         rm -rf "$outdir"
 
@@ -1314,6 +1322,14 @@ rule vamb_single:
         "envs/binning_vamb.yaml"
     shell:
         """
+        ncontigs=$(grep -c "^>" {input.contigs})
+        if [ "$ncontigs" -lt 50 ]; then
+            echo "Too few contigs for VAMB, skipping"
+            mkdir -p $(dirname {output})
+            touch {output}
+            exit 0
+        fi
+
         outdir={RESULTS_DIR}/bins/single/vamb/{wildcards.assembly_type}/{wildcards.sample}
         rm -rf "$outdir"
 
