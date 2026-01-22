@@ -731,7 +731,8 @@ rule map_short_multi:
         r2 = lambda wc: SHORT_FINAL_R2
     output:
         bam = f"{SCRATCH_MAP}/multi/short/{{sample}}/{{other}}.sorted.bam",
-        bai = f"{SCRATCH_MAP}/multi/short/{{sample}}/{{other}}.sorted.bam.bai"
+        bai = f"{SCRATCH_MAP}/multi/short/{{sample}}/{{other}}.sorted.bam.bai",
+        outdir = directory(f"{SCRATCH_MAP}/multi/short/{{sample}}")
     threads: config["threads"]
     conda:
         "envs/mapping.yaml"
@@ -810,7 +811,8 @@ rule map_long_multi:
         reads = lambda wc: LONG_FINAL.format(sample=wc.other)
     output:
         bam = f"{SCRATCH_MAP}/multi/long/{{sample}}/{{other}}.sorted.bam",
-        bai = f"{SCRATCH_MAP}/multi/long/{{sample}}/{{other}}.sorted.bam.bai"
+        bai = f"{SCRATCH_MAP}/multi/long/{{sample}}/{{other}}.sorted.bam.bai",
+        outdir = directory(f"{SCRATCH_MAP}/multi/long/{{sample}}")
     threads: config["threads"]
     conda:
         "envs/mapping.yaml"
