@@ -1953,7 +1953,7 @@ rule comebin_multi:
           -t {threads} \
           -a {input.contigs} \
           -o "$SCRATCH_OUT" \
-          -p {SCRATCH_MAP}/multi/{wc.assembly_type}/{wc.sample}
+          -p {SCRATCH_MAP}/multi/{wildcards.assembly_type}/{wildcards.sample}
 
         rm -rf "$OUT_FINAL"
         mkdir -p "$OUT_FINAL"
