@@ -767,15 +767,6 @@ rule map_short_multi:
         samtools index {output.bam}
         """
 
-rule touch_bam_dir_short:
-    input:
-        bams = expand(f"{SCRATCH_MAP}/multi/short/{{sample}}/{{other}}.sorted.bam", sample=SAMPLES, other=SAMPLES)
-    output:
-        outdir = directory(f"{SCRATCH_MAP}/multi/short/{{sample}}")
-    run:
-        import os
-        os.makedirs(output.outdir, exist_ok=True)
-
 
 # ---- LONG READS ----
 
@@ -848,15 +839,6 @@ rule map_long_multi:
 
         samtools index {output.bam}
         """
-
-rule touch_bam_dir_long:
-    input:
-        bams = expand(f"{SCRATCH_MAP}/multi/long/{{sample}}/{{other}}.sorted.bam", sample=SAMPLES, other=SAMPLES)
-    output:
-        outdir = directory(f"{SCRATCH_MAP}/multi/long/{{sample}}")
-    run:
-        import os
-        os.makedirs(output.outdir, exist_ok=True)
 
 
 # ---- HYBRID ----
@@ -945,16 +927,6 @@ rule map_hybrid_multi:
         samtools merge -@ {threads} {output.bam} "$TMPDIR/short.bam" "$TMPDIR/long.bam"
         samtools index {output.bam}
         """
-
-
-rule touch_bam_dir_hybrid:
-    input:
-        bams = expand(f"{SCRATCH_MAP}/multi/hybrid/{{sample}}/{{other}}.sorted.bam", sample=SAMPLES, other=SAMPLES)
-    output:
-        outdir = directory(f"{SCRATCH_MAP}/multi/hybrid/{{sample}}")
-    run:
-        import os
-        os.makedirs(output.outdir, exist_ok=True)
 
 ############################################
 # 5.3 Depth calculation
