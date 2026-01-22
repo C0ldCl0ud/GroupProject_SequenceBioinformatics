@@ -769,7 +769,7 @@ rule map_short_multi:
 
 rule touch_bam_dir_short:
     input:
-        bams = expand(f"{SCRATCH_MAP}/multi/short/{{sample}}/{{other}}.sorted.bam", other=SHORT_SAMPLES)
+        bams = expand(f"{SCRATCH_MAP}/multi/short/{{sample}}/{{other}}.sorted.bam")
     output:
         outdir = directory(f"{SCRATCH_MAP}/multi/short/{{sample}}")
     run:
@@ -851,7 +851,7 @@ rule map_long_multi:
 
 rule touch_bam_dir_long:
     input:
-        bams = expand(f"{SCRATCH_MAP}/multi/long/{{sample}}/{{other}}.sorted.bam", other=LONG_SAMPLES)
+        bams = expand(f"{SCRATCH_MAP}/multi/long/{{sample}}/{{other}}.sorted.bam")
     output:
         outdir = directory(f"{SCRATCH_MAP}/multi/long/{{sample}}")
     run:
