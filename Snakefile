@@ -18,10 +18,10 @@ if USE_SCRATCH:
     USER = os.environ.get("USER", "unknown")
     PROJECT = config.get("dataset", "GroupProject")
     SCRATCH = f"{SCRATCH_BASE}/{USER}/{PROJECT}"
-    SCRATCH_MAP = {SCRATCH}/mapping
+    SCRATCH_MAP = f"{SCRATCH}/mapping"
 else:
     SCRATCH = ""
-    SCRATCH_MAP = {RESULTS_DIR}/mapping
+    SCRATCH_MAP = f"{RESULTS_DIR}/mapping"
 
 short = [l.strip() for l in open(DATASET_DIR+"/short_reads.txt") if l.strip()]
 long  = [l.strip() for l in open(DATASET_DIR+"/long_reads.txt") if l.strip()]
