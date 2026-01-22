@@ -722,6 +722,15 @@ rule map_short_coassembly:
         samtools index {output.bam}
         """
 
+rule touch_bam_dir_coassembly:
+    input:
+        bams = expand(f"{SCRATCH_MAP}/coassembly/short/{{sample}}.sorted.bam", sample=SAMPLES)
+    output:
+        outdir = directory(f"{SCRATCH_MAP}/coassembly/short")
+    run:
+        import os
+        os.makedirs(output.outdir, exist_ok=True)
+
 
 
 rule map_short_multi:
