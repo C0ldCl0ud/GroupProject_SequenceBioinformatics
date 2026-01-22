@@ -133,22 +133,22 @@ rule all:
                 tool=config["binning_tools"],
                 assembly_type=["short","long","hybrid"],
                 sample=SAMPLES,
-                #eval_type=["comp_cont", "tRNA", "rRNA"]),
-                eval_type=["comp_cont"]),
+                eval_type=["comp_cont", "tRNA", "rRNA"]),
+                #eval_type=["comp_cont"]),
                 #eval_type=["rRNA"]),
         # Multi-sample eval
         expand(f"{RESULTS_DIR}/eval/multi/{{tool}}/{{assembly_type}}/{{sample}}/eval_{{eval_type}}.done",
                 tool=config["binning_tools"],
                 assembly_type=["short","long","hybrid"],
                 sample=SAMPLES,
-                #eval_type=["comp_cont", "tRNA", "rRNA"]),
-                eval_type=["comp_cont"]),
+                eval_type=["comp_cont", "tRNA", "rRNA"]),
+                #eval_type=["comp_cont"]),
                 #eval_type=["rRNA"]),
         # Coassembly eval
         expand(f"{RESULTS_DIR}/eval/coassembly/{{tool}}/eval_{{eval_type}}.done",
                 tool=config["binning_tools"],
-                #eval_type=["comp_cont", "tRNA", "rRNA"]),
-                eval_type=["comp_cont"]),
+                eval_type=["comp_cont", "tRNA", "rRNA"]),
+                #eval_type=["comp_cont"]),
                 #eval_type=["rRNA"])
         ]
 
