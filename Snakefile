@@ -1864,7 +1864,7 @@ rule semibin2_multi:
 rule comebin_coassembly:
     input:
         contigs = f"{RESULTS_DIR}/assemblies/coassembly/short/assembly.fasta",
-        bams_dir = directory(f"{SCRATCH_MAP}/coassembly/short")
+        bams_dir = f"{SCRATCH_MAP}/coassembly/short"
     output:
         touch(f"{RESULTS_DIR}/bins/coassembly/comebin/bins.done")
     threads: config["threads"]
@@ -1931,7 +1931,7 @@ rule comebin_single:
 rule comebin_multi:
     input:
         contigs = f"{RESULTS_DIR}/assemblies/single/{{assembly_type}}/{{sample}}/assembly.fasta",
-        bams = lambda wc: glob(
+        bams = lambda wc: glob.glob(
             f"{SCRATCH_MAP}/multi/{wc.assembly_type}/{wc.sample}/*.sorted.bam"
         )
     output:
