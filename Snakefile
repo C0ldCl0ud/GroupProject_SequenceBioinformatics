@@ -767,6 +767,15 @@ rule map_short_multi:
         samtools index {output.bam}
         """
 
+rule touch_bam_dir_short:
+    input:
+        bams = expand(f"{SCRATCH_MAP}/multi/short/{{sample}}/{{other}}.sorted.bam", other=SHORT_SAMPLES)
+    output:
+        outdir = directory(f"{SCRATCH_MAP}/multi/short/{{sample}}")
+    run:
+        import os
+        os.makedirs(output.outdir, exist_ok=True)
+
 
 # ---- LONG READS ----
 
@@ -839,6 +848,16 @@ rule map_long_multi:
 
         samtools index {output.bam}
         """
+
+rule touch_bam_dir_long:
+    input:
+        bams = expand(f"{SCRATCH_MAP}/multi/long/{{sample}}/{{other}}.sorted.bam", other=LONG_SAMPLES)
+    output:
+        outdir = directory(f"{SCRATCH_MAP}/multi/long/{{sample}}")
+    run:
+        import os
+        os.makedirs(output.outdir, exist_ok=True)
+
 
 # ---- HYBRID ----
 
@@ -926,6 +945,16 @@ rule map_hybrid_multi:
         samtools merge -@ {threads} {output.bam} "$TMPDIR/short.bam" "$TMPDIR/long.bam"
         samtools index {output.bam}
         """
+
+
+rule touch_bam_dir_hybrid:
+    input:
+        bams = expand(f"{SCRATCH_MAP}/multi/hybrid/{{sample}}/{{other}}.sorted.bam", other=HYBRID_SAMPLES)
+    output:
+        outdir = directory(f"{SCRATCH_MAP}/multi/hybrid/{{sample}}")
+    run:
+        import os
+        os.makedirs(output.outdir, exist_ok=True)
 
 ############################################
 # 5.3 Depth calculation
@@ -1931,36 +1960,23 @@ rule comebin_single:
 rule comebin_multi:
     input:
         contigs = f"{RESULTS_DIR}/assemblies/single/{{assembly_type}}/{{sample}}/assembly.fasta",
-        bams = lambda wc: glob.glob(
-            f"{SCRATCH_MAP}/multi/{wc.assembly_type}/{wc.sample}/*.sorted.bam"
-        )
+        bams_dir = directory(f"{SCRATCH_MAP}/multi/{{assembly_type}}/{{sample}}")  # now works!
     output:
         touch(f"{RESULTS_DIR}/bins/multi/comebin/{{assembly_type}}/{{sample}}/bins.done")
-    threads: config["threads"]
-    conda:
-        "envs/binning_comebin.yaml"
     shell:
         r"""
         set -euo pipefail
-
         SCRATCH_OUT="{SCRATCH}/comebin_multi_{wildcards.assembly_type}_{wildcards.sample}"
         OUT_FINAL="{RESULTS_DIR}/bins/multi/comebin/{wildcards.assembly_type}/{wildcards.sample}"
-
         rm -rf "$SCRATCH_OUT"
         mkdir -p "$SCRATCH_OUT"
-
-        run_comebin.sh \
-          -t {threads} \
-          -a {input.contigs} \
-          -o "$SCRATCH_OUT" \
-          -p {input.bams}
-
+        run_comebin.sh -t {threads} -a {input.contigs} -o "$SCRATCH_OUT" -p {input.bams_dir}
         rm -rf "$OUT_FINAL"
         mkdir -p "$OUT_FINAL"
         rsync -a "$SCRATCH_OUT/" "$OUT_FINAL/"
-
         touch {output}
         """
+
 
 ############################################
 # 6. Evaluation for rank scoring
