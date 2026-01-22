@@ -731,8 +731,7 @@ rule map_short_multi:
         r2 = lambda wc: SHORT_FINAL_R2
     output:
         bam = f"{SCRATCH_MAP}/multi/short/{{sample}}/{{other}}.sorted.bam",
-        bai = f"{SCRATCH_MAP}/multi/short/{{sample}}/{{other}}.sorted.bam.bai",
-        outdir = directory(f"{SCRATCH_MAP}/multi/short/{{sample}}")
+        bai = f"{SCRATCH_MAP}/multi/short/{{sample}}/{{other}}.sorted.bam.bai"
     threads: config["threads"]
     conda:
         "envs/mapping.yaml"
@@ -811,8 +810,7 @@ rule map_long_multi:
         reads = lambda wc: LONG_FINAL.format(sample=wc.other)
     output:
         bam = f"{SCRATCH_MAP}/multi/long/{{sample}}/{{other}}.sorted.bam",
-        bai = f"{SCRATCH_MAP}/multi/long/{{sample}}/{{other}}.sorted.bam.bai",
-        outdir = directory(f"{SCRATCH_MAP}/multi/long/{{sample}}")
+        bai = f"{SCRATCH_MAP}/multi/long/{{sample}}/{{other}}.sorted.bam.bai"
     threads: config["threads"]
     conda:
         "envs/mapping.yaml"
@@ -1933,7 +1931,9 @@ rule comebin_single:
 rule comebin_multi:
     input:
         contigs = f"{RESULTS_DIR}/assemblies/single/{{assembly_type}}/{{sample}}/assembly.fasta",
-        bams = directory(f"{SCRATCH_MAP}/multi/{{assembly_type}}/{{sample}}")
+        bams = lambda wc: glob(
+            f"{SCRATCH_MAP}/multi/{wc.assembly_type}/{wc.sample}/*.sorted.bam"
+        )
     output:
         touch(f"{RESULTS_DIR}/bins/multi/comebin/{{assembly_type}}/{{sample}}/bins.done")
     threads: config["threads"]
