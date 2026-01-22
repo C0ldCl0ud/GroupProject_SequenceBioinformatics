@@ -722,15 +722,6 @@ rule map_short_coassembly:
         samtools index {output.bam}
         """
 
-rule touch_bam_dir_coassembly:
-    input:
-        bams = expand(f"{SCRATCH_MAP}/coassembly/short/{{sample}}.sorted.bam", sample=SAMPLES)
-    output:
-        outdir = directory(f"{SCRATCH_MAP}/coassembly/short")
-    run:
-        import os
-        os.makedirs(output.outdir, exist_ok=True)
-
 
 
 rule map_short_multi:
@@ -1902,7 +1893,7 @@ rule semibin2_multi:
 rule comebin_coassembly:
     input:
         contigs = f"{RESULTS_DIR}/assemblies/coassembly/short/assembly.fasta",
-        bams_dir = f"{SCRATCH_MAP}/coassembly/short"
+       bams = lambda wc: glob.glob(f"{SCRATCH_MAP}/coassembly/short/*.sorted.bam")
     output:
         touch(f"{RESULTS_DIR}/bins/coassembly/comebin/bins.done")
     threads: config["threads"]
@@ -1922,7 +1913,7 @@ rule comebin_coassembly:
           -t {threads} \
           -a {input.contigs} \
           -o "$SCRATCH_OUT" \
-          -p {input.bams_dir}
+          -p {SCRATCH_MAP}/coassembly/short
 
         rm -rf "$OUT_FINAL"
         mkdir -p "$OUT_FINAL"
