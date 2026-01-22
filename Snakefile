@@ -777,25 +777,21 @@ rule map_long_single:
         # Remove old partial BAM/index if present
         rm -rf {output.bam} {output.bam}.tmp*
 
-        # Use samtools temp dir inside /scratch to avoid conflicts
-        if [ -z "{SCRATCH}" ]; then
-            # Create unique temp dir
-            TMPDIR=$(mktemp -d ./tmp_samtools.XXXXXX)
-
-            # Always clean up, even on error
-            trap 'rm -rf "$TMPDIR"' EXIT
+        # Create unique temp dir per job
+        if [ -n "{SCRATCH}" ]; then
+            TMPDIR=$(mktemp -d {SCRATCH}/samtools.{wildcards.sample}.XXXXXX)
         else
-            TMPDIR="{SCRATCH}"
+            TMPDIR=$(mktemp -d ./tmp_samtools.{wildcards.sample}.XXXXXX)
         fi
+
+        # Always clean up
+        trap 'rm -rf "$TMPDIR"' EXIT
 
         minimap2 -ax map-hifi {input.contigs} {input.reads} -t {threads} |
-        samtools sort -@ {threads} -T $TMPDIR/{wildcards.sample}.tmp -o {output.bam}
+        samtools sort -@ {threads} -T "$TMPDIR/{wildcards.sample}.tmp" -o {output.bam}
         samtools index {output.bam}
 
         samtools index {output.bam}
-        if [ "$TMPDIR" = "./tmp_samtools" ]; then
-            rm -rf "$TMPDIR"
-        fi
         """
 
 rule map_long_multi:
