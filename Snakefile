@@ -1960,7 +1960,7 @@ rule comebin_single:
 rule comebin_multi:
     input:
         contigs = f"{RESULTS_DIR}/assemblies/single/{{assembly_type}}/{{sample}}/assembly.fasta",
-        bams_dir = directory(f"{SCRATCH_MAP}/multi/{{assembly_type}}/{{sample}}")  # now works!
+        bams_dir = f"{SCRATCH_MAP}/multi/{{assembly_type}}/{{sample}}"
     output:
         touch(f"{RESULTS_DIR}/bins/multi/comebin/{{assembly_type}}/{{sample}}/bins.done")
     shell:
