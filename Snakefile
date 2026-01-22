@@ -1304,7 +1304,7 @@ rule vamb_coassembly:
             print n+0
           }}
         ' {input.contigs})
-        if [ "$ncontigs" -lt 50 ]; then
+        if [ "$ncontigs" -lt 500 ]; then
             echo "Too few contigs for VAMB, skipping"
             mkdir -p $(dirname {output})
             touch {output}
@@ -1349,7 +1349,7 @@ rule vamb_single:
             print n+0
           }}
         ' {input.contigs})
-        if [ "$ncontigs" -lt 50 ]; then
+        if [ "$ncontigs" -lt 500 ]; then
             echo "Too few contigs for VAMB, skipping"
             mkdir -p $(dirname {output})
             touch {output}
@@ -1395,7 +1395,7 @@ rule vamb_multi:
           }}
         ' {input.contigs})
 
-        if [ "$ncontigs" -lt 50 ]; then
+        if [ "$ncontigs" -lt 500 ]; then
             echo "Too few contigs for VAMB, skipping"
             mkdir -p $(dirname {output})
             touch {output}
