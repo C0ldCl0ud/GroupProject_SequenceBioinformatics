@@ -6,6 +6,11 @@ from glob import glob
 
 configfile: "config/config.yaml"
 
+# dataset is passed via --config dataset=dataset1
+DATASET = config["dataset"]
+DATASET_DIR = f"data/{DATASET}"
+RESULTS_DIR = f"results/{DATASET}"
+
 USE_SCRATCH = config.get("use_scratch", False)
 
 if USE_SCRATCH:
@@ -13,13 +18,10 @@ if USE_SCRATCH:
     USER = os.environ.get("USER", "unknown")
     PROJECT = config.get("dataset", "GroupProject")
     SCRATCH = f"{SCRATCH_BASE}/{USER}/{PROJECT}"
+    SCRATCH_MAP = {SCRATCH}/mapping
 else:
     SCRATCH = ""
-
-# dataset is passed via --config dataset=dataset1
-DATASET = config["dataset"]
-DATASET_DIR = f"data/{DATASET}"
-RESULTS_DIR = f"results/{DATASET}"
+    SCRATCH_MAP = {RESULTS_DIR}/mapping
 
 short = [l.strip() for l in open(DATASET_DIR+"/short_reads.txt") if l.strip()]
 long  = [l.strip() for l in open(DATASET_DIR+"/long_reads.txt") if l.strip()]
@@ -666,7 +668,7 @@ rule map_short_single:
         r1 = SHORT_FINAL_R1,
         r2 = SHORT_FINAL_R2
     output:
-        bam = f"{RESULTS_DIR}/mapping/single/short/{{sample}}.sorted.bam"
+        bam = f"{SCRATCH_MAP}/single/short/{{sample}}.sorted.bam"
     threads: config["threads"]
     conda:
         "envs/mapping.yaml"
@@ -700,7 +702,7 @@ rule map_short_coassembly:
         r1 = SHORT_FINAL_R1,
         r2 = SHORT_FINAL_R2
     output:
-        bam = f"{RESULTS_DIR}/mapping/coassembly/short/{{sample}}.sorted.bam"
+        bam = f"{SCRATCH_MAP}/coassembly/short/{{sample}}.sorted.bam"
     threads: config["threads"]
     conda:
         "envs/mapping.yaml"
@@ -720,8 +722,8 @@ rule map_short_multi:
         r1 = lambda wc: SHORT_FINAL_R1,
         r2 = lambda wc: SHORT_FINAL_R2
     output:
-        bam = f"{RESULTS_DIR}/mapping/multi/short/{{sample}}/{{other}}.sorted.bam",
-        bai = f"{RESULTS_DIR}/mapping/multi/short/{{sample}}/{{other}}.sorted.bam.bai"
+        bam = f"{SCRATCH_MAP}/multi/short/{{sample}}/{{other}}.sorted.bam",
+        bai = f"{SCRATCH_MAP}/multi/short/{{sample}}/{{other}}.sorted.bam.bai"
     threads: config["threads"]
     conda:
         "envs/mapping.yaml"
@@ -765,7 +767,7 @@ rule map_long_single:
         contigs = f"{RESULTS_DIR}/assemblies/single/long/{{sample}}/assembly.fasta",
         reads = LONG_FINAL
     output:
-        bam = f"{RESULTS_DIR}/mapping/single/long/{{sample}}.sorted.bam"
+        bam = f"{SCRATCH_MAP}/single/long/{{sample}}.sorted.bam"
     threads: config["threads"]
     conda:
         "envs/mapping.yaml"
@@ -799,8 +801,8 @@ rule map_long_multi:
         contigs = f"{RESULTS_DIR}/assemblies/single/long/{{sample}}/assembly.fasta",
         reads = lambda wc: LONG_FINAL.format(sample=wc.other)
     output:
-        bam = f"{RESULTS_DIR}/mapping/multi/long/{{sample}}/{{other}}.sorted.bam",
-        bai = f"{RESULTS_DIR}/mapping/multi/long/{{sample}}/{{other}}.sorted.bam.bai"
+        bam = f"{SCRATCH_MAP}/multi/long/{{sample}}/{{other}}.sorted.bam",
+        bai = f"{SCRATCH_MAP}/multi/long/{{sample}}/{{other}}.sorted.bam.bai"
     threads: config["threads"]
     conda:
         "envs/mapping.yaml"
@@ -840,7 +842,7 @@ rule map_hybrid_single:
         r2 = SHORT_FINAL_R2,
         long = LONG_FINAL
     output:
-        bam = f"{RESULTS_DIR}/mapping/single/hybrid/{{sample}}.sorted.bam"
+        bam = f"{SCRATCH_MAP}/single/hybrid/{{sample}}.sorted.bam"
     threads: config["threads"]
     conda:
         "envs/mapping.yaml"
@@ -883,7 +885,7 @@ rule map_hybrid_multi:
         r2 = lambda wc: SHORT_FINAL_R2,
         long = lambda wc: LONG_FINAL
     output:
-        bam = f"{RESULTS_DIR}/mapping/multi/hybrid/{{sample}}/{{other}}.sorted.bam"
+        bam = f"{SCRATCH_MAP}/multi/hybrid/{{sample}}/{{other}}.sorted.bam"
     threads: config["threads"]
     conda:
         "envs/mapping.yaml"
@@ -923,7 +925,7 @@ rule map_hybrid_multi:
 
 rule depth_coassembly:
     input:
-        expand(f"{RESULTS_DIR}/mapping/coassembly/short/{{sample}}.sorted.bam", sample=SAMPLES)
+        expand(f"{SCRATCH_MAP}/coassembly/short/{{sample}}.sorted.bam", sample=SAMPLES)
     output:
         depth = f"{RESULTS_DIR}/depth/coassembly/depth.txt"
     conda:
@@ -950,7 +952,7 @@ rule maxbin_abundance_coassembly:
 
 rule depth_single:
     input:
-        bam = f"{RESULTS_DIR}/mapping/single/{{assembly_type}}/{{sample}}.sorted.bam"
+        bam = f"{SCRATCH_MAP}/single/{{assembly_type}}/{{sample}}.sorted.bam"
     output:
         depth = f"{RESULTS_DIR}/depth/single/{{assembly_type}}/{{sample}}/depth.txt"
     conda:
@@ -979,7 +981,7 @@ rule maxbin_abundance_single:
 rule depth_multi:
     input:
         bams = lambda wc: expand(
-            f"{RESULTS_DIR}/mapping/multi/{wc.assembly_type}/{wc.sample}/{{other}}.sorted.bam",
+            f"{SCRATCH_MAP}/multi/{wc.assembly_type}/{wc.sample}/{{other}}.sorted.bam",
             other=SAMPLES
         )
     output:
@@ -1144,7 +1146,7 @@ rule concoct_coassembly:
     input:
         contigs = f"{RESULTS_DIR}/assemblies/coassembly/short/assembly.fasta",
         bams = expand(
-            f"{RESULTS_DIR}/mapping/coassembly/short/{{sample}}.sorted.bam",
+            f"{SCRATCH_MAP}/coassembly/short/{{sample}}.sorted.bam",
             sample=SAMPLES
         )
     output:
@@ -1197,7 +1199,7 @@ rule concoct_coassembly:
 rule concoct_single:
     input:
         contigs = f"{RESULTS_DIR}/assemblies/single/{{assembly_type}}/{{sample}}/assembly.fasta",
-        bam = f"{RESULTS_DIR}/mapping/single/{{assembly_type}}/{{sample}}.sorted.bam"
+        bam = f"{SCRATCH_MAP}/single/{{assembly_type}}/{{sample}}.sorted.bam"
     output:
         touch(f"{RESULTS_DIR}/bins/single/concoct/{{assembly_type}}/{{sample}}/bins.done")
     threads: config["threads"]
@@ -1249,7 +1251,7 @@ rule concoct_multi:
     input:
         contigs = f"{RESULTS_DIR}/assemblies/single/{{assembly_type}}/{{sample}}/assembly.fasta",
         bams = lambda wc: expand(
-            f"{RESULTS_DIR}/mapping/multi/{wc.assembly_type}/{wc.sample}/{{other}}.sorted.bam",
+            f"{SCRATCH_MAP}/multi/{wc.assembly_type}/{wc.sample}/{{other}}.sorted.bam",
             other=SAMPLES
         )
     output:
@@ -1448,12 +1450,12 @@ rule metadecoder_coassembly:
     input:
         contigs=f"{RESULTS_DIR}/assemblies/coassembly/short/assembly.fasta",
         bams=expand(
-            f"{RESULTS_DIR}/mapping/coassembly/short/{{sample}}.sorted.bam",
+            f"{SCRATCH_MAP}/coassembly/short/{{sample}}.sorted.bam",
             sample=SAMPLES
         )
     params:
         sams=expand(
-            f"{RESULTS_DIR}/mapping/coassembly/short/{{sample}}.sorted.sam",
+            f"{SCRATCH_MAP}/coassembly/short/{{sample}}.sorted.sam",
             sample=SAMPLES
         )
     output:
@@ -1487,9 +1489,9 @@ rule metadecoder_coassembly:
 rule metadecoder_single:
     input:
         contigs=f"{RESULTS_DIR}/assemblies/single/{{assembly_type}}/{{sample}}/assembly.fasta",
-        bam=f"{RESULTS_DIR}/mapping/single/{{assembly_type}}/{{sample}}.sorted.bam"
+        bam=f"{SCRATCH_MAP}/single/{{assembly_type}}/{{sample}}.sorted.bam"
     params:
-        sam=f"{RESULTS_DIR}/mapping/single/{{assembly_type}}/{{sample}}.sorted.sam"
+        sam=f"{SCRATCH_MAP}/single/{{assembly_type}}/{{sample}}.sorted.sam"
     output:
         touch(f"{RESULTS_DIR}/bins/single/metadecoder/{{assembly_type}}/{{sample}}/bins.done")
     threads: config["threads"]
@@ -1518,12 +1520,12 @@ rule metadecoder_multi:
     input:
         contigs=f"{RESULTS_DIR}/assemblies/single/{{assembly_type}}/{{sample}}/assembly.fasta",
         bams=lambda wc: expand(
-            f"{RESULTS_DIR}/mapping/multi/{wc.assembly_type}/{wc.sample}/{{rep}}.sorted.bam",
+            f"{SCRATCH_MAP}/multi/{wc.assembly_type}/{wc.sample}/{{rep}}.sorted.bam",
             rep=SAMPLES
         )
     params:
         sams=lambda wc: expand(
-            f"{RESULTS_DIR}/mapping/multi/{wc.assembly_type}/{wc.sample}/{{rep}}.sorted.sam",
+            f"{SCRATCH_MAP}/multi/{wc.assembly_type}/{wc.sample}/{{rep}}.sorted.sam",
             rep=SAMPLES
         )
     output:
@@ -1750,7 +1752,7 @@ rule metabinner_multi:
 rule semibin2_coassembly:
     input:
         contigs = f"{RESULTS_DIR}/assemblies/coassembly/short/assembly.fasta",
-        bams = expand(f"{RESULTS_DIR}/mapping/coassembly/short/{{sample}}.sorted.bam", sample=SAMPLES)
+        bams = expand(f"{SCRATCH_MAP}/coassembly/short/{{sample}}.sorted.bam", sample=SAMPLES)
     output:
         touch(f"{RESULTS_DIR}/bins/coassembly/semibin2/bins.done")
     threads: config["threads"]
@@ -1783,7 +1785,7 @@ rule semibin2_coassembly:
 rule semibin2_single:
     input:
         contigs = f"{RESULTS_DIR}/assemblies/single/{{assembly_type}}/{{sample}}/assembly.fasta",
-        bam = f"{RESULTS_DIR}/mapping/single/{{assembly_type}}/{{sample}}.sorted.bam"
+        bam = f"{SCRATCH_MAP}/single/{{assembly_type}}/{{sample}}.sorted.bam"
     output:
         touch(f"{RESULTS_DIR}/bins/single/semibin2/{{assembly_type}}/{{sample}}/bins.done")
     threads: config["threads"]
@@ -1815,7 +1817,7 @@ rule semibin2_multi:
     input:
         contigs = f"{RESULTS_DIR}/assemblies/single/{{assembly_type}}/{{sample}}/assembly.fasta",
         bams = lambda wc: expand(
-            f"{RESULTS_DIR}/mapping/multi/{wc.assembly_type}/{wc.sample}/{{other}}.sorted.bam",
+            f"{SCRATCH_MAP}/multi/{wc.assembly_type}/{wc.sample}/{{other}}.sorted.bam",
             other=SAMPLES
         )    
     output:
@@ -1854,7 +1856,7 @@ rule semibin2_multi:
 rule comebin_coassembly:
     input:
         contigs = f"{RESULTS_DIR}/assemblies/coassembly/short/assembly.fasta",
-        bams_dir = f"{RESULTS_DIR}/mapping/coassembly/short"
+        bams_dir = f"{SCRATCH_MAP}/coassembly/short"
     output:
         touch(f"{RESULTS_DIR}/bins/coassembly/comebin/bins.done")
     threads: config["threads"]
@@ -1886,7 +1888,7 @@ rule comebin_coassembly:
 rule comebin_single:
     input:
         contigs = f"{RESULTS_DIR}/assemblies/single/{{assembly_type}}/{{sample}}/assembly.fasta",
-        bam = f"{RESULTS_DIR}/mapping/single/{{assembly_type}}/{{sample}}.sorted.bam"
+        bam = f"{SCRATCH_MAP}/single/{{assembly_type}}/{{sample}}.sorted.bam"
     output:
         touch(f"{RESULTS_DIR}/bins/single/comebin/{{assembly_type}}/{{sample}}/bins.done")
     threads: config["threads"]
@@ -1898,7 +1900,7 @@ rule comebin_single:
 
         SCRATCH_OUT="{SCRATCH}/comebin_single_{wildcards.assembly_type}_{wildcards.sample}"
         OUT_FINAL="{RESULTS_DIR}/bins/single/comebin/{wildcards.assembly_type}/{wildcards.sample}"
-        bamdir={RESULTS_DIR}/mapping/single/{wildcards.assembly_type}/{wildcards.sample}/
+        bamdir={SCRATCH_MAP}/single/{wildcards.assembly_type}/{wildcards.sample}/
         mkdir -p $bamdir
         cp {input.bam} $bamdir
 
@@ -1921,7 +1923,7 @@ rule comebin_single:
 rule comebin_multi:
     input:
         contigs = f"{RESULTS_DIR}/assemblies/single/{{assembly_type}}/{{sample}}/assembly.fasta",
-        bams = f"{RESULTS_DIR}/mapping/multi/{{assembly_type}}/{{sample}}"
+        bams = f"{SCRATCH_MAP}/multi/{{assembly_type}}/{{sample}}"
     output:
         touch(f"{RESULTS_DIR}/bins/multi/comebin/{{assembly_type}}/{{sample}}/bins.done")
     threads: config["threads"]
