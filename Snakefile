@@ -1932,22 +1932,36 @@ rule comebin_single:
 rule comebin_multi:
     input:
         contigs = f"{RESULTS_DIR}/assemblies/single/{{assembly_type}}/{{sample}}/assembly.fasta",
-        bams_dir = f"{SCRATCH_MAP}/multi/{{assembly_type}}/{{sample}}"
+        # Collect all BAMs inside the sample directory dynamically
+        bams = lambda wc: sorted(glob.glob(f"{SCRATCH_MAP}/multi/{wc.assembly_type}/{wc.sample}/*.sorted.bam"))
     output:
         touch(f"{RESULTS_DIR}/bins/multi/comebin/{{assembly_type}}/{{sample}}/bins.done")
+    threads: config["threads"]
+    conda:
+        "envs/binning_comebin.yaml"
     shell:
         r"""
         set -euo pipefail
+
         SCRATCH_OUT="{SCRATCH}/comebin_multi_{wildcards.assembly_type}_{wildcards.sample}"
         OUT_FINAL="{RESULTS_DIR}/bins/multi/comebin/{wildcards.assembly_type}/{wildcards.sample}"
+
         rm -rf "$SCRATCH_OUT"
         mkdir -p "$SCRATCH_OUT"
-        run_comebin.sh -t {threads} -a {input.contigs} -o "$SCRATCH_OUT" -p {input.bams_dir}
+
+        run_comebin.sh \
+          -t {threads} \
+          -a {input.contigs} \
+          -o "$SCRATCH_OUT" \
+          -p {SCRATCH_MAP}/multi/{wc.assembly_type}/{wc.sample}
+
         rm -rf "$OUT_FINAL"
         mkdir -p "$OUT_FINAL"
         rsync -a "$SCRATCH_OUT/" "$OUT_FINAL/"
+
         touch {output}
         """
+
 
 
 ############################################
