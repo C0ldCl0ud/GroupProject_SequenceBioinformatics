@@ -639,17 +639,6 @@ rule index_short_coassembly:
         """
         mkdir -p {output.idxdir}
         bowtie2-build {input.contigs} {output.idxdir}/contigs
-        """rule index_short_coassembly:
-    input:
-        contigs = f"{RESULTS_DIR}/assemblies/coassembly/short/assembly.fasta"
-    output:
-        idxdir = directory(f"{RESULTS_DIR}/indices/coassembly/short/contigs")
-    conda:
-        "envs/mapping.yaml"
-    shell:
-        """
-        mkdir -p {output.idxdir}
-        bowtie2-build {input.contigs} {output.idxdir}/contigs
         """
 
 rule index_hybrid_single:
