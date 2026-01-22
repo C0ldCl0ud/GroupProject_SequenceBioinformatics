@@ -1290,7 +1290,20 @@ rule vamb_coassembly:
         "envs/binning_vamb.yaml"
     shell:
         """
-        ncontigs=$(grep -c "^>" {input.contigs})
+        minlen=200000
+
+        ncontigs=$(awk -v minlen="$minlen" '
+          /^>/ {
+            if (seqlen >= minlen) n++
+            seqlen=0
+            next
+          }
+          { seqlen += length($0) }
+          END {
+            if (seqlen >= minlen) n++
+            print n+0
+          }
+        ' {input.contigs})
         if [ "$ncontigs" -lt 50 ]; then
             echo "Too few contigs for VAMB, skipping"
             mkdir -p $(dirname {output})
@@ -1322,7 +1335,20 @@ rule vamb_single:
         "envs/binning_vamb.yaml"
     shell:
         """
-        ncontigs=$(grep -c "^>" {input.contigs})
+        minlen=200000
+
+        ncontigs=$(awk -v minlen="$minlen" '
+          /^>/ {
+            if (seqlen >= minlen) n++
+            seqlen=0
+            next
+          }
+          { seqlen += length($0) }
+          END {
+            if (seqlen >= minlen) n++
+            print n+0
+          }
+        ' {input.contigs})
         if [ "$ncontigs" -lt 50 ]; then
             echo "Too few contigs for VAMB, skipping"
             mkdir -p $(dirname {output})
@@ -1354,7 +1380,21 @@ rule vamb_multi:
         "envs/binning_vamb.yaml"
     shell:
         """
-        ncontigs=$(grep -c "^>" {input.contigs})
+        minlen=200000
+
+        ncontigs=$(awk -v minlen="$minlen" '
+          /^>/ {
+            if (seqlen >= minlen) n++
+            seqlen=0
+            next
+          }
+          { seqlen += length($0) }
+          END {
+            if (seqlen >= minlen) n++
+            print n+0
+          }
+        ' {input.contigs})
+
         if [ "$ncontigs" -lt 50 ]; then
             echo "Too few contigs for VAMB, skipping"
             mkdir -p $(dirname {output})
