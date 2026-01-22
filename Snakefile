@@ -1893,7 +1893,7 @@ rule semibin2_multi:
 rule comebin_coassembly:
     input:
         contigs = f"{RESULTS_DIR}/assemblies/coassembly/short/assembly.fasta",
-       bams = lambda wc: glob.glob(f"{SCRATCH_MAP}/coassembly/short/*.sorted.bam")
+        bams = lambda wc: glob.glob(f"{SCRATCH_MAP}/coassembly/short/*.sorted.bam")
     output:
         touch(f"{RESULTS_DIR}/bins/coassembly/comebin/bins.done")
     threads: config["threads"]
