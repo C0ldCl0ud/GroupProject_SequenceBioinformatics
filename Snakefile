@@ -673,28 +673,36 @@ rule map_short_single:
     conda:
         "envs/mapping.yaml"
     shell:
-        """
-        # Ensure output directory exists
+        r"""
+        set -euo pipefail
+
         mkdir -p $(dirname {output.bam})
+        rm -f {output.bam} {output.bam}.bai
 
-        # Remove old partial BAM/index if present
-        rm -rf {output.bam} {output.bam}.tmp*
-
-        # Use samtools temp dir inside /scratch to avoid conflicts
-        if [ -z "{SCRATCH}" ]; then
-            # Create unique temp dir
-            TMPDIR=$(mktemp -d ./tmp_samtools.XXXXXX)
-
-            # Always clean up, even on error
-            trap 'rm -rf "$TMPDIR"' EXIT
+        # Create UNIQUE temp dir per job
+        if [ -n "{SCRATCH}" ]; then
+            TMPDIR=$(mktemp -d {SCRATCH}/samtools.{wildcards.sample}.XXXXXX)
         else
-            TMPDIR="{SCRATCH}"
+            TMPDIR=$(mktemp -d ./tmp_samtools.XXXXXX)
         fi
+
+        # Always clean up
+        trap 'rm -rf "$TMPDIR"' EXIT
+
         PREFIX=$(basename {input.idx} .1.bt2)
-        bowtie2 -x {RESULTS_DIR}/indices/single/short/contigs/$PREFIX -1 {input.r1} -2 {input.r2} -p {threads} |
-        samtools sort -@ {threads} -T $TMPDIR/{wildcards.sample}.tmp -o {output.bam}
+
+        bowtie2 \
+          -x {RESULTS_DIR}/indices/single/short/contigs/$PREFIX \
+          -1 {input.r1} -2 {input.r2} \
+          -p {threads} |
+        samtools sort \
+          -@ {threads} \
+          -T "$TMPDIR/sort" \
+          -o {output.bam}
+
         samtools index {output.bam}
         """
+
 
 rule map_short_coassembly:
     input:
