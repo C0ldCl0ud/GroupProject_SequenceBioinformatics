@@ -949,7 +949,7 @@ rule map_hybrid_multi:
 
 rule touch_bam_dir_hybrid:
     input:
-        bams = expand(f"{SCRATCH_MAP}/multi/hybrid/{{sample}}/{{other}}.sorted.bam", other=HYBRID_SAMPLES)
+        bams = expand(f"{SCRATCH_MAP}/multi/hybrid/{{sample}}/{{other}}.sorted.bam")
     output:
         outdir = directory(f"{SCRATCH_MAP}/multi/hybrid/{{sample}}")
     run:
