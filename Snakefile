@@ -1293,16 +1293,16 @@ rule vamb_coassembly:
         minlen=200000
 
         ncontigs=$(awk -v minlen="$minlen" '
-          /^>/ {
+          /^>/ {{
             if (seqlen >= minlen) n++
             seqlen=0
             next
-          }
-          { seqlen += length($0) }
-          END {
+          }}
+          {{ seqlen += length($0) }}
+          END {{
             if (seqlen >= minlen) n++
             print n+0
-          }
+          }}
         ' {input.contigs})
         if [ "$ncontigs" -lt 50 ]; then
             echo "Too few contigs for VAMB, skipping"
@@ -1338,16 +1338,16 @@ rule vamb_single:
         minlen=200000
 
         ncontigs=$(awk -v minlen="$minlen" '
-          /^>/ {
+          /^>/ {{
             if (seqlen >= minlen) n++
             seqlen=0
             next
-          }
-          { seqlen += length($0) }
-          END {
+          }}
+          {{ seqlen += length($0) }}
+          END {{
             if (seqlen >= minlen) n++
             print n+0
-          }
+          }}
         ' {input.contigs})
         if [ "$ncontigs" -lt 50 ]; then
             echo "Too few contigs for VAMB, skipping"
@@ -1383,16 +1383,16 @@ rule vamb_multi:
         minlen=200000
 
         ncontigs=$(awk -v minlen="$minlen" '
-          /^>/ {
+          /^>/ {{
             if (seqlen >= minlen) n++
             seqlen=0
             next
-          }
-          { seqlen += length($0) }
-          END {
+          }}
+          {{ seqlen += length($0) }}
+          END {{
             if (seqlen >= minlen) n++
             print n+0
-          }
+          }}
         ' {input.contigs})
 
         if [ "$ncontigs" -lt 50 ]; then
