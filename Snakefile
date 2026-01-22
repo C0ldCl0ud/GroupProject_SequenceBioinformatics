@@ -2056,7 +2056,7 @@ rule eval_comp_cont_coassembly:
             print(f"No bins found for Coassembly, skipping.")
             shell(f"touch {output[0]}")
         else:
-            outdir = f"{RESULTS_DIR}/eval/multi/{wildcards.tool}/{wildcards.assembly_type}/{wildcards.sample}_check"
+            outdir = f"{RESULTS_DIR}/eval/coassembly/{wildcards.tool}_check"
             shell(f"""
                 outdir={RESULTS_DIR}/eval/coassembly/{wildcards.tool}_check
                 checkm2 predict --threads {threads} --input {input.bins} --output-directory $outdir --database_path {input.db} --force
