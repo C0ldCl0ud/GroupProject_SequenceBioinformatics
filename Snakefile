@@ -1338,6 +1338,15 @@ rule vamb_multi:
         "envs/binning_vamb.yaml"
     shell:
         """
+        ncontigs=$(grep -c "^>" {input.contigs})
+        if [ "$ncontigs" -lt 50 ]; then
+            echo "Too few contigs for VAMB, skipping"
+            mkdir -p $(dirname {output})
+            touch {output}
+            exit 0
+        fi
+
+
         outdir={RESULTS_DIR}/bins/multi/vamb/{wildcards.assembly_type}/{wildcards.sample}
         rm -rf "$outdir"
 
