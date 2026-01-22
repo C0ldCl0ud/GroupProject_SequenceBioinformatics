@@ -2041,6 +2041,7 @@ rule eval_comp_cont_coassembly:
     conda:
         "envs/evaluation.yaml"
     shell:
+        """
         # Escape early if input bins are empty
         if not input.bins:
             print(f"No bins found for Coassembly, skipping.")
