@@ -2040,8 +2040,7 @@ rule eval_comp_cont_coassembly:
     threads: config["threads"]
     conda:
         "envs/evaluation.yaml"
-    shell:
-        """
+    run:
         # Escape early if input bins are empty
         if not input.bins:
             print(f"No bins found for Coassembly, skipping.")
