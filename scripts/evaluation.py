@@ -95,7 +95,7 @@ BIN_QUALITIES = ['HQ','NC','MQ', 'total_bin_count']
 
 # reads in the list of available paths to evaluate (created by the evaluate.sh)
 with open('paths.eval', newline='', encoding='utf-8') as paths_f:
-    RESULT_PATHS = paths_f.splitlines()
+    RESULT_PATHS = paths_f.read().splitlines()
 
 # creates a nested (4-dim) dictionary hierarchically:
     # 1. dataset
