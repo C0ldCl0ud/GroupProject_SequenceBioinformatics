@@ -78,21 +78,24 @@ BIN_QUALITIES = ['HQ','NC','MQ', 'total_bin_count']
 #=============#
 
 # creates a list of every possible path to evalation files
-RESULT_PATHS = []
-for d in DATASETS:
-    for st in SAMPLING_TYPE:
-        for t in TOOLS:
-            # base_dir = os.path.dirname(os.path.abspath(__file__)) + '/../results/' + d + '/eval/' + st + '/' + t
-            base_dir = d + '/eval/' + st + '/' + t
-            if st == 'coassembly':
-                RESULT_PATHS.append(base_dir)
-            else:
-                for at in ASSEMBLY_TYPE:
-                    for s in SAMPLES:
-                        base_dir = base_dir + '/' + at + '/' + s
-                        if Path(f'{base_dir}_check').exists():  # checks indirectly, if there are any binnings at all, because checkm2 then would've created this path
-                            RESULT_PATHS.append(base_dir)
+# RESULT_PATHS = []
+# for d in DATASETS:
+#     for st in SAMPLING_TYPE:
+#         for t in TOOLS:
+#             # base_dir = os.path.dirname(os.path.abspath(__file__)) + '/../results/' + d + '/eval/' + st + '/' + t
+#             base_dir = d + '/eval/' + st + '/' + t
+#             if st == 'coassembly':
+#                 RESULT_PATHS.append(base_dir)
+#             else:
+#                 for at in ASSEMBLY_TYPE:
+#                     for s in SAMPLES:
+#                         base_dir = base_dir + '/' + at + '/' + s
+#                         if Path(f'{base_dir}_check').exists():  # checks indirectly, if there are any binnings at all, because checkm2 then would've created this path
+#                            RESULT_PATHS.append(base_dir)
 
+# reads in the list of available paths to evaluate (created by the evaluate.sh)
+with open('paths.eval', newline='', encoding='utf-8') as paths_f:
+    RESULT_PATHS = paths_f.splitlines()
 
 # creates a nested (4-dim) dictionary hierarchically:
     # 1. dataset
