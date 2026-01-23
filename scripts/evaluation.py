@@ -6,7 +6,7 @@
 # execute with: ./evaluation.py [pipe]
 #
 # Use pipe flag, if output will be parsed to a
-# file via pipe symbol. This option suppresses
+# file via any pipe symbol. This option suppresses
 # several lines and user interaction during
 # handling.
 #
@@ -23,6 +23,7 @@
 #import os
 import csv
 import sys
+from pathlib import Path
 
 # handle no-print command-line option
 PIPE = False
@@ -103,7 +104,8 @@ for d in DATASETS:
             else:
                 for at in ASSEMBLY_TYPE:
                     for s in SAMPLES:
-                        RESULT_PATHS.append(base_dir + '/' + at + '/' + s)
+                        if Path(f"{base_dir}_check").exists():  # checks indirectly, if there are any binnings at all, because checkm2 then would've created this path
+                            RESULT_PATHS.append(base_dir + '/' + at + '/' + s)
 
 
 # creates a nested (4-dim) dictionary hierarchically:
