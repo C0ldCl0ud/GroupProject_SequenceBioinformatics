@@ -104,8 +104,9 @@ for d in DATASETS:
             else:
                 for at in ASSEMBLY_TYPE:
                     for s in SAMPLES:
+                        base_dir = base_dir + '/' + at + '/' + s
                         if Path(f"{base_dir}_check").exists():  # checks indirectly, if there are any binnings at all, because checkm2 then would've created this path
-                            RESULT_PATHS.append(base_dir + '/' + at + '/' + s)
+                            RESULT_PATHS.append(base_dir)
 
 
 # creates a nested (4-dim) dictionary hierarchically:
@@ -137,7 +138,7 @@ print_results = True
 if not PIPE:
     print()
     print('\tevaluate quality of binnings...')
-    print_results = (input('\t\tLooking in {} paths. Print each result seperately? (y/n) >'.format(len(RESULT_PATHS))).lower().startswith() == 'y')
+    print_results = input('\t\tLooking in {} paths. Print each result seperately? (y/n) >'.format(len(RESULT_PATHS))).lower().startswith('y')
     if print_results:
         print()
 
