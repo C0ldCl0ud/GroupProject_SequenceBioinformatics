@@ -27,7 +27,7 @@ binning_tools:
   #- metadecoder  #probably also a debug mode issue
   #- binny #looks incredible complicated to set up
   # - metabinner #slightly harder to install
-  - semibin2 #works
+  #- semibin2 #works
   #- comebin #currently with hg2 # should work
   
 hg38_index: data/human_assembly/bow2_idx/GRCh38_index
