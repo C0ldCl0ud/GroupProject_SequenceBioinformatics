@@ -209,9 +209,8 @@ for path in RESULT_PATHS:
 print('# plotting data')
 
 for d in DATASETS:
-    print('$')
-    print(d)
+    print('$ ' + d)
     for bq in BIN_QUALITIES:
-        print('%')
+        print('% ' + bq)
         for t in TOOLS:
-            print('{}\t{}\t{}\t{}\t{}\t{}\t{}'.format(*(eval_bin_counts_dict[d][t][sac][bq] for sac in SAMP_ASS_COMBIS)))
+            print('{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}'.format(t, *(eval_bin_counts_dict[d][t][sac][bq] for sac in SAMP_ASS_COMBIS)))
