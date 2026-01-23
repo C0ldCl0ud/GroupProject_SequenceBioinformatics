@@ -3,12 +3,8 @@
 #==============================================================================
 # EVALUATION SCRIPT - Group Project SeqBI WS25
 #
-# execute with: ./evaluation.py [pipe]
+# execute via shell script: ./evaluate.sh
 #
-# Use pipe flag, if output will be parsed to a
-# file via any pipe symbol. This option suppresses
-# several lines and user interaction during
-# handling.
 #
 # IMPORTANT:
 # copy this script to each ".../results/"
@@ -22,13 +18,6 @@
 
 #import os
 import csv
-import sys
-from pathlib import Path
-
-# handle no-print command-line option
-PIPE = False
-if len(sys.argv) > 1 and sys.argv[1] == "pipe":
-    PIPE = True
 
 
 #=======================================#
@@ -82,10 +71,6 @@ SAMP_ASS_COMBIS = [
 # bin quality scheme
 BIN_QUALITIES = ['HQ','NC','MQ', 'total_bin_count']
 
-if not PIPE:
-    print('EVALUATION STARTED...')
-
-
 
 
 #=============#
@@ -105,7 +90,7 @@ for d in DATASETS:
                 for at in ASSEMBLY_TYPE:
                     for s in SAMPLES:
                         base_dir = base_dir + '/' + at + '/' + s
-                        if Path(f"{base_dir}_check").exists():  # checks indirectly, if there are any binnings at all, because checkm2 then would've created this path
+                        if Path(f'{base_dir}_check').exists():  # checks indirectly, if there are any binnings at all, because checkm2 then would've created this path
                             RESULT_PATHS.append(base_dir)
 
 
@@ -134,17 +119,9 @@ for d in DATASETS:
 
 MAGs = list()
 
-print_results = True
-if not PIPE:
-    print()
-    print('\tevaluate quality of binnings...')
-    print_results = input('\t\tLooking in {} paths. Print each result seperately? (y/n) >'.format(len(RESULT_PATHS))).lower().startswith('y')
-    if print_results:
-        print()
 
-if print_results:
-    print('# csv table')
-    print('{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}'.format('dataset', 'sampling_type', 'tool', 'assembly_type', 'sample', 'HQ_count', 'NC_count', 'MQ_count', 'total_bin_count'))
+print('# csv table')
+print('{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}'.format('dataset', 'sampling_type', 'tool', 'assembly_type', 'sample', 'HQ_count', 'NC_count', 'MQ_count', 'total_bin_count'))
 
 # extract eval data
 for path in RESULT_PATHS:
@@ -224,22 +201,14 @@ for path in RESULT_PATHS:
                     eval_bin_counts_dict[dataset][tool][samp_ass_combi]['HQ'] += 1
                     HQ_count += 1
 
-    if print_results:
-        print('{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}'.format(dataset, sampling_type, tool, assembly_type, sample, HQ_count, NC_count, MQ_count, total_bin_count))
+    print('{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}'.format(dataset, sampling_type, tool, assembly_type, sample, HQ_count, NC_count, MQ_count, total_bin_count))
 
-if print_results:
-    print('# plotting data')
-    sep_d = '$'
-    sep_q = '%'
-else:
-    print('\t...done\nSummary:\n')
-    sep_d = ''
-    sep_q = ''
+print('# plotting data')
 
 for d in DATASETS:
-    print(sep_d)
+    print('$')
     print(d)
     for bq in BIN_QUALITIES:
-        print(sep_q)
+        print('%')
         for t in TOOLS:
             print('{}\t{}\t{}\t{}\t{}\t{}\t{}'.format(*(eval_bin_counts_dict[d][t][sac][bq] for sac in SAMP_ASS_COMBIS)))
