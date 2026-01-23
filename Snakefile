@@ -2160,7 +2160,7 @@ rule eval_rRNA_single:
         for filename in {input.bins}; do
             base=$(basename "$filename" *.fa*)
             outfile="{RESULTS_DIR}/eval/single/{wildcards.tool}/{wildcards.assembly_type}/{wildcards.sample}.${{base}}.barrnap.gff3"   # unique per bin
-            barrnap --threads {threads} --quiet "$filename" > "$outfile"
+            barrnap --threads {threads} --quiet "$filename" > "$outfile" || true
 
             if grep -E "rRNA.*5S" "$outfile" >/dev/null && \
                grep -E "rRNA.*16S" "$outfile" >/dev/null && \
@@ -2193,7 +2193,7 @@ rule eval_rRNA_multi:
         for filename in {input.bins}; do
             base=$(basename "$filename" *.fa*)
             outfile="{RESULTS_DIR}/eval/multi/{wildcards.tool}/{wildcards.assembly_type}/{wildcards.sample}.${{base}}.barrnap.gff3"   # unique per bin
-            barrnap --threads {threads} --quiet "$filename" > "$outfile"
+            barrnap --threads {threads} --quiet "$filename" > "$outfile" || true
 
             if grep -E "rRNA.*5S" "$outfile" >/dev/null && \
                grep -E "rRNA.*16S" "$outfile" >/dev/null && \
@@ -2226,7 +2226,7 @@ rule eval_rRNA_coassembly:
         for filename in {input.bins}; do
             base=$(basename "$filename" *.fa*)
             outfile="{RESULTS_DIR}/eval/coassembly/{wildcards.tool}.${{base}}.barrnap.gff3"   # unique per bin
-            barrnap --threads {threads} --quiet "$filename" > "$outfile"
+            barrnap --threads {threads} --quiet "$filename" > "$outfile" || true
 
             if grep -E "rRNA.*5S" "$outfile" >/dev/null && \
                grep -E "rRNA.*16S" "$outfile" >/dev/null && \
