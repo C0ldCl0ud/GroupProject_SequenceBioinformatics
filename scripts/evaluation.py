@@ -16,7 +16,6 @@
 # INSTEAD OF .fa FILES TO THE LIST BELOW
 #==============================================================================
 
-#import os
 import csv
 
 
@@ -59,7 +58,7 @@ ASSEMBLY_TYPE = ['short', 'long', 'hybrid']
 # S00 .. S07
 SAMPLES = [f'S0{i}' for i in range(8)]
 # sampling assembly combinations (like in the heatmap plot)
-SAMP_ASS_COMBIS = [
+MODES = [
     'short_co',
     'short_single',
     'short_multi',
@@ -77,23 +76,8 @@ BIN_QUALITIES = ['HQ','NC','MQ', 'total_bin_count']
 # PREPARATION #
 #=============#
 
-# creates a list of every possible path to evalation files
-# RESULT_PATHS = []
-# for d in DATASETS:
-#     for st in SAMPLING_TYPE:
-#         for t in TOOLS:
-#             # base_dir = os.path.dirname(os.path.abspath(__file__)) + '/../results/' + d + '/eval/' + st + '/' + t
-#             base_dir = d + '/eval/' + st + '/' + t
-#             if st == 'coassembly':
-#                 RESULT_PATHS.append(base_dir)
-#             else:
-#                 for at in ASSEMBLY_TYPE:
-#                     for s in SAMPLES:
-#                         base_dir = base_dir + '/' + at + '/' + s
-#                         if Path(f'{base_dir}_check').exists():  # checks indirectly, if there are any binnings at all, because checkm2 then would've created this path
-#                            RESULT_PATHS.append(base_dir)
 
-# reads in the list of available paths to evaluate (created by the evaluate.sh)
+# reads in the list of available paths to evaluate (created by evaluate.sh)
 with open('paths.eval', newline='', encoding='utf-8') as paths_f:
     RESULT_PATHS = paths_f.read().splitlines()
 
@@ -108,10 +92,10 @@ for d in DATASETS:
     eval_bin_counts_dict[d] = dict()
     for t in TOOLS:
         eval_bin_counts_dict[d][t] = dict()
-        for sac in SAMP_ASS_COMBIS:
-            eval_bin_counts_dict[d][t][sac] = dict()
+        for m in MODES:
+            eval_bin_counts_dict[d][t][m] = dict()
             for bq in BIN_QUALITIES:
-                eval_bin_counts_dict[d][t][sac][bq] = 0
+                eval_bin_counts_dict[d][t][m][bq] = 0
 
 
 
@@ -124,7 +108,7 @@ MAGs = list()
 
 
 print('# csv table')
-print('{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}'.format('dataset', 'sampling_type', 'tool', 'assembly_type', 'sample', 'HQ_count', 'NC_count', 'MQ_count', 'total_bin_count'))
+print('{:<17}{:<15}{:<13}{:<15}{:<8}{:<10}{:<10}{:<10}{}'.format('dataset', 'sampling_type', 'tool', 'assembly_type', 'sample', 'HQ_count', 'NC_count', 'MQ_count', 'total_bin_count'))
 
 # extract eval data
 for path in RESULT_PATHS:
@@ -134,7 +118,7 @@ for path in RESULT_PATHS:
     # (4. assembly type)
     # (5. sample)
 
-    # extract dataset, tool, samp_ass_combi info from path to count to the correct dict entry
+    # extract dataset, tool, mode info from path to count to the correct dict entry
     path_list = path.split('/')
 
     if len(path_list) == 4:     # if coassembly append missing info
@@ -147,9 +131,9 @@ for path in RESULT_PATHS:
     assembly_type = path_list[4]
     sample        = path_list[5]
     if sampling_type == 'coassembly':
-        samp_ass_combi = 'short_co'
+        mode = 'short_co'
     else:
-        samp_ass_combi = assembly_type + '_' + sampling_type
+        mode = assembly_type + '_' + sampling_type
 
     # init counters per sample
     HQ_count = 0
@@ -186,25 +170,25 @@ for path in RESULT_PATHS:
 
             # count
             # increase total bin count anyway
-            eval_bin_counts_dict[dataset][tool][samp_ass_combi]['total_bin_count'] += 1
+            eval_bin_counts_dict[dataset][tool][mode]['total_bin_count'] += 1
             total_bin_count += 1
             # MQ - >50% completeness, <10% contamination
             if completeness > 0.5 and contamination < 0.1:
-                eval_bin_counts_dict[dataset][tool][samp_ass_combi]['MQ'] += 1
+                eval_bin_counts_dict[dataset][tool][mode]['MQ'] += 1
                 MQ_count += 1
                 # append found MAG to the list of all found MAGs with every info to identify it later
                 mag = (dataset, sampling_type, tool, assembly_type, sample, bin_ID)
                 MAGs.append(mag)
             # NC - >90% completeness, <5% contamination
             if completeness > 0.9 and contamination < 0.05:
-                eval_bin_counts_dict[dataset][tool][samp_ass_combi]['NC'] += 1
+                eval_bin_counts_dict[dataset][tool][mode]['NC'] += 1
                 NC_count += 1
                 # HQ - all rRNA present?
                 if all_rRNA_present:
-                    eval_bin_counts_dict[dataset][tool][samp_ass_combi]['HQ'] += 1
+                    eval_bin_counts_dict[dataset][tool][mode]['HQ'] += 1
                     HQ_count += 1
 
-    print('{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}'.format(dataset, sampling_type, tool, assembly_type, sample, HQ_count, NC_count, MQ_count, total_bin_count))
+    print('{:<17}{:<15}{:<13}{:<15}{:<8}{:<10}{:<10}{:<10}{}'.format(dataset, sampling_type, tool, assembly_type, sample, HQ_count, NC_count, MQ_count, total_bin_count))
 
 print('# plotting data')
 
@@ -213,4 +197,4 @@ for d in DATASETS:
     for bq in BIN_QUALITIES:
         print('% ' + bq)
         for t in TOOLS:
-            print('{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}'.format(t, *(eval_bin_counts_dict[d][t][sac][bq] for sac in SAMP_ASS_COMBIS)))
+            print('{:<13}{:<6}{:<6}{:<6}{:<6}{:<6}{:<6}{:<6}'.format(t, *(eval_bin_counts_dict[d][t][m][bq] for m in MODES)))
