@@ -173,14 +173,14 @@ for path in RESULT_PATHS:
             eval_bin_counts_dict[dataset][tool][mode]['total_bin_count'] += 1
             total_bin_count += 1
             # MQ - >50% completeness, <10% contamination
-            if completeness > 0.5 and contamination < 0.1:
+            if completeness > 50 and contamination < 10:
                 eval_bin_counts_dict[dataset][tool][mode]['MQ'] += 1
                 MQ_count += 1
                 # append found MAG to the list of all found MAGs with every info to identify it later
                 mag = (dataset, sampling_type, tool, assembly_type, sample, bin_ID)
                 MAGs.append(mag)
             # NC - >90% completeness, <5% contamination
-            if completeness > 0.9 and contamination < 0.05:
+            if completeness > 90 and contamination < 5:
                 eval_bin_counts_dict[dataset][tool][mode]['NC'] += 1
                 NC_count += 1
                 # HQ - all rRNA present and at least 18 tRNAs?
