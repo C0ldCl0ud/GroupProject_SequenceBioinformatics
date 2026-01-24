@@ -24,17 +24,17 @@ import csv
 #=======================================#
 
 DATASETS = [
-    'cheese',
 #    'marine',
+    'cheese',
 #    'activated_sludge',
 #    'human_gut_1',
 #    'human_gut_2'
     ]
 
 TOOLS = [
-    'metabat2',
-    'maxbin2',
     'concoct',
+    'maxbin2',
+    'metabat2',
 #    'vamb',
 #    'metadecoder',
 #    'binny',
