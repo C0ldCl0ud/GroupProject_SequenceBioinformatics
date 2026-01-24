@@ -156,7 +156,7 @@ for path in RESULT_PATHS:
             bin_ID        = row[0]  # must be of type string for use in pathnames later
             completeness  = float(row[1])
             contamination = float(row[2])
-            tRNA_count    = tRNA_counts[i]  # the corresponding tRNA count
+            tRNA_count    = int(tRNA_counts[i])  # the corresponding tRNA count
 
 
             # eval rRNA for each binning seperately, because of barrnaps output policy
