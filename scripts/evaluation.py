@@ -183,8 +183,8 @@ for path in RESULT_PATHS:
             if completeness > 0.9 and contamination < 0.05:
                 eval_bin_counts_dict[dataset][tool][mode]['NC'] += 1
                 NC_count += 1
-                # HQ - all rRNA present?
-                if all_rRNA_present:
+                # HQ - all rRNA present and at least 18 tRNAs?
+                if all_rRNA_present and tRNA_count > 17:
                     eval_bin_counts_dict[dataset][tool][mode]['HQ'] += 1
                     HQ_count += 1
 
