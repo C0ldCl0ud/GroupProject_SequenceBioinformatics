@@ -126,8 +126,11 @@ for path in RESULT_PATHS:
         path_list.append('all')
 
     dataset =       path_list[0]
+    # path_list[1] is just 'eval', for whom is wondering
     sampling_type = path_list[2]
     tool =          path_list[3]
+    if tool not in TOOLS:       # sometimes there are unfinished binnings from other tools in the path list
+        continue
     assembly_type = path_list[4]
     sample        = path_list[5]
     if sampling_type == 'coassembly':
