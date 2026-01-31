@@ -1,34 +1,16 @@
 dataset: marine
-debug: false
+binning_tools:
+  - metabat2
+  - maxbin2
+  - concoct
+  - semibin2
+remove_human_reads: false
+long_read_technology: pacbio   # pacbio | nanopore (human_gut_II, activated_sludge)
+threads: 16
 use_scratch: true        # set to false for local runs
 scratch_base: /beegfs/HPCscratch
+hg38_index: data/human_assembly/bow2_idx/GRCh38_index
+debug: false
 debug_reads_short: 100000
 debug_reads_long: 5000
 debug_seed: 42
-vamb:
-  prod:
-    minfasta: 200000
-    mincontigs: 2000
-    batchsize: 256
-  debug:
-    minfasta: 20
-    mincontigs: 100
-    batchsize: 8
-metabinner:
-    min_contig_len: 1000
-    kmer_size: 4
-threads: 16
-long_read_technology: pacbio   # pacbio | nanopore (human_gut_II, activated_sludge)
-binning_tools:
-  - metabat2 #works
-  - maxbin2 #works
-  #- concoct #works
-  #- vamb     #no documentation for 3.0.9; cant make it work with default parameters by paper authors
-  #- metadecoder  #probably also a debug mode issue
-  #- binny #looks incredible complicated to set up
-  # - metabinner #slightly harder to install
-  #- semibin2 #works
-  #- comebin #currently with hg2 # should work
-  
-hg38_index: data/human_assembly/bow2_idx/GRCh38_index
-remove_human_reads: false
