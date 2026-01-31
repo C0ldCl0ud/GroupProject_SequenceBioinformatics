@@ -1,4 +1,4 @@
-dataset: marine
+dataset: cheese
 binning_tools:
   - metabat2
   - maxbin2
