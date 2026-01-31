@@ -68,24 +68,6 @@ LONG_ACC  = dict(zip(SAMPLES, long))
 
 DEBUG = config.get("debug", False)
 
-VAMB_MINFASTA = (
-    config["vamb"]["debug"]["minfasta"]
-    if DEBUG else
-    config["vamb"]["prod"]["minfasta"]
-)
-
-VAMB_MINCONTIGS = (
-    config["vamb"]["debug"]["mincontigs"]
-    if DEBUG else
-    config["vamb"]["prod"]["mincontigs"]
-)
-
-VAMB_BATCHSIZE = (
-    config["vamb"]["debug"]["batchsize"]
-    if DEBUG else
-    config["vamb"]["prod"]["batchsize"]
-)
-
 ############################################
 # Rule order / final targets
 ############################################
@@ -1020,7 +1002,7 @@ rule maxbin_abundance_multie:
 
 
 ############################################
-# 5.4 MetaBAT2
+# 6.1 MetaBAT2
 ############################################
 
 rule metabat2_coassembly:
@@ -1077,7 +1059,7 @@ rule metabat2_multi:
         """
 
 ############################################
-# 5.5 MaxBin 2
+# 6.2 MaxBin 2
 ############################################
 
 rule maxbin2_coassembly:
@@ -1148,7 +1130,7 @@ rule maxbin2_multi:
         """
 
 ############################################
-# 5.6 CONCOCT
+# 6.3 CONCOCT
 ############################################
 
 rule concoct_coassembly:
@@ -1309,453 +1291,8 @@ rule concoct_multi:
         rm -rf $SCRATCHDIR
         """
 
-
 ############################################
-# 5.7. VAMB
-############################################
-
-rule vamb_coassembly:
-    input:
-        contigs = f"{RESULTS_DIR}/assemblies/coassembly/short/assembly.fasta",
-        depth   = f"{RESULTS_DIR}/depth/coassembly/depth.txt"
-    output:
-        touch(f"{RESULTS_DIR}/bins/coassembly/vamb/bins.done")
-    threads: config["threads"]
-    conda:
-        "envs/binning_vamb.yaml"
-    shell:
-        """
-        minlen=200000
-
-        ncontigs=$(awk -v minlen="$minlen" '
-          /^>/ {{
-            if (seqlen >= minlen) n++
-            seqlen=0
-            next
-          }}
-          {{ seqlen += length($0) }}
-          END {{
-            if (seqlen >= minlen) n++
-            print n+0
-          }}
-        ' {input.contigs})
-        if [ "$ncontigs" -lt 500 ]; then
-            echo "Too few contigs for VAMB, skipping"
-            mkdir -p $(dirname {output})
-            touch {output}
-            exit 0
-        fi
-
-        outdir={RESULTS_DIR}/bins/coassembly/vamb
-        rm -rf "$outdir"
-
-        vamb \
-          --outdir "$outdir" \
-          --fasta {input.contigs} \
-          --jgi {input.depth} \
-          --minfasta {VAMB_MINFASTA} \
-          -m {VAMB_MINCONTIGS}
-
-        touch {output}
-        """
-
-rule vamb_single:
-    input:
-        contigs = f"{RESULTS_DIR}/assemblies/single/{{assembly_type}}/{{sample}}/assembly.fasta",
-        depth   = f"{RESULTS_DIR}/depth/single/{{assembly_type}}/{{sample}}/depth.txt"
-    output:
-        touch(f"{RESULTS_DIR}/bins/single/vamb/{{assembly_type}}/{{sample}}/bins.done")
-    threads: config["threads"]
-    conda:
-        "envs/binning_vamb.yaml"
-    shell:
-        """
-        minlen=200000
-
-        ncontigs=$(awk -v minlen="$minlen" '
-          /^>/ {{
-            if (seqlen >= minlen) n++
-            seqlen=0
-            next
-          }}
-          {{ seqlen += length($0) }}
-          END {{
-            if (seqlen >= minlen) n++
-            print n+0
-          }}
-        ' {input.contigs})
-        if [ "$ncontigs" -lt 500 ]; then
-            echo "Too few contigs for VAMB, skipping"
-            mkdir -p $(dirname {output})
-            touch {output}
-            exit 0
-        fi
-
-        outdir={RESULTS_DIR}/bins/single/vamb/{wildcards.assembly_type}/{wildcards.sample}
-        rm -rf "$outdir"
-
-        vamb \
-          --outdir "$outdir" \
-          --fasta {input.contigs} \
-          --jgi {input.depth} \
-          --minfasta {VAMB_MINFASTA} \
-          -m {VAMB_MINCONTIGS}
-
-        touch {output}
-        """
-
-rule vamb_multi:
-    input:
-        contigs = f"{RESULTS_DIR}/assemblies/single/{{assembly_type}}/{{sample}}/assembly.fasta",
-        depth   = f"{RESULTS_DIR}/depth/multi/{{assembly_type}}/{{sample}}/depth.txt"
-    output:
-        touch(f"{RESULTS_DIR}/bins/multi/vamb/{{assembly_type}}/{{sample}}/bins.done")
-    threads: config["threads"]
-    conda:
-        "envs/binning_vamb.yaml"
-    shell:
-        """
-        minlen=200000
-
-        ncontigs=$(awk -v minlen="$minlen" '
-          /^>/ {{
-            if (seqlen >= minlen) n++
-            seqlen=0
-            next
-          }}
-          {{ seqlen += length($0) }}
-          END {{
-            if (seqlen >= minlen) n++
-            print n+0
-          }}
-        ' {input.contigs})
-
-        if [ "$ncontigs" -lt 500 ]; then
-            echo "Too few contigs for VAMB, skipping"
-            mkdir -p $(dirname {output})
-            touch {output}
-            exit 0
-        fi
-
-
-        outdir={RESULTS_DIR}/bins/multi/vamb/{wildcards.assembly_type}/{wildcards.sample}
-        rm -rf "$outdir"
-
-        vamb \
-          --outdir "$outdir" \
-          --fasta {input.contigs} \
-          --jgi {input.depth} \
-          --minfasta {VAMB_MINFASTA} \
-          -m {VAMB_MINCONTIGS}
-
-        touch {output}
-        """
-
-############################################
-# 5.8. MetaDecoder
-############################################
-
-rule metadecoder_coassembly:
-    input:
-        contigs=f"{RESULTS_DIR}/assemblies/coassembly/short/assembly.fasta",
-        bams=expand(
-            f"{SCRATCH_MAP}/coassembly/short/{{sample}}.sorted.bam",
-            sample=SAMPLES
-        )
-    params:
-        sams=expand(
-            f"{SCRATCH_MAP}/coassembly/short/{{sample}}.sorted.sam",
-            sample=SAMPLES
-        )
-    output:
-        touch(f"{RESULTS_DIR}/bins/coassembly/metadecoder/bins.done")
-    threads: config["threads"]
-    conda: "envs/binning_metadecoder.yaml"
-    run:
-        # Generate BAM -> SAM conversion commands in Python
-        bam_to_sam_cmds = " && ".join([f"samtools view -h {bam} > {sam}" 
-                                       for bam, sam in zip(input.bams, params.sams)])
-        
-        outdir = f"{RESULTS_DIR}/bins/coassembly/metadecoder"
-        
-        shell(f"""
-        mkdir -p "{outdir}"
-
-        # Convert BAM -> SAM
-        {bam_to_sam_cmds}
-
-        # Run MetaDecoder
-        metadecoder coverage --threads {threads} -s {params.sams} -o "{outdir}/METADECODER_gsa.COVERAGE"
-
-        metadecoder seed --threads {threads} -f {input.contigs} -o "{outdir}/METADECODER_gsa.SEED"
-
-        metadecoder cluster -f {input.contigs} -c "{outdir}/METADECODER_gsa.COVERAGE" -s "{outdir}/METADECODER_gsa.SEED" -o "{outdir}/METADECODER_coassembly"
-
-        touch {output}
-        """)
-
-
-rule metadecoder_single:
-    input:
-        contigs=f"{RESULTS_DIR}/assemblies/single/{{assembly_type}}/{{sample}}/assembly.fasta",
-        bam=f"{SCRATCH_MAP}/single/{{assembly_type}}/{{sample}}.sorted.bam"
-    params:
-        sam=f"{SCRATCH_MAP}/single/{{assembly_type}}/{{sample}}.sorted.sam"
-    output:
-        touch(f"{RESULTS_DIR}/bins/single/metadecoder/{{assembly_type}}/{{sample}}/bins.done")
-    threads: config["threads"]
-    conda: "envs/binning_metadecoder.yaml"
-    run:
-        outdir = f"{RESULTS_DIR}/bins/single/metadecoder/{wildcards.assembly_type}/{wildcards.sample}"
-        
-        shell(f"""
-        mkdir -p "{outdir}"
-
-        # Convert BAM -> SAM
-        samtools view -h {input.bam} > {params.sam}
-
-        # Run MetaDecoder
-        metadecoder coverage --threads {threads} -s {params.sam} -o "{outdir}/METADECODER_gsa.COVERAGE"
-
-        metadecoder seed --threads {threads} -f {input.contigs} -o "{outdir}/METADECODER_gsa.SEED"
-
-        metadecoder cluster -f {input.contigs} -c "{outdir}/METADECODER_gsa.COVERAGE" -s "{outdir}/METADECODER_gsa.SEED" -o "{outdir}/METADECODER_{wildcards.sample}"
-
-        touch {output}
-        """)
-
-
-rule metadecoder_multi:
-    input:
-        contigs=f"{RESULTS_DIR}/assemblies/single/{{assembly_type}}/{{sample}}/assembly.fasta",
-        bams=lambda wc: expand(
-            f"{SCRATCH_MAP}/multi/{wc.assembly_type}/{wc.sample}/{{rep}}.sorted.bam",
-            rep=SAMPLES
-        )
-    params:
-        sams=lambda wc: expand(
-            f"{SCRATCH_MAP}/multi/{wc.assembly_type}/{wc.sample}/{{rep}}.sorted.sam",
-            rep=SAMPLES
-        )
-    output:
-        touch(f"{RESULTS_DIR}/bins/multi/metadecoder/{{assembly_type}}/{{sample}}/bins.done")
-    threads: config["threads"]
-    conda: "envs/binning_metadecoder.yaml"
-    run:
-        outdir = f"{RESULTS_DIR}/bins/multi/metadecoder/{wildcards.assembly_type}/{wildcards.sample}"
-        shell(f"mkdir -p {outdir}")
-
-        # Convert BAM -> SAM for all replicates
-        for bam, sam in zip(input.bams, params.sams):
-            shell(f"samtools view -h {bam} > {sam}")
-
-        # Now join the SAM paths into a space-separated string for MetaDecoder
-        sams_str = " ".join(params.sams)
-
-        # Run MetaDecoder
-        shell(f"""
-            metadecoder coverage --threads {threads} -s {sams_str} -o {outdir}/METADECODER_gsa.COVERAGE
-            metadecoder seed --threads {threads} -f {input.contigs} -o {outdir}/METADECODER_gsa.SEED
-            metadecoder cluster -f {input.contigs} -c {outdir}/METADECODER_gsa.COVERAGE -s {outdir}/METADECODER_gsa.SEED -o {outdir}/METADECODER_{wildcards.sample}
-            touch {output}
-        """)
-
-
-
-
-############################################
-# 5.9. BINNY
-############################################
-
-rule binny_coassembly:
-    input:
-        config = f"{RESULTS_DIR}/assemblies/coassembly/short/assembly.fasta"
-    output:
-        touch(f"{RESULTS_DIR}/bins/coassembly/binny/bins.done")
-    threads: config["threads"]
-    conda:
-        "envs/binning.yaml"
-    shell:
-        """
-        outdir={RESULTS_DIR}/bins/coassembly/binny
-        mkdir -p $outdir
-
-        binny \
-          -l \
-          -n marine_result \
-          -r \
-          -t {threads} \
-          {input.config}
-
-        touch {output}
-        """
-
-rule binny_single:
-    input:
-        config = f"{RESULTS_DIR}/assemblies/single/{{assembly_type}}/{{sample}}/assembly.fasta"
-    output:
-        touch(f"{RESULTS_DIR}/bins/single/binny/{{assembly_type}}/{{sample}}/bins.done")
-    threads: config["threads"]
-    conda:
-        "envs/binning.yaml"
-    shell:
-        """
-        outdir={RESULTS_DIR}/bins/single/binny/{wildcards.sample}
-        mkdir -p $outdir
-
-        binny \
-          -l \
-          -n {wildcards.sample}_single_result \
-          -r \
-          -t {threads} \
-          {input.config}
-
-        touch {output}
-        """
-
-rule binny_multi:
-    input:
-        config = f"{RESULTS_DIR}/assemblies/single/{{assembly_type}}/{{sample}}/assembly.fasta"
-    output:
-        touch(f"{RESULTS_DIR}/bins/multi/binny/{{assembly_type}}/{{sample}}/bins.done")
-    threads: config["threads"]
-    conda:
-        "envs/binning.yaml"
-    shell:
-        """
-        outdir={RESULTS_DIR}/bins/multi/binny/{wildcards.sample}
-        mkdir -p $outdir
-
-        binny \
-          -l \
-          -n {wildcards.sample}_multi_result \
-          -r \
-          -t {threads} \
-          {input.config}
-
-        touch {output}
-        """
-
-############################################
-# 5.10. MetaBinner
-############################################
-
-# TODO metabinner_path in shell command should probably be: $CONDA_PREFIX/bin/MetaBinner
-
-rule metabinner_coassembly:
-    input:
-        contigs = f"{RESULTS_DIR}/assemblies/coassembly/short/assembly.fasta",
-        coverage = f"{RESULTS_DIR}/depth/coassembly/depth.txt"
-    output:
-        done = f"{RESULTS_DIR}/bins/coassembly/metabinner/bins.done"
-    threads: config["threads"]
-    conda:
-        "envs/binning_metabinner.yaml"
-    shell:
-        r"""
-        set -euo pipefail
-
-        outdir="{RESULTS_DIR}/bins/coassembly/metabinner"
-        mkdir -p "$outdir"
-
-        # Generate k-mer profile
-        gen_kmer.py \
-          {input.contigs} \
-          {config[metabinner][min_contig_len]} \
-          {config[metabinner][kmer_size]} \
-          "$outdir/kmer.tsv"
-
-        # Run MetaBinner
-        run_metabinner.sh \
-          -t {threads} \
-          -a {input.contigs} \
-          -o "$outdir/output" \
-          -d {input.coverage} \
-          -k "$outdir/kmer.tsv"
-
-        touch {output.done}
-        """
-
-rule metabinner_single:
-    input:
-        contigs = f"{RESULTS_DIR}/assemblies/single/{{assembly_type}}/{{sample}}/assembly.fasta",
-        coverage = f"{RESULTS_DIR}/depth/single/{{assembly_type}}/{{sample}}/depth.txt"
-    output:
-        done = f"{RESULTS_DIR}/bins/single/metabinner/{{assembly_type}}/{{sample}}/bins.done"
-    threads: config["threads"]
-    conda:
-        "envs/binning_metabinner.yaml"
-    shell:
-        r"""
-        set -euo pipefail
-
-        outdir="{RESULTS_DIR}/bins/single/metabinner/{wildcards.assembly_type}/{wildcards.sample}"
-        mkdir -p "$outdir"
-
-        # Generate k-mer profile
-        gen_kmer.py \
-          {input.contigs} \
-          {config[metabinner][min_contig_len]} \
-          {config[metabinner][kmer_size]} \
-          "$outdir/kmer.tsv"
-
-        # Run MetaBinner
-        run_metabinner.sh \
-          -t {threads} \
-          -a {input.contigs} \
-          -o "$outdir/output" \
-          -d {input.coverage} \
-          -k "$outdir/kmer.tsv"
-
-        touch {output.done}
-        """
-
-rule metabinner_multi:
-    input:
-        contigs = f"{RESULTS_DIR}/assemblies/single/{{assembly_type}}/{{sample}}/assembly.fasta",
-        coverage = f"{RESULTS_DIR}/depth/multi/{{assembly_type}}/{{sample}}/depth.txt"
-    output:
-        done = f"{RESULTS_DIR}/bins/multi/metabinner/{{assembly_type}}/{{sample}}/bins.done"
-    threads: config["threads"]
-    conda:
-        "envs/binning_metabinner.yaml"
-    shell:
-        r"""
-        set -euo pipefail
-
-        outdir="{RESULTS_DIR}/bins/multi/metabinner/{wildcards.assembly_type}/{wildcards.sample}"
-        mkdir -p "$outdir"
-
-        contig_dir=$(dirname {input.contigs})
-        contig_base=$(basename {input.contigs} .fasta)
-
-        # Run gen_kmer in contig directory (MetaBinner hardcodes output path)
-        (
-          cd "$contig_dir"
-          gen_kmer.py \
-            "$contig_base.fasta" \
-            {config[metabinner][min_contig_len]} \
-            {config[metabinner][kmer_size]}
-        )
-
-        # Move generated kmer file to outdir
-        mv \
-          "$contig_dir/${{contig_base}}_kmer_{config[metabinner][kmer_size]}_f{config[metabinner][min_contig_len]}.csv" \
-          "$outdir/kmer.tsv"
-
-        # Run MetaBinner
-        run_metabinner.sh \
-          -t {threads} \
-          -a {input.contigs} \
-          -o "$outdir/output" \
-          -d {input.coverage} \
-          -k "$outdir/kmer.tsv"
-
-        touch {output.done}
-        """
-
-############################################
-# 5.11. SemiBin2
+# 6.4 SemiBin2
 ############################################
 
 rule semibin2_coassembly:
@@ -1858,114 +1395,9 @@ rule semibin2_multi:
         touch {output}
         """
 
-############################################
-# 5.12. COMEBin
-############################################
-
-rule comebin_coassembly:
-    input:
-        contigs = f"{RESULTS_DIR}/assemblies/coassembly/short/assembly.fasta",
-        bams = lambda wc: glob.glob(f"{SCRATCH_MAP}/coassembly/short/*.sorted.bam")
-    output:
-        touch(f"{RESULTS_DIR}/bins/coassembly/comebin/bins.done")
-    threads: config["threads"]
-    conda:
-        "envs/binning_comebin.yaml"
-    shell:
-        r"""
-        set -euo pipefail
-
-        SCRATCH_OUT="{SCRATCH}/comebin_coassembly_out"
-        OUT_FINAL="{RESULTS_DIR}/bins/coassembly/comebin"
-
-        rm -rf "$SCRATCH_OUT"
-        mkdir -p "$SCRATCH_OUT"
-
-        run_comebin.sh \
-          -t {threads} \
-          -a {input.contigs} \
-          -o "$SCRATCH_OUT" \
-          -p {SCRATCH_MAP}/coassembly/short
-
-        rm -rf "$OUT_FINAL"
-        mkdir -p "$OUT_FINAL"
-        rsync -a "$SCRATCH_OUT/" "$OUT_FINAL/"
-
-        touch {output}
-        """
-
-rule comebin_single:
-    input:
-        contigs = f"{RESULTS_DIR}/assemblies/single/{{assembly_type}}/{{sample}}/assembly.fasta",
-        bam = f"{SCRATCH_MAP}/single/{{assembly_type}}/{{sample}}.sorted.bam"
-    output:
-        touch(f"{RESULTS_DIR}/bins/single/comebin/{{assembly_type}}/{{sample}}/bins.done")
-    threads: config["threads"]
-    conda:
-        "envs/binning_comebin.yaml"
-    shell:
-        r"""
-        set -euo pipefail
-
-        SCRATCH_OUT="{SCRATCH}/comebin_single_{wildcards.assembly_type}_{wildcards.sample}"
-        OUT_FINAL="{RESULTS_DIR}/bins/single/comebin/{wildcards.assembly_type}/{wildcards.sample}"
-        bamdir={SCRATCH_MAP}/single/{wildcards.assembly_type}/{wildcards.sample}/
-        mkdir -p $bamdir
-        cp {input.bam} $bamdir
-
-        rm -rf "$SCRATCH_OUT"
-        mkdir -p "$SCRATCH_OUT"
-
-        run_comebin.sh \
-          -t {threads} \
-          -a {input.contigs} \
-          -o "$SCRATCH_OUT" \
-          -p $bamdir
-
-        rm -rf "$OUT_FINAL"
-        mkdir -p "$OUT_FINAL"
-        rsync -a "$SCRATCH_OUT/" "$OUT_FINAL/"
-
-        touch {output}
-        """
-
-rule comebin_multi:
-    input:
-        contigs = f"{RESULTS_DIR}/assemblies/single/{{assembly_type}}/{{sample}}/assembly.fasta",
-        # Collect all BAMs inside the sample directory dynamically
-        bams = lambda wc: sorted(glob.glob(f"{SCRATCH_MAP}/multi/{wc.assembly_type}/{wc.sample}/*.sorted.bam"))
-    output:
-        touch(f"{RESULTS_DIR}/bins/multi/comebin/{{assembly_type}}/{{sample}}/bins.done")
-    threads: config["threads"]
-    conda:
-        "envs/binning_comebin.yaml"
-    shell:
-        r"""
-        set -euo pipefail
-
-        SCRATCH_OUT="{SCRATCH}/comebin_multi_{wildcards.assembly_type}_{wildcards.sample}"
-        OUT_FINAL="{RESULTS_DIR}/bins/multi/comebin/{wildcards.assembly_type}/{wildcards.sample}"
-
-        rm -rf "$SCRATCH_OUT"
-        mkdir -p "$SCRATCH_OUT"
-
-        run_comebin.sh \
-          -t {threads} \
-          -a {input.contigs} \
-          -o "$SCRATCH_OUT" \
-          -p {SCRATCH_MAP}/multi/{wildcards.assembly_type}/{wildcards.sample}
-
-        rm -rf "$OUT_FINAL"
-        mkdir -p "$OUT_FINAL"
-        rsync -a "$SCRATCH_OUT/" "$OUT_FINAL/"
-
-        touch {output}
-        """
-
-
 
 ############################################
-# 6. Evaluation for rank scoring
+# 7. Evaluation for rank scoring
 ############################################
 
 # this BIN_FILES scheme is probably only for Metabat2, other tools have different output. Maybe we have to write a rule for every tool.
@@ -1981,7 +1413,7 @@ BIN_FILES_COASSEMBLY = lambda wildcards: sorted(glob.glob(f"{RESULTS_DIR}/bins/c
 
 
 ############################################
-# 6.1 Completeness and Contamination - CheckM 2
+# 7.1 Completeness and Contamination - CheckM 2
 ############################################
 
 CHECKM2_DB = f"database/uniref100.KO.1.dmnd"
@@ -2064,7 +1496,7 @@ rule eval_comp_cont_coassembly:
             """)
 
 ############################################
-# 6.2 tRNA count - Aragorn
+# 7.2 tRNA count - Aragorn
 ############################################
 
 # Single-sample Evaluation (short, long, hybrid)
@@ -2140,7 +1572,7 @@ rule eval_tRNA_coassembly:
         """
 
 ############################################
-# 6.3 Presence of rRNAs - Barrnap
+# 7.3 Presence of rRNAs - Barrnap
 ############################################
 
 # Single-sample Evaluation (short, long, hybrid)
